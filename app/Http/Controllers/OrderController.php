@@ -128,7 +128,7 @@ class OrderController extends HomeController
         $countries = Countries::where('deleted', 0)->select(['id', 'country_code', 'country_name'])->get();
         $currencies = Currencies::where('deleted', 0)->select(['id', 'cur_name', 'cur_value', 'cur_rate'])->get();
         $companies = Company::where('deleted', 0)->select(['id', 'name'])->orderBy('name')->get();
-        $supplies = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.chief'=>0, 'users.deleted'=>0])->select('users.id', 'users.name', 'users.surname')->get();
+        $supplies = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.deleted'=>0])->select('users.id', 'users.name', 'users.surname')->get();
 
         return view('backend.orders_for_supply')->with(['units' => $units, 'companies'=>$companies, 'vehicles' => $vehicles, 'positions' => $positions, 'countries'=>$countries, 'currencies'=>$currencies, 'supplies'=>$supplies]);
     }
@@ -188,7 +188,7 @@ class OrderController extends HomeController
             }
 
             $order = Orders::where(['id' => $request->id])->select('image')->first();
-            $image = '<img src="' . $order->image . '"  width="200" height="200">';
+            $image = '<img src="' . $order->image . '"  width="400" height="200">';
 
             return response(['case' => 'success', 'data' => $image]);
         } else if ($request->type == 5) {
@@ -243,7 +243,7 @@ class OrderController extends HomeController
             }
 
             if (Auth::user()->chief() == 1) {
-                $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed')->get();
+                $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka as vehicle', 'v.QN', 'v.Tipi', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed')->get();
             }
             else {
                 $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.SupplyID', '=', Auth::id())->orWhere('Orders.MainPerson', '=', Auth::id());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed')->get();
@@ -312,6 +312,10 @@ class OrderController extends HomeController
         else if ($request->type == 12) {
             //update order
             return $this->update_order($request);
+        }
+        else if ($request->type == 13) {
+            //update order image
+            return $this->update_order_image($request);
         }
         else {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
@@ -404,35 +408,12 @@ class OrderController extends HomeController
         }
 
         try {
-            /*
-            $current_date = Carbon::today();
-            $year = $current_date->year;
-            if (Orders::whereYear('created_at', $year)->where(['deleted'=>0, 'confirmed'=>1])->count() > 0) {
-                $orders = Orders::whereYear('created_at', $year)->where(['deleted'=>0, 'confirmed'=>1])->select('ReportNo')->orderBy('ReportNo', 'Desc')->first();
-                $last_report_no = $orders['ReportNo'];
-                $last_no = substr($last_report_no, 4);
-                $no = (int) $last_no + 1;
-                $no_length = strlen($no);
-                if ($no_length < 4) {
-                    $add_zero = 4 - $no_length;
-                    for ($i=0; $i<$add_zero; $i++) {
-                        $no = '0'.$no;
-                    }
-                }
-                $report_no = $year.$no;
-            }
-            else {
-                $report_no = $year.'0001';
-            }
-            */
-
             $arr = array();
             $order_id = $request->order_id;
             $arr['ChiefID'] = Auth::id();
             $arr['confirmed_at'] = Carbon::now();
             $arr['confirmed'] = 1;
             $arr['situation_id'] = 2; //tesdiqlendi
-            //$arr['ReportNo'] = $report_no;
 
             Orders::where(['id'=>$order_id, 'deleted'=>0])->update($arr);
 
@@ -560,11 +541,48 @@ class OrderController extends HomeController
             unset($request['_token']);
             unset($request['type']);
 
-            Orders::where(['id' => $id])->update($request->all());
+            unset($request['picture']);
+            $request = Input::except('picture');
+
+            Orders::where(['id' => $id])->update($request);
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Məlumatlar dəyişdirildi!']);
         } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Məlumatlar dəyişdirilərkən səhv baş verdi!']);
+        }
+    }
+
+    //update order image function
+    public function update_order_image(Request $request) {
+        if (isset($request->picture)) {
+            $validator_file = Validator::make($request->all(), [
+                'id' => 'required|integer',
+                'picture' => 'mimes:jpeg,png,jpg,gif,svg',
+            ]);
+            if ($validator_file->fails()) {
+                return response(['case' => 'error', 'title' => 'Xəta! (Şəkil)', 'content' => 'Fayl tipləri: jpeg,png,jpg,gif,svg!']);
+            }
+
+            $image = Input::file('picture');
+            $image_ext = $image->getClientOriginalExtension();
+            $image_name = 'order_' . str_random(4) . '_' . microtime() . '.' . $image_ext;
+            Storage::disk('uploads')->makeDirectory('files/orders/images');
+            Image::make($image->getRealPath())->save('uploads/files/orders/images/' . $image_name);
+            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
+            $image_address = '/uploads/files/orders/images/' . $image_name;
+
+            $id = $request->id;
+
+            try {
+                Orders::where(['id'=>$id])->update(['image'=>$image_address]);
+
+                return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Şəkil dəyişdirildi!', 'type' => 'update_order_image']);
+            } catch (\Exception $e) {
+                    return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Şəkil dəyişdirilərkən səhv baş verdi!']);
+                }
+        }
+        else {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Şəkil seçilməyib!']);
         }
     }
 

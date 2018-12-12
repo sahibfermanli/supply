@@ -16,17 +16,17 @@
             <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
-                      <div id="message" class="message-mobile">
-                          <h1>Zəhmət olmasa kategoriya seçin...</h1>
-                          <p>Seçim sehifenin sol kenarında, menyudadır...</p>
-                      </div>
-                      <div class="cats-mobile">
-                        <ul class="nav child_menu show-categories">
-                            @foreach($categories as $category)
-                                <li class="cat-li"><a style="color: black;" class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
-                            @endforeach
-                        </ul>
-                      </div>
+                        <div id="message" class="message-mobile">
+                            <h1>Zəhmət olmasa kategoriya seçin...</h1>
+                            <p>Seçim sehifenin sol kenarında, menyudadır...</p>
+                        </div>
+                        <div class="cats-mobile">
+                            <ul class="nav child_menu show-categories">
+                                @foreach($categories as $category)
+                                    <li class="cat-li"><a style="color: black;" class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                @endforeach
+                            </ul>
+                        </div>
                         <div class="x_content" id="table_display">
                             <div class="table-responsive">
                                 <form action="" method="post">
@@ -41,16 +41,12 @@
                                         <tr class="headings">
                                             <th class="column-title">#</th>
                                             @if(Auth::user()->chief() == 1)
-                                                @php($product_input_length = 3)
+                                                @php($product_input_length = 1)
                                                 <th class="column-title">Təchizatçı</th>
                                             @else
-                                                @php($product_input_length = 2)
+                                                @php($product_input_length = 1)
                                             @endif
-                                            <th class="column-title">Alternativ</th>
-                                            @if(Auth::user()->chief() == 1)
-                                                <th class="column-title">Təsdiq</th>
-                                            @endif
-                                            <th class="column-title" style="min-width: 80px;">Düzəliş</th>
+                                            <th class="column-title">Emeliyyatlar</th>
                                             <th class="column-title" id="Product_th">Malın adı</th>
                                             <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
                                             <th class="column-title" id="Part_th">Part No</th>
@@ -257,7 +253,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="modal-body-data">
+                        <div class="remark-modal"></div>
+                        <form action="" id="form" method="post" enctype="multipart/form-data" class="image-form-modal">
 
+                        </form>
                     </div>
                 </div>
             </div>
@@ -268,37 +267,37 @@
     <!-- start select supply for order-->
     @if(Auth::user()->chief() == 1)
         <div class="modal fade" id="select-supply-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="form" action="" method="post">
-                        {{csrf_field()}}
-                        <input type="hidden" name="type" value="9">
-                        <div id="order_id_for_select_supply"></div>
-                        <div id="category_id_for_select_supply"></div>
-                        <div class="form-group">
-                            <div class="col-md-12 col-sm-12 col-xs-12">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="supply_id">Təchizatçı</label>
-                                <select class="form-control col-md-7 col-xs-12" name="supply_id" id="supply_id">
-                                    @foreach($supplies as $supply)
-                                        <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
-                                    @endforeach
-                                </select>
-                                <button style="margin-top: 10px;" type="submit" class="btn btn-success">Təsdiqlə</button>
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="form" action="" method="post">
+                            {{csrf_field()}}
+                            <input type="hidden" name="type" value="9">
+                            <div id="order_id_for_select_supply"></div>
+                            <div id="category_id_for_select_supply"></div>
+                            <div class="form-group">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="supply_id">Təchizatçı</label>
+                                    <select class="form-control col-md-7 col-xs-12" name="supply_id" id="supply_id">
+                                        @foreach($supplies as $supply)
+                                            <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
+                                        @endforeach
+                                    </select>
+                                    <button style="margin-top: 10px;" type="submit" class="btn btn-success">Təsdiqlə</button>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     @endif
     <!-- /.end select supply for order-->
 
@@ -563,9 +562,9 @@
                             count++;
                             var order = orders[i];
                             var id = order['id'];
-                            var product = '<td>' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Product'] + '">' + '</td>';
-                            var translation_brand = '<td>' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Translation_Brand'] + '">' + '</td>';
-                            var part = '<td>' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Part'] + '">' + '</td>';
+                            var product = '<td title="' + order['Product'] + '" style="min-width: 150px;">' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Product'] + '">' + '</td>';
+                            var translation_brand = '<td style="min-width: 150px;" title="' + order['Translation_Brand'] + '">' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Translation_Brand'] + '">' + '</td>';
+                            var part = '<td title="' + order['Part'] + '" style="min-width: 100px;">' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Part'] + '">' + '</td>';
                             var first_pcs = order['Pcs'];
                             if ((first_pcs - parseInt(first_pcs)) > 0) {
                                 var last_pcs = first_pcs;
@@ -579,7 +578,7 @@
                             var units = response.units;
                             var unit = '';
                             var j = 0;
-                            unit = unit + '<td><select id="unit_id_edit_' + id + '" class="form-control input-sm">';
+                            unit = unit + '<td title="' + order['Unit'] + '" style="min-width: 110px;"><select id="unit_id_edit_' + id + '" class="form-control input-sm">';
                             for(j=0; j<units.length; j++) {
                                 if (units[j]['id'] == unit_id) {
                                     unit = unit+ '<option selected value="' + units[j]['id'] + '">' + units[j]['Unit'] + '</option>';
@@ -590,11 +589,11 @@
                             }
                             unit = unit + '</select></td>';
 
-                            var vehicle_id = order['unit_id'];
+                            var vehicle_id = order['vehicle_id'];
                             var vehicles = response.vehicles;
                             var vehicle = '';
                             var j = 0;
-                            vehicle = vehicle + '<td><select id="vehicle_id_edit_' + id + '" class="form-control input-sm">';
+                            vehicle = vehicle + '<td title="' + order['vehicle'] + ' , ' + order['QN'] + ' , ' + order['Tipi'] + '" style="min-width: 170px;"><select id="vehicle_id_edit_' + id + '" class="form-control input-sm">';
                             for(j=0; j<vehicles.length; j++) {
                                 if (vehicles[j]['id'] == vehicle_id) {
                                     vehicle = vehicle+ '<option selected value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
@@ -607,10 +606,12 @@
                             var marka = vehicle;
 
                             if (order['WEB_link'] == null) {
-                                var web_link = '<td><span disabled="true"><i class="fa fa-link"></i></span></td>';
+                                var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 100px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
+                                // var web_link = '<td title="Link yoxdur"><span disabled="true"><i class="fa fa-link"></i></span></td>';
                             }
                             else {
-                                var web_link = '<td><a target="_blank" href="' + order['WEB_link'] + '"><i class="fa fa-link"></i></a></td>';
+                                var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 100px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
+                                // var web_link = '<td title="' + order['WEB_Link'] + '"><a target="_blank" href="' + order['WEB_link'] + '"><i class="fa fa-link"></i></a></td>';
                             }
 
                             if (order['Remark'] == null) {
@@ -644,46 +645,46 @@
                             var status = '<td><span id="status_' + id + '" class="btn btn-xs" style="color: ' + order['color'] + ';">' + order['status'] + '</span></td>';
 
                             if(order['confirmed'] === 1 && order['SupplyID'] !== null) {
-                                var send_director = '<td><center><span onclick="show_alternative(' + id + ');" class="btn btn-success btn-xs show-alternative-modal"><i class="fa fa-eye"></i></span></center></td>';
+                                var send_director = '<span onclick="show_alternative(' + id + ');" class="btn btn-success btn-xs show-alternative-modal"><i class="fa fa-eye"></i></span>';
                             }
                             else {
-                                var send_director = '<td><center><span style="background-color: red; border-color: red;" disabled="true" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
+                                var send_director = '<span style="background-color: red; border-color: red;" disabled="true" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span>';
                             }
 
                             @if(Auth::user()->chief() == 1)
-                                if (order['confirmed'] == 1) {
-                                    if (order['SupplyID'] == null) {
-                                        select_supply = '<td><span onclick="select_supply(' + id + ');" class="btn btn-success btn-xs select-supply-modal">Seç</span></td>';
-                                    }
-                                    else {
-                                        select_supply = '<td><span class="btn btn-warning btn-xs">' + order['supply_name'] + ' ' + order['supply_surname'] + '</span></td>';
-                                    }
+                            if (order['confirmed'] == 1) {
+                                if (order['SupplyID'] == null) {
+                                    select_supply = '<td><span onclick="select_supply(' + id + ');" class="btn btn-success btn-xs select-supply-modal">Seç</span></td>';
                                 }
                                 else {
-                                    select_supply = '<td><span disabled="true" style="background-color: red; border-color: red;" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs">Seç</span></td>';
+                                    select_supply = '<td><span class="btn btn-warning btn-xs">' + order['supply_name'] + ' ' + order['supply_surname'] + '</span></td>';
                                 }
+                            }
+                            else {
+                                select_supply = '<td><span disabled="true" style="background-color: red; border-color: red;" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs">Seç</span></td>';
+                            }
 
 
-                                if (order['status_id'] == 9 || order['confirmed'] == 1) {
-                                    edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                                    cancel = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                                    check = '<td><i style="color: red;" class="fa fa-check"></i></td>';
-                                }
-                                else {
-                                    edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
-                                    cancel = '<span id="cancel_btn_' + id + '" onclick="del(this, ' + id + ');" title="Geri çevir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span>';
-                                    check = '<td id="check_' + id + '"><span class="btn btn-success btn-xs" onclick="confirm_order(' + id + ');"><i class="fa fa-check"></i></span></td>';
-                                }
+                            if (order['status_id'] == 9 || order['confirmed'] == 1) {
+                                edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
+                                cancel = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
+                                check = '<i style="color: red;" class="fa fa-check"></i>';
+                            }
+                            else {
+                                edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
+                                cancel = '<span id="cancel_btn_' + id + '" onclick="del(this, ' + id + ');" title="Geri çevir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span>';
+                                check = '<span id="check_' + id + '" class="btn btn-success btn-xs" onclick="confirm_order(' + id + ');"><i class="fa fa-check"></i></span>';
+                            }
                             @else
-                                if (order['status_id'] == 9 || order['confirmed'] == 1) {
-                                    edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                                }
-                                else {
-                                    edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
-                                }
+                            if (order['status_id'] == 9 || order['confirmed'] == 1) {
+                                edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
+                            }
+                            else {
+                                edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
+                            }
                             @endif
 
-                            switch (category_id) {
+                                switch (category_id) {
                                 case '3': {
                                     //servis
                                     translation_brand = '';
@@ -750,7 +751,7 @@
                             for (var k = 0; k<purchases.length; k++) {
                                 if (id == purchases[k]['OrderID']) {
                                     color_style = '';
-                                    send_director = '<td><center><span title="Düymə deaktivdir" class="btn btn-success btn-xs" style="background-color: red; border-color: red;"><i class="fa fa-eye"></i></span></center></td>';
+                                    send_director = '<span title="Düymə deaktivdir" class="btn btn-success btn-xs" style="background-color: red; border-color: red;"><i class="fa fa-eye"></i></span>';
                                     break;
                                 }
                             }
@@ -760,7 +761,7 @@
                             }
 
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>' + select_supply + send_director + check + '<td id="actions_' + id + '"><center>' + edit + cancel + '</center></td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect + report;
+                            tr = tr + '<td>' + count + '</td>'+ select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect + report;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -793,14 +794,14 @@
             var image = '';
             var deffect_doc = '';
 
-            <?php
+                <?php
                 if (Auth::user()->chief() == 1) {
                     $save_btn_colspan = 3;
                 }
                 else {
                     $save_btn_colspan = 2;
                 }
-            ?>
+                ?>
 
             var inputs = '<td colspan="{{$save_btn_colspan}}" id="add-btn-td"><center><button type="submit" id="add-btn" class="btn btn-success btn-xs"><i class="fa fa-save"></i></button></center></td>';
 
@@ -1176,7 +1177,23 @@
                 success: function (response) {
                     swal.close();
 
-                    $('.modal-body-data').html(response.data);
+                    if(type === 3) {
+                        $('.image-form-modal').html('');
+                        var remark = '';
+                        remark = '<textarea class="form-control" id="Remark_edit_' + id + '" name="Remark">' + response.data + '</textarea>'
+                        $('.remark-modal').html(remark);
+                    }
+                    else {
+                        $('.remark-modal').html('');
+                        var image = '';
+                        image = image + response.data;
+                        image = image + '{{csrf_field()}}';
+                        image = image + '<input type="hidden" name="type" value="13">';
+                        image = image + '<input type="hidden" name="id" value="' + id + '">';
+                        image = image + '<input style="margin: 10px 0; width: 400px;" type="file" name="picture" class="form-control input-sm" placeholder="Image">';
+                        image = image + '<button type="submit" class="btn btn-success">Şəkli dəyiş</button>';
+                        $('.image-form-modal').html(image);
+                    }
                 }
             });
         }
@@ -1234,6 +1251,11 @@
                         //add order
                         if (response.type == 'add_order') {
                             change_category(response.category_id);
+                        }
+
+                        //update order image
+                        if(response.type === 'update_order_image') {
+                            $('#add-modal').modal('hide');
                         }
                     }
                 }
@@ -1309,13 +1331,13 @@
 
                             // var remark = alternative['Remark'];
                             @if(Auth::user()->chief() == 1)
-                                if (alternative['confirm_chief'] == 0) {
-                                    confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
-                                }
-                                else {
-                                    confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
-                                }
-                            @endif
+                            if (alternative['confirm_chief'] == 0) {
+                                confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
+                            }
+                            else {
+                                confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
+                            }
+                                    @endif
 
                             var brend = '<td title="' + remark + '">' + alternative['Brend'] + '</td>';
                             var model = '<td>' + alternative['Model'] + '</td>';
@@ -1448,6 +1470,9 @@
                     var part = $('#part_edit_'+id).val();
                     var pcs = $('#pcs_edit_'+id).val();
                     var unit_id = $('#unit_id_edit_'+id).val();
+                    var WEB_link = $('#WEB_link_edit_'+id).val();
+                    var Remark = $('#Remark_edit_'+id).val();
+                    // var picture = $('#picture_edit_'+id).val();
 
                     $.ajax({
                         type: "Post",
@@ -1460,7 +1485,10 @@
                             'Translation_Brand': translation_brand,
                             'Part': part,
                             'Pcs': pcs,
-                            'unit_id': unit_id
+                            'unit_id': unit_id,
+                            'WEB_link': WEB_link,
+                            'Remark': Remark,
+                            // 'picture': picture
                         },
                         beforeSubmit: function () {
                             //loading
