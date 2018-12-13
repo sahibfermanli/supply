@@ -46,7 +46,7 @@
                         <h2 style="text-transform: capitalize;">{{Auth::user()->name}} <span style="color: white; text-transform: uppercase;">{{Auth::user()->surname}}</span></h2>
                         @if(Auth::user()->authority() == 1)
                             <small>Admin</small>
-                        @elseif(Auth::user()->authority() == 2)
+                        @elseif(Auth::user()->chief() == 1)
                             <small>Rəhbər</small>
                         @elseif(Auth::user()->authority() == 3)
                             <small>İstifadəçi</small>
@@ -115,6 +115,7 @@
                                 @endif
 
                                 {{--SupplyUser--}}
+                                <li><a href="/supply/accounts"><i class="fa fa-money"></i> Hesablar</a></li>
                                 <li><a href="/supply/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                 <li><a href="/supply/orders/"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
                                 <li class="active">

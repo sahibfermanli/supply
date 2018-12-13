@@ -46,10 +46,16 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/add', 'OrderController@post_add_order');
     });
 
+    //accounts for supply
+    Route::group(['prefix'=>'supply/accounts', 'middleware'=>'Supply'], function () {
+        Route::get('/', 'AccountController@get_accounts_for_supply');
+        Route::post('/', 'AccountController@post_accounts_for_supply');
+    });
+
     //purchase for supply user
     Route::group(['prefix'=>'supply/purchases', 'middleware'=>'Supply'], function () {
-        Route::get('/', 'PurchaseController@get_purchases');
-        Route::post('/', 'PurchaseController@post_delete_purchase_for_supply');
+        Route::get('/', 'PurchaseController@get_purchases_for_supply');
+        Route::post('/', 'PurchaseController@post_purchase_for_supply');
     });
 
     //director

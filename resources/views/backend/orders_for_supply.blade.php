@@ -1242,7 +1242,7 @@
                             var director_remark = '<td>' + 'null' + '</td>';
 
                             var tr = '<tr class="even pointer">';
-                            tr = tr + '<td>' + count + '</td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + remark + director_remark;
+                            tr = tr + '<td>' + count + '</td><td></td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + remark + director_remark;
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);

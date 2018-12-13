@@ -153,19 +153,8 @@ class OrderController extends HomeController
                 return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
             }
         } else if ($request->type == 2) {
+            //empty
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
-            //get orders (del)
-            //$validator = Validator::make($request->all(), [
-            //    'cat_id' => 'required|integer',
-            //]);
-            //if ($validator->fails()) {
-            //    return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadı!']);
-            //}
-
-            //$orders = '';
-            //$orders = Orders::leftJoin('Reports as r', 'Orders.ReportID', '=', 'r.id')->leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'r.deleted' => 0])->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'r.ReportNo', 'r.ReportDate', 'Orders.deffect_doc', 'Orders.created_at')->get();
-
-            //return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id]);
         } else if ($request->type == 3) {
             //get remark
             $validator = Validator::make($request->all(), [
@@ -455,12 +444,6 @@ class OrderController extends HomeController
         }
 
         if (isset($request->defect)) {
-            //$validator_file = Validator::make($request->all(), [
-            //    'defect' => 'mimes:jpeg,png,jpg,gif,svg,doc,docx,pdf',
-            //]);
-            //if ($validator_file->fails()) {
-            //    return response(['case' => 'error', 'title' => 'Xəta! (Deffekt sənədi)', 'content' => 'Fayl tipləri:jpeg,png,jpg,gif,svg,doc,docx,pdf!']);
-            //}
 
             $file = Input::file('defect');
             $file_ext = $file->getClientOriginalExtension();
@@ -474,12 +457,6 @@ class OrderController extends HomeController
         }
 
         if (isset($request->report)) {
-            //$validator_file = Validator::make($request->all(), [
-            //    'report' => 'mimes:doc,docx,pdf',
-            //]);
-            //if ($validator_file->fails()) {
-            //    return response(['case' => 'error', 'title' => 'Xəta! (Raport)', 'content' => 'Fayl tipləri:doc,docx,pdf!']);
-            //}
 
             $file2 = Input::file('report');
             $file_ext2 = $file2->getClientOriginalExtension();
