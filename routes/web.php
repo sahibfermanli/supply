@@ -58,6 +58,12 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/', 'PurchaseController@post_purchase_for_supply');
     });
 
+    //companies for supply
+    Route::group(['prefix'=>'supply/companies', 'middleware'=>'Supply'], function () {
+        Route::get('/', 'CompanyController@get_companies');
+        Route::post('/', 'CompanyController@post_companies');
+    });
+
     //director
     Route::group(['prefix'=>'director', 'middleware'=>'Director'], function () {
         //purchase
@@ -106,16 +112,6 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     Route::group(['prefix'=>'supply-users', 'middleware'=>'Admin'], function () {
         Route::get('/', 'SupplyController@get_supply_users');
         Route::post('/', 'SupplyController@post_delete_supply_user');
-    });
-
-    //companies for admins
-    Route::group(['prefix'=>'companies', 'middleware'=>'Admin'], function () {
-        Route::get('/', 'CompanyController@get_companies');
-        Route::post('/', 'CompanyController@post_delete_company');
-        Route::get('/add', 'CompanyController@get_add_company');
-        Route::post('/add', 'CompanyController@post_add_company');
-        Route::get('/update/{id}', 'CompanyController@get_update_company');
-        Route::post('/update/{id}', 'CompanyController@post_update_company');
     });
 
     //situations for admins

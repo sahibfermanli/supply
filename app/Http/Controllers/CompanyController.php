@@ -7,17 +7,35 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CompanyController extends HomeController
+class CompanyController extends Controller
 {
     //show
     public function get_companies() {
-        $companies = Company::where(['deleted'=>0])->select('id', 'name', 'account_number', 'address', 'zip_code', 'phone', 'local', 'created_at')->paginate(30);
+        $companies = Company::where(['deleted'=>0])->select('id', 'name', 'address', 'zip_code', 'fax', 'phone', 'local', 'created_at')->paginate(30);
 
         return view('backend.companies')->with(['companies'=>$companies]);
     }
 
+    public function post_companies(Request $request) {
+        if ($request->type == 'delete') {
+            //delete
+            return $this->delete_company($request);
+        }
+        else if ($request->type == 'add') {
+            //add
+            return $this->add_company($request);
+        }
+        else if ($request->type == 'update') {
+            //update
+            return $this->update_company($request);
+        }
+        else {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
+
     //delete
-    public function post_delete_company(Request $request)
+    public function delete_company(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
@@ -38,60 +56,50 @@ class CompanyController extends HomeController
     }
 
     //add
-    public function get_add_company() {
-        return view('backend.company_add');
-    }
-
-    public function post_add_company(Request $request) {
+    public function add_company(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
-            'account_number' => 'required|string|max:20',
             'address' => 'required|string|max:100',
             'zip_code' => 'required|string|max:10',
-            'phone' => 'required|string|max:15',
-            'local' => 'required|integer',
+            'phone' => 'required|string|max:30',
+            'fax' => 'required|string|max:30',
+            'local' => 'integer',
         ]);
         if ($validator->fails()) {
-            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Fill in the required fields!']);
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Lazımlı xanaları doldurun!']);
         }
         try {
             $request->merge(['deleted'=>0]);
 
             Company::create($request->all());
 
-            return response(['case' => 'success', 'title' => 'Success!', 'content' => 'Company added!']);
+            return response(['case' => 'success', 'title' => 'Success!', 'content' => 'Şirkət əlavə edildi!', 'type' => 'add_company']);
         } catch (\Exception $e) {
-            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Company could not be added!']);
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Səhv baş verdi!']);
         }
     }
 
-    //update
-    public function get_update_company($id) {
-        $company = Company::where(['id'=>$id, 'deleted'=>0])->select('name', 'account_number', 'address', 'zip_code', 'phone', 'local')->first();
-
-        return view('backend.company_update')->with(['company'=>$company]);
-    }
-
-    public function post_update_company($id, Request $request) {
+    public function update_company(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
-            'account_number' => 'required|string|max:20',
             'address' => 'required|string|max:100',
             'zip_code' => 'required|string|max:10',
-            'phone' => 'required|string|max:15',
-            'local' => 'required|integer',
+            'phone' => 'required|string|max:30',
+            'fax' => 'required|string|max:30',
+            'local' => 'integer',
         ]);
         if ($validator->fails()) {
-            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Fill in the required fields!']);
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Lazımlı xanaları doldurun!']);
         }
         try {
-            unset($request['_token']);
+            $id = $request->id;
+            unset($request['id'], $request['_token'], $request['type']);
 
             Company::where('id', $id)->update($request->all());
 
-            return response(['case' => 'success', 'title' => 'Success!', 'content' => 'Company updated!']);
+            return response(['case' => 'success', 'title' => 'Success!', 'content' => 'Məlumatlar dəyişdirildi!']);
         } catch (\Exception $e) {
-            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Company could not be updated!']);
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Səhv baş verdi!']);
         }
     }
 }

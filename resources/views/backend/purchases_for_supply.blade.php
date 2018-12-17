@@ -33,7 +33,7 @@
                                         <th class="column-title">Sirket </th>
                                         <th class="column-title">Təslimatçı </th>
                                         <th class="column-title">Ödəniş tarixi </th>
-                                        <th class="column-title">Hesab doc. </th>
+                                        <th class="column-title">Hesab </th>
                                         <th class="column-title">Qaime doc. </th>
                                         <th class="column-title">AWB_Akt doc. </th>
                                         <th class="column-title">Icraci doc. </th>
@@ -75,14 +75,9 @@
                                             <td title="{{$purchase->phone}} , {{$purchase->address}}">{{$purchase->company}}</td>
                                             <td title="{{$purchase->delivery_date}}">{{$purchase->name}} {{$purchase->surname}}</td>
                                             <td>{{$purchase->odenish_date}}</td>
-                                            @if(isset($purchase->hesab_doc))
-                                                <td title="{{$purchase->hesab_doc_date}}"><a href="{{$purchase->hesab_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
-                                            @else
-                                                <td title="{{$purchase->hesab_doc_date}}" style="min-width: 80px;">
-                                                    <span disabled="true" class="btn btn-success btn-xs" style="background-color: red; border-color: red;"><i class="fa fa-download"></i></span>
-                                                    <span class="btn btn-success btn-xs"><i class="fa fa-upload"></i></span>
-                                                </td>
-                                            @endif
+                                            <td title="{{$purchase->account_date}}">
+                                                <a class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="{{$purchase->account_doc}}"><i class="fa fa-download"></i> {{$purchase->account_no}}</a>
+                                            </td>
                                             @if(isset($purchase->qaime_doc))
                                                 <td title="{{$purchase->qaime_doc_date}}"><a href="{{$purchase->qaime_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
                                             @else

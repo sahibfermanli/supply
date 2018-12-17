@@ -115,6 +115,7 @@
                                 @endif
 
                                 {{--SupplyUser--}}
+                                <li><a href="/supply/companies"><i class="fa fa-building"></i> Şirkətlər</a></li>
                                 <li><a href="/supply/accounts"><i class="fa fa-money"></i> Hesablar</a></li>
                                 <li><a href="/supply/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                 <li><a href="/supply/orders/"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
