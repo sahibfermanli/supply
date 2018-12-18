@@ -55,6 +55,7 @@
                                             <th class="column-title" id="unit_th">Ölçü vahidi</th>
                                             <th class="column-title" id="vehicle_th">Qaraj No</th>
                                             <th class="column-title" id="position_th">Vəzifə</th>
+                                            <th class="column-title">Sifarişçi</th>
                                             <th class="column-title" id="Status_th">Status</th>
                                             <th class="column-title" id="Remark_th">Qeyd</th>
                                             <th class="column-title" id="Image_th">Şəkil</th>
@@ -562,6 +563,7 @@
                             count++;
                             var order = orders[i];
                             var id = order['id'];
+                            var user_detail = '<td style="min-width: 150px;">' + order['user_name'] + ' ' + order['user_surname'] + ' , ' + order['user_department'] + '</td>';
                             var product = '<td title="' + order['Product'] + '" style="min-width: 150px;">' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Product'] + '">' + '</td>';
                             var translation_brand = '<td style="min-width: 150px;" title="' + order['Translation_Brand'] + '">' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Translation_Brand'] + '">' + '</td>';
                             var part = '<td title="' + order['Part'] + '" style="min-width: 100px;">' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Part'] + '">' + '</td>';
@@ -761,7 +763,7 @@
                             }
 
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>'+ select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect + report;
+                            tr = tr + '<td>' + count + '</td>'+ select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + status + remark + picture + defect + report;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
