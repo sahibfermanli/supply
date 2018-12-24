@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Accounts;
 use App\Company;
+use App\Orders;
 use App\Purchase;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,10 +19,10 @@ class AccountController extends HomeController
         $companies = Company::where(['deleted'=>0])->select('id', 'name')->orderBy('name')->get();
         $accounts = Accounts::where(['deleted'=>0])->select()->paginate(30);
         if (Auth::user()->chief() == 1) {
-            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('companies as c', 'Purchases.company_id', '=', 'c.id')->leftJoin('users', 'Purchases.delivery_person_id', '=', 'users.id')->where(['Purchases.deleted'=>0, 'a.deleted'=>0 ,'o.deleted'=>0])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at')->get();
+            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color')->get();
         }
         else {
-            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('companies as c', 'Purchases.company_id', '=', 'c.id')->leftJoin('users', 'Purchases.delivery_person_id', '=', 'users.id')->where(['Purchases.deleted'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'o.SupplyID'=>Auth::id()])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at')->get();
+            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'o.SupplyID'=>Auth::id()])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color')->get();
         }
 
         return view('backend.accounts')->with(['accounts'=>$accounts, 'free_purchases'=>$free_purchases, 'companies'=>$companies]);
@@ -30,7 +31,12 @@ class AccountController extends HomeController
     public function post_accounts_for_supply(Request $request) {
         if ($request->type == 'delete') {
             //delete
-            return $this->delete_account($request);
+            if (Accounts::where(['id'=>$request->id, 'deleted'=>0, 'send'=>0])->count() > 0) {
+                return $this->delete_account($request);
+            }
+            else {
+                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
+            }
         }
         else if ($request->type == 'add') {
             //add
@@ -38,11 +44,21 @@ class AccountController extends HomeController
         }
         else if ($request->type == 'update') {
             //update
-            return $this->update_account($request);
+            if (Accounts::where(['id'=>$request->id, 'deleted'=>0, 'send'=>0])->count() > 0) {
+                return $this->update_account($request);
+            }
+            else {
+                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
+            }
         }
         else if ($request->type == 'update_doc') {
             //update document
-            return $this->update_document($request);
+            if (Accounts::where(['id'=>$request->id, 'deleted'=>0, 'send'=>0])->count() > 0) {
+                return $this->update_document($request);
+            }
+            else {
+                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
+            }
         }
         else if ($request->type == 'show_purchases') {
             //show selected purchases
@@ -55,6 +71,15 @@ class AccountController extends HomeController
         else if ($request->type == 'remove_purchase_from_selected_account') {
             //remove purchase from selected account
             return $this->remove_purchase_from_selected_account($request);
+        }
+        else if ($request->type == 'send_lawyer') {
+            //send lawyer
+            if(Auth::user()->chief() == 1) {
+                return $this->send_lawyer($request);
+            }
+            else {
+                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Bu əməliyyat üçün icazəniz yoxdur!']);
+            }
         }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
@@ -73,7 +98,11 @@ class AccountController extends HomeController
         try {
             $id = $request->id;
             $date = Carbon::now();
-            Accounts::where(['id'=>$id])->update(['deleted'=>1, 'deleted_at'=>$date]);
+            $del = Accounts::where(['id'=>$id])->update(['deleted'=>1, 'deleted_at'=>$date]);
+
+            if ($del) {
+                Purchase::where(['account_id'=>$id, 'deleted'=>0])->update(['account_id'=>null]);
+            }
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Silindi!', 'row_id'=>$request->row_id]);
         } catch (\Exception $e) {
@@ -165,10 +194,10 @@ class AccountController extends HomeController
         }
         try {
             if (Auth::user()->chief() == 1) {
-                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('companies as c', 'Purchases.company_id', '=', 'c.id')->leftJoin('users', 'Purchases.delivery_person_id', '=', 'users.id')->where(['Purchases.deleted'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at')->get();
+                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color')->get();
             }
             else {
-                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('companies as c', 'Purchases.company_id', '=', 'c.id')->leftJoin('users', 'Purchases.delivery_person_id', '=', 'users.id')->where(['Purchases.deleted'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at')->get();
+                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color')->get();
             }
 
             return response(['case' => 'success', 'selected_purchases'=>$selected_purchases]);
@@ -187,10 +216,15 @@ class AccountController extends HomeController
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab və ya sifariş tapılmadı!']);
         }
         try {
-            $update = Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>$request->account_id]);
+            if (Accounts::where(['id'=>$request->account_id, 'deleted'=>0, 'send'=>0])->count() > 0) {
+                $update = Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>$request->account_id]);
 
-            if ($update) {
-                $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at')->first();
+                if ($update) {
+                    $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color')->first();
+                }
+            }
+            else {
+                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
             }
 
             return response(['case' => 'success', 'purchase'=>$purchase]);
@@ -211,10 +245,35 @@ class AccountController extends HomeController
             $update = Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>null]);
 
             if ($update) {
-                $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at')->first();
+                $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color')->first();
             }
 
             return response(['case' => 'success', 'purchase'=>$purchase]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
+
+    public function send_lawyer(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'account_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
+        }
+        try {
+            $id = $request->account_id;
+            $current_date = Carbon::now();
+
+            $update = Accounts::where(['id'=>$id])->update(['send'=>1, 'send_at'=>$current_date]);
+
+            if ($update) {
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.account_id'=>$id])->select('a.OrderID')->get();
+
+                Orders::whereIn('id', $orders)->update(['situation_id'=>11]);
+            }
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Hüquqa göndərildi!']);
         } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }

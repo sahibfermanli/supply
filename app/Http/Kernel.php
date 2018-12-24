@@ -64,5 +64,7 @@ class Kernel extends HttpKernel
         'Supply' => \App\Http\Middleware\Supply::class,
         'SupplyChief' => \App\Http\Middleware\SupplyChief::class,
         'Director' => \App\Http\Middleware\Director::class,
+        'Lawyer' => \App\Http\Middleware\Lawyer::class,
+        'LawyerChief' => \App\Http\Middleware\LawyerChief::class,
     ];
 }

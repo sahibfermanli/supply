@@ -3,9 +3,11 @@ $(document).ready(function () {
   if (s_width < 992) {
     $('.message-mobile').css('display', 'none');
     $('.cats-mobile').css('display', 'block');
+    $('.accounts-mobile').css('display', 'block');
   }
   else {
     $('.cats-mobile').css('display', 'none');
+    $('.accounts-mobile').css('display', 'none');
     $('.message-mobile').css('display', 'block');
   }
 
@@ -14,9 +16,11 @@ $(document).ready(function () {
     if (s_width < 992) {
       $('.message-mobile').css('display', 'none');
       $('.cats-mobile').css('display', 'block');
+      $('.accounts-mobile').css('display', 'block');
     }
     else {
       $('.cats-mobile').css('display', 'none');
+      $('.accounts-mobile').css('display', 'none');
       $('.message-mobile').css('display', 'block');
     }
   });
@@ -28,8 +32,15 @@ $('.cat-li-mobile').click(function() {
   $('.btn-mobile').css('display', 'inline-block');
 });
 
+$('.account-li-mobile').click(function() {
+  $('.tables-mobile').css('display', 'block');
+  $('.accounts-mobile').css('display', 'none');
+  $('.btn-mobile').css('display', 'inline-block');
+});
+
 $('.btn-mobile').click(function() {
   $('.tables-mobile').css('display', 'none');
   $('.cats-mobile').css('display', 'block');
+  $('.accounts-mobile').css('display', 'block');
   $('.btn-mobile').css('display', 'none');
 });

@@ -67,6 +67,10 @@
     display: none;
 }
 
+.show-accounts {
+    display: none;
+}
+
 #orders-add-inputs {
     min-width: 120px !important;
 }

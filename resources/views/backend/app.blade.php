@@ -150,6 +150,41 @@
                                         @endforeach
                                     </ul>
                                 </li>
+
+                            @elseif(Auth::user()->authority() == 6)
+
+                                @if(Auth::user()->chief() == 1)
+                                    {{--Lawyer Chief--}}
+                                    <li><a href="/law/users"><i class="fa fa-user"></i> İşçilər</a></li>
+                                    <li><a href="/law/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                @else
+                                    <li><a href="/law/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                @endif
+
+                                {{--LawyerUser--}}
+                                <li class="active">
+                                    <ul class="nav child_menu show-categories">
+                                    <!-- @php($cat_count = 0) -->
+                                    @foreach($categories as $category)
+                                        <!-- @php($cat_count++) -->
+                                            @if($category->orders_count > 0)
+                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}  <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a></li>
+                                            @else
+                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </li>
+
+                                <li><a href="/law/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                <li class="active">
+                                    <ul class="nav child_menu show-accounts">
+                                        @foreach($accounts as $account)
+                                            <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+
                             @endif
 
                         </ul>
