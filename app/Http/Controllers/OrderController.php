@@ -210,9 +210,31 @@ class OrderController extends HomeController
 
             $request->merge(['deleted' => 0, 'confirm_chief'=>0]);
 
+            if (isset($request->picture)) {
+                $validator_file = Validator::make($request->all(), [
+                    'picture' => 'mimes:jpeg,png,jpg,gif,svg',
+                ]);
+                if ($validator_file->fails()) {
+                    return response(['case' => 'error', 'title' => 'Xəta! (Şəkil)', 'content' => 'Fayl tipləri: jpeg,png,jpg,gif,svg!']);
+                }
+
+                $image = Input::file('picture');
+                $image_ext = $image->getClientOriginalExtension();
+                $image_name = 'order_' . str_random(4) . '_' . microtime() . '.' . $image_ext;
+                Storage::disk('uploads')->makeDirectory('files/alternatives/images');
+                Image::make($image->getRealPath())->save('uploads/files/alternatives/images/' . $image_name);
+                Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
+                $image_address = '/uploads/files/alternatives/images/' . $image_name;
+
+                $request['image'] = $image_address;
+            }
+
             try {
+                unset($request['picture']);
+//                $request = Input::except('picture');
+
                 $create_alternative = Alternatives::create($request->all());
-                Alternatives::where(['OrderID'=>$request->OrderID, 'deleted'=>0])->update(['DirectorRemark'=>null]);
+                Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
                 $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company')->first();
 
                 Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
@@ -307,6 +329,10 @@ class OrderController extends HomeController
             //update order image
             return $this->update_order_image($request);
         }
+        else if ($request->type == 14) {
+            //get alternative image
+            return $this->get_alt_image($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
         }
@@ -387,6 +413,21 @@ class OrderController extends HomeController
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
+    }
+
+    //get alternative image
+    public function get_alt_image(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Sifariş tapılmadı!']);
+        }
+
+        $alt = Alternatives::where(['id' => $request->id])->select('image')->first();
+        $image = '<img src="' . $alt->image . '"  width="200" height="200">';
+
+        return response(['case' => 'success', 'data' => $image]);
     }
 
     public function confirm_order(Request $request) {

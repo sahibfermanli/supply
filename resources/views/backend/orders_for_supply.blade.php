@@ -209,6 +209,11 @@
                                                             @endforeach
                                                         </select>
                                                     </td>
+                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="file"
+                                                                                                            id="image_input"
+                                                                                                            class="form-control input-sm"
+                                                                                                            name="picture">
+                                                    </td>
                                                     <td colspan="2" id="orders-add-inputs" style="width: 150px;"><input
                                                                 id="remark_input"
                                                                 type="text" class="form-control input-sm" name="Remark"
@@ -229,6 +234,7 @@
                                                     <th class="column-title">Bazar tipi</th>
                                                     <th class="column-title">Firma</th>
                                                     <th class="column-title">Ölkə</th>
+                                                    <th class="column-title">Şəkil</th>
                                                     <th class="column-title">Qeyd</th>
                                                     <th class="column-title">Direktorun qeydi</th>
                                                 </tr>
@@ -310,6 +316,26 @@
         </div>
     @endif
     <!-- /.end select supply for order-->
+
+    {{--start alt image modal--}}
+    <div class="modal fade" id="alt-image" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alt-image">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{--finish alt image modal--}}
 
 @endsection
 
@@ -1260,6 +1286,7 @@
                             var count = '<span style="color: green;">New</span>';
 
                             // var remark = alternative['Remark'];
+                            var alt_id = request['id'];
                             var brend = '<td>' + request['Brend'] + '</td>';
                             var model = '<td>' + request['Model'] + '</td>';
                             var part = '<td>' + request['PartSerialNo'] + '</td>';
@@ -1275,8 +1302,16 @@
                             var remark = '<td>' + request['Remark'] + '</td>';
                             var director_remark = '<td>' + 'null' + '</td>';
 
+                            var image = '';
+                            if(request['image'] !== null) {
+                                image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alt_id + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
+                            }
+                            else {
+                                image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
+                            }
+
                             var tr = '<tr class="even pointer">';
-                            tr = tr + '<td>' + count + '</td><td></td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + remark + director_remark;
+                            tr = tr + '<td>' + count + '</td><td></td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);
@@ -1334,6 +1369,7 @@
             $('#total_cost_input').val('');
             $('#remark_input').val('');
             $('#company_input').val('');
+            $('#image_input').val('');
             $('#currency_input').val(1);
             $('#store_input').val('Yerli');
             $('#country_input').val(15);
@@ -1409,6 +1445,7 @@
                                 }
                             @endif
 
+                            var alt_id = alternative['id'];
                             var brend = '<td>' + alternative['Brend'] + '</td>';
                             var model = '<td>' + alternative['Model'] + '</td>';
                             var part = '<td>' + alternative['PartSerialNo'] + '</td>';
@@ -1423,9 +1460,17 @@
                             var country = '<td>' + alternative['country'] + '</td>';
                             var remark = '<td>' + alternative['Remark'] + '</td>';
                             var director_remark = '<td>' + alternative['DirectorRemark'] + '</td>';
+                            var image = '';
+
+                            if(alternative['image'] !== null) {
+                                image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alt_id + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
+                            }
+                            else {
+                                image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
+                            }
 
                             var tr = '<tr class="even pointer">';
-                            tr = tr + '<td>' + count + '</td><td id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + remark + director_remark;
+                            tr = tr + '<td>' + count + '</td><td id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -1435,6 +1480,36 @@
                 }
             });
         }
+
+        function get_alt_image(id) {
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'id': id,
+                    '_token': CSRF_TOKEN,
+                    'type': 14
+                },
+                beforeSubmit: function () {
+                    //loading
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
+                        text: 'Loading, please wait..',
+                        showConfirmButton: false
+                    });
+                },
+                success: function (response) {
+                    swal.close();
+
+                    $('.alt-image').html(response.data);
+                }
+            });
+        }
+
+        $(document).on('click', '.alt-image-modal', function() {
+            $('#alt-image').modal('show');
+        });
     </script>
 
     @if(Auth::user()->chief() == 1)
