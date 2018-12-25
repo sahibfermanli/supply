@@ -333,6 +333,10 @@ class OrderController extends HomeController
             //get alternative image
             return $this->get_alt_image($request);
         }
+        else if ($request->type == 15) {
+            //delete alternative
+            return $this->delete_alternative($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
         }
@@ -428,6 +432,31 @@ class OrderController extends HomeController
         $image = '<img src="' . $alt->image . '"  width="200" height="200">';
 
         return response(['case' => 'success', 'data' => $image]);
+    }
+
+    //delete alternative
+    public function delete_alternative(Request $request) {
+        //delete
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Alternativ tapılmadı!']);
+        }
+        try {
+            $id = $request->id;
+            $date = Carbon::now();
+
+            if (Alternatives::where(['id'=>$id, 'confirm_chief'=>0])->count() == 0) {
+                return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Bu alternativi silmək üçün icazəniz yoxdur!']);
+            }
+
+            Alternatives::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ silindi!', 'id' => $id, 'type' => 'alt_del']);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
+        }
     }
 
     public function confirm_order(Request $request) {

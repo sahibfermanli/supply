@@ -101,7 +101,7 @@
                                             <table class="table table-bordered">
                                                 <thead>
                                                 <tr class="jsgrid-filter-row">
-                                                    <td id="add-btn-td" colspan="2">
+                                                    <td id="add-btn-td" colspan="3">
                                                         <button type="submit" id="add-btn"
                                                                 class="btn btn-success btn-xs"><i
                                                                     class="fa fa-plus"></i></button>
@@ -222,6 +222,7 @@
                                                 <tr class="headings">
                                                     <th class="column-title">#</th>
                                                     <th class="column-title">#</th>
+                                                    <th class="column-title">Sil</th>
                                                     <th class="column-title">Marka</th>
                                                     <th class="column-title">Model</th>
                                                     <th class="column-title">Part No</th>
@@ -358,14 +359,14 @@
     <script>
         function del(e, id, row_id) {
             swal({
-                title: 'Are you sure you want to delete?',
-                text: 'This process has no return...',
+                title: 'Silmək istədiyinizdən əminsiniz?',
+                text: 'Bu əməliyyatın geri dönüşü yoxdur...',
                 type: 'warning',
                 showCancelButton: true,
-                cancelButtonText: 'Cancel',
+                cancelButtonText: 'Geri',
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Delete!'
+                confirmButtonText: 'Sil!'
             }).then(function (result) {
                 if (result.value) {
                     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
@@ -381,8 +382,8 @@
                         beforeSubmit: function () {
                             //loading
                             swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
-                                text: 'Loading, please wait..',
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                text: 'Gözləyin, əməliyyat aparılır..',
                                 showConfirmButton: false
                             });
                         },
@@ -1234,6 +1235,54 @@
     </script>
 
     <script>
+        //delete alternative
+        function del_alt(id) {
+            swal({
+                title: 'Silmək istədiyinizdən əminsiniz?',
+                text: 'Bu əməliyyatın geri dönüşü yoxdur...',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Geri',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sil!'
+            }).then(function (result) {
+                if (result.value) {
+                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                    $.ajax({
+                        type: "Post",
+                        url: '',
+                        data: {
+                            'id': id,
+                            '_token': CSRF_TOKEN,
+                            'type': 15
+                        },
+                        beforeSubmit: function () {
+                            //loading
+                            swal({
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                text: 'Gözləyin, əməliyyat aparılır..',
+                                showConfirmButton: false
+                            });
+                        },
+                        success: function (response) {
+                            swal(
+                                response.title,
+                                response.content,
+                                response.case
+                            );
+                            if (response.case === 'success') {
+                                var elem = document.getElementById('alt_row_' + response.id);
+                                elem.parentNode.removeChild(elem);
+                            }
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        }
+
         $(document).ready(function () {
             $('form').validate();
             $('form').ajaxForm({
@@ -1310,8 +1359,17 @@
                                 image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
                             }
 
-                            var tr = '<tr class="even pointer">';
-                            tr = tr + '<td>' + count + '</td><td></td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            var del_btn = '';
+
+                            if (request['confirm_chief'] === 0) {
+                                del_btn = '<td id="del_alt_btn_' + alt_id + '"><span onclick="del_alt(' + alt_id + ');" title="Sil" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span></td>';
+                            }
+                            else {
+                                del_btn = '<td><span disabled="true" title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span></td>';
+                            }
+
+                            var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
+                            tr = tr + '<td>' + count + '</td><td></td>' +del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);
@@ -1469,8 +1527,16 @@
                                 image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
                             }
 
-                            var tr = '<tr class="even pointer">';
-                            tr = tr + '<td>' + count + '</td><td id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</td>' + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            var del_btn = '';
+                            if (alternative['confirm_chief'] === 0) {
+                                del_btn = '<td id="del_alt_btn_' + alt_id + '"><span onclick="del_alt(' + alt_id + ');" title="Sil" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span></td>';
+                            }
+                            else {
+                                del_btn = '<td><span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-trash"></i></span></td>';
+                            }
+
+                            var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
+                            tr = tr + '<td>' + count + '</td><td id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -1537,6 +1603,7 @@
                         swal.close();
 
                         $('#confirm_alternative_tr_'+alt_id).html('<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>');
+                        $('#del_alt_btn_'+alt_id).html('<span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-trash"></i></span>');
                     }
                 });
             }
