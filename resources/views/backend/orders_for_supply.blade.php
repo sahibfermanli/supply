@@ -83,7 +83,7 @@
         <div style="width: 80% !important;" class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <span style="color: green;" id="order_details"></span>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -94,7 +94,7 @@
                             <div class="x_panel">
                                 <div class="x_content">
                                     <div class="table-responsive">
-                                        <form action="" method="post" enctype="multipart/form-data">
+                                        <form action="" method="post" enctype="multipart/form-data" id="alt-form">
                                             {{csrf_field()}}
                                             <div id="order_id_for_alternative"></div>
                                             <input type="hidden" name="type" value="5">
@@ -107,18 +107,21 @@
                                                                     class="fa fa-plus"></i></button>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;"><input type="text"
+                                                                                                            id="brend_input"
                                                                                                             class="form-control input-sm"
                                                                                                             name="Brend"
                                                                                                             placeholder="Marka *"
                                                                                                             required>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;"><input type="text"
+                                                                                                            id="model_input"
                                                                                                             class="form-control input-sm"
                                                                                                             name="Model"
                                                                                                             placeholder="Model *"
                                                                                                             required>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;"><input type="text"
+                                                                                                            id="part_input"
                                                                                                             class="form-control input-sm"
                                                                                                             name="PartSerialNo"
                                                                                                             placeholder="Part NO *"
@@ -133,7 +136,7 @@
                                                                                                             required>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="unit_id" required>
+                                                        <select class="form-control input-sm" name="unit_id" required id="unit_input">
                                                             @foreach($units as $unit)
                                                                 @if($unit->id == 10)
                                                                     <option selected
@@ -153,14 +156,18 @@
                                                                                                             required>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="currency_id"
+                                                        <select class="form-control input-sm" name="currency_id" id="currency_input"
                                                                 required>
                                                             @foreach($currencies as $currency)
-                                                                <option value="{{$currency->id}}">{{$currency->cur_name}}</option>
+                                                                @if($currency->id == 1)
+                                                                    <option selected value="{{$currency->id}}">{{$currency->cur_name}}</option>
+                                                                @else
+                                                                    <option value="{{$currency->id}}">{{$currency->cur_name}}</option>
+                                                                @endif
                                                             @endforeach
                                                         </select>
                                                     </td>
-                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="date"
+                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="date" id="date_input"
                                                                                                             class="form-control input-sm"
                                                                                                             name="date"
                                                                                                             placeholder="Qiymət tarixi  *"
@@ -173,7 +180,7 @@
                                                                                                             placeholder="Ümumi qiymət">
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="store_type"
+                                                        <select class="form-control input-sm" name="store_type" id="store_input"
                                                                 required>
                                                             <option value="Yerli">Yerli</option>
                                                             <option value="Xarici">Xarici</option>
@@ -181,7 +188,16 @@
                                                         </select>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="country_id"
+                                                        <select class="form-control input-sm" name="company_id" id="company_input"
+                                                                required>
+                                                            <option selected value="">Seçin</option>
+                                                            @foreach($companies as $company)
+                                                                <option value="{{$company->id}}">{{$company->name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </td>
+                                                    <td id="orders-add-inputs" style="width: 150px;">
+                                                        <select class="form-control input-sm" name="country_id" id="country_input"
                                                                 required>
                                                             @foreach($countries as $country)
                                                                 @if($country->id == 15)
@@ -193,15 +209,8 @@
                                                             @endforeach
                                                         </select>
                                                     </td>
-                                                    <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="company_id"
-                                                                required>
-                                                            @foreach($companies as $company)
-                                                                <option value="{{$company->id}}">{{$company->name}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </td>
                                                     <td colspan="2" id="orders-add-inputs" style="width: 150px;"><input
+                                                                id="remark_input"
                                                                 type="text" class="form-control input-sm" name="Remark"
                                                                 placeholder="Qeyd *" required></td>
                                                 </tr>
@@ -396,9 +405,6 @@
             change_category(cat_id);
         });
     </script>
-
-
-
 
     {{--change category--}}
     <script>
@@ -647,7 +653,7 @@
                             var status = '<td><span id="status_' + id + '" class="btn btn-xs" style="color: ' + order['color'] + ';">' + order['status'] + '</span></td>';
 
                             if(order['confirmed'] === 1 && order['SupplyID'] !== null) {
-                                var send_director = '<span onclick="show_alternative(' + id + ');" class="btn btn-success btn-xs show-alternative-modal"><i class="fa fa-eye"></i></span>';
+                                var send_director = '<span onclick="show_alternative(' + id + ',' + last_pcs + ',' + unit_id + ');" class="btn btn-success btn-xs show-alternative-modal"><i class="fa fa-eye"></i></span>';
                             }
                             else {
                                 var send_director = '<span style="background-color: red; border-color: red;" disabled="true" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span>';
@@ -1222,13 +1228,39 @@
                     if (response.case === 'success') {
                         //add alternative
                         if (response.type === 'add_alternative') {
+                            // //add new alternative
+                            // $(':input','#alt-form')
+                            //     .not(':button, :submit, :reset, :hidden')
+                            //     .val('')
+                            //     .prop('checked', false)
+                            //     .prop('selected', false);
+
+                            var now = new Date();
+                            var day = ("0" + now.getDate()).slice(-2);
+                            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+                            var today = now.getFullYear()+"-"+(month)+"-"+(day);
+                            $('#date_input').val(today);
+
+                            $('#brend_input').val('');
+                            $('#model_input').val('');
+                            $('#part_input').val('');
+                            $('#cost_input').val('');
+                            $('#total_cost_input').val('');
+                            $('#remark_input').val('');
+                            $('#company_input').val('');
+                            $('#unit_input').val(10);
+                            $('#currency_input').val(1);
+                            $('#store_input').val('Yerli');
+                            $('#country_input').val(15);
+                            //
+
                             add_order_id(response.order_id);
                             var  i = 0;
                             var request = response.alts;
                             var count = '<span style="color: green;">New</span>';
 
                             // var remark = alternative['Remark'];
-                            var brend = '<td title="' + remark + '">' + request['Brend'] + '</td>';
+                            var brend = '<td>' + request['Brend'] + '</td>';
                             var model = '<td>' + request['Model'] + '</td>';
                             var part = '<td>' + request['PartSerialNo'] + '</td>';
                             var pcs = '<td>' + request['pcs'] + '</td>';
@@ -1286,7 +1318,26 @@
 
     {{--show alternative--}}
     <script>
-        function show_alternative(order_id) {
+        function show_alternative(order_id, pcs, unit) {
+            //update inputs value
+            var now = new Date();
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear()+"-"+(month)+"-"+(day);
+            $('#date_input').val(today);
+            $('#pcs_cost_input').val(pcs);
+            $('#unit_input').val(unit);
+            $('#brend_input').val('');
+            $('#model_input').val('');
+            $('#part_input').val('');
+            $('#cost_input').val('');
+            $('#total_cost_input').val('');
+            $('#remark_input').val('');
+            $('#company_input').val('');
+            $('#currency_input').val(1);
+            $('#store_input').val('Yerli');
+            $('#country_input').val(15);
+
             $('#order_id_for_alternative').html("<input type='hidden' name='OrderID' value='" + order_id + "'>");
 
             $('#alt-brend').html('');
@@ -1321,6 +1372,23 @@
                     if (response.case === 'success') {
                         swal.close();
 
+                        var order_details = '';
+                        var order = response.order;
+                        
+                        if (order['Product'] !== null)  {
+                            order_details += order['Product'] + ' , ';
+                        }
+                        if (order['Translation_Brand'] !== null)  {
+                            order_details += order['Translation_Brand'] + ' , ';
+                        }
+                        if (order['Part'] !== null)  {
+                            order_details += order['Part'] + ' , ';
+                        }
+
+                        order_details = order_details.substr(0, order_details.length-3);
+                        
+                        $('#order_details').html(order_details);
+
                         var alternatives = response.alternatives;
                         var table = '';
                         var i = 0;
@@ -1333,15 +1401,15 @@
 
                             // var remark = alternative['Remark'];
                             @if(Auth::user()->chief() == 1)
-                            if (alternative['confirm_chief'] == 0) {
-                                confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
-                            }
-                            else {
-                                confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
-                            }
-                                    @endif
+                                if (alternative['confirm_chief'] == 0) {
+                                    confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
+                                }
+                                else {
+                                    confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
+                                }
+                            @endif
 
-                            var brend = '<td title="' + remark + '">' + alternative['Brend'] + '</td>';
+                            var brend = '<td>' + alternative['Brend'] + '</td>';
                             var model = '<td>' + alternative['Model'] + '</td>';
                             var part = '<td>' + alternative['PartSerialNo'] + '</td>';
                             var pcs = '<td>' + alternative['pcs'] + '</td>';
@@ -1363,7 +1431,6 @@
                         }
 
                         $('#alts_table').html(table);
-
                     }
                 }
             });

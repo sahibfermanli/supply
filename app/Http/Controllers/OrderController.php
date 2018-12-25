@@ -253,8 +253,9 @@ class OrderController extends HomeController
         else if ($request->type == 8) {
             //show alternative
             $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->order_id, 'lb_Alternatives.deleted'=>0])->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company')->get();
+            $order = Orders::where(['id'=>$request->order_id])->select('Product', 'Translation_Brand', 'Part')->first();
 
-            return response(['case'=>'success', 'alternatives'=>$alternatives]);
+            return response(['case'=>'success', 'alternatives'=>$alternatives, 'order'=>$order]);
         }
         else if ($request->type == 9) {
             //select supply for order
