@@ -591,18 +591,20 @@
                         $('#cancel_alternatives').html('<input type="hidden" name="OrderID" value="' + order_id + '">');
                         $('#OrderIdForCreatePurchase').html('<input type="hidden" name="OrderID" value="' + order_id + '">');
                         $('#alternatives_table').html(table);
+
+                        $('#add-modal-alternatives').modal('show');
                     }
                 }
             });
         }
     </script>
 
-    <script type="text/javascript">
-        //add modal - alternatives
-        $(document).on('click', '.add-modal-alternatives', function() {
-            $('#add-modal-alternatives').modal('show');
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+        {{--// add modal - alternatives--}}
+        {{--$(document).on('click', '.add-modal-alternatives', function() {--}}
+            {{--$('#add-modal-alternatives').modal('show');--}}
+        {{--});--}}
+    {{--</script>--}}
 
 
     <script>

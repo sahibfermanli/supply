@@ -1013,23 +1013,25 @@
                     swal.close();
 
                     $('.get-data').html(response.data);
+
+                    $('#add-modal').modal('show');
                 }
             });
         }
     </script>
 
-    <script type="text/javascript">
-        //add modal
-        $(document).on('click', '.add-modal', function() {
-            $('#add-modal').modal('show');
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+        {{--//add modal--}}
+        {{--$(document).on('click', '.add-modal', function() {--}}
+            {{--$('#add-modal').modal('show');--}}
+        {{--});--}}
+    {{--</script>--}}
 
-    <script type="text/javascript">
-        //modal add order
-        $(document).on('click', '.order-add-form-modal', function() {
-            $('#order-add-form-modal').modal('show');
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+        {{--//modal add order--}}
+        {{--$(document).on('click', '.order-add-form-modal', function() {--}}
+            {{--$('#order-add-form-modal').modal('show');--}}
+        {{--});--}}
+    {{--</script>--}}
 
 @endsection

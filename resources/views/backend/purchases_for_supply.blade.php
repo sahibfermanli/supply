@@ -179,11 +179,13 @@
         //upload qaime
         function upload_qaime(purchase_id) {
             $('#purchase_id_div').html('<input type="hidden" name="purchase_id" value="' + purchase_id + '">');
+
+            $('#add-qaime').modal('show');
         }
 
         //add modal
-        $(document).on('click', '.add-qaime', function() {
-            $('#add-qaime').modal('show');
-        });
+        // $(document).on('click', '.add-qaime', function() {
+        //     $('#add-qaime').modal('show');
+        // });
     </script>
 @endsection

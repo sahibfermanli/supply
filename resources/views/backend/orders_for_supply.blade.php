@@ -355,57 +355,6 @@
     <script src="/js/jquery.validate.min.js"></script>
     <script src="/js/sweetalert2.min.js"></script>
 
-    {{--alert--}}
-    <script>
-        function del(e, id, row_id) {
-            swal({
-                title: 'Silmək istədiyinizdən əminsiniz?',
-                text: 'Bu əməliyyatın geri dönüşü yoxdur...',
-                type: 'warning',
-                showCancelButton: true,
-                cancelButtonText: 'Geri',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sil!'
-            }).then(function (result) {
-                if (result.value) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        type: "Post",
-                        url: '',
-                        data: {
-                            'id': id,
-                            '_token': CSRF_TOKEN,
-                            'row_id': row_id,
-                            'type': 1
-                        },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                                text: 'Gözləyin, əməliyyat aparılır..',
-                                showConfirmButton: false
-                            });
-                        },
-                        success: function (response) {
-                            swal(
-                                response.title,
-                                response.content,
-                                response.case
-                            );
-                            if (response.case === 'success') {
-                                var elem = document.getElementById('row_' + response.row_id);
-                                elem.parentNode.removeChild(elem);
-                            }
-                        }
-                    });
-                } else {
-                    return false;
-                }
-            });
-        }
-    </script>
-
     <script>
         $(document).ready(function () {
             $('.show-categories').css('display', 'block');
@@ -650,28 +599,28 @@
                             }
 
                             if (order['Remark'] == null) {
-                                var remark = '<td><center><span disabled="true" title="Qeydi göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
+                                var remark = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Qeydi göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
                             }
                             else {
                                 var remark = '<td><center><span title="Qeydi göstər" onclick="get_data(' + id + ', 3);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
                             }
 
                             if (order['image'] == null) {
-                                var picture = '<td><center><span disabled="true" title="Şəkli göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
+                                var picture = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Şəkli göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
                             }
                             else {
                                 var picture = '<td><center><span title="Şəkli göstər" onclick="get_data(' + id + ', 4);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
                             }
 
                             if (order['deffect_doc'] == null) {
-                                var defect = '<td><center><span disabled="true" title="Xəta sənədini endir" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></center></td>';
+                                var defect = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Xəta sənədini endir" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></center></td>';
                             }
                             else {
                                 var defect = '<td><center><a title="Xəta sənədini endir" href="' + order['deffect_doc'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
                             }
 
                             if (order['ReportDocument'] == null) {
-                                var report = '<td><center><span disabled="true" title="Raportu endir" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></center></td>';
+                                var report = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Raportu endir" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></center></td>';
                             }
                             else{
                                 var report = '<td><center><a title="Raportu endir" href="' + order['ReportDocument'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
@@ -1229,6 +1178,8 @@
                         image = image + '<button type="submit" class="btn btn-success">Şəkli dəyiş</button>';
                         $('.image-form-modal').html(image);
                     }
+
+                    $('#add-modal').modal('show');
                 }
             });
         }
@@ -1542,6 +1493,8 @@
                         }
 
                         $('#alts_table').html(table);
+
+                        $('#show-alternative-modal').modal('show');
                     }
                 }
             });
@@ -1569,13 +1522,15 @@
                     swal.close();
 
                     $('.alt-image').html(response.data);
+
+                    $('#alt-image').modal('show');
                 }
             });
         }
 
-        $(document).on('click', '.alt-image-modal', function() {
-            $('#alt-image').modal('show');
-        });
+        // $(document).on('click', '.alt-image-modal', function() {
+        //     $('#alt-image').modal('show');
+        // });
     </script>
 
     @if(Auth::user()->chief() == 1)
@@ -1777,24 +1732,17 @@
         }
     </script>
 
-    <script type="text/javascript">
-        //add modal
-        $(document).on('click', '.add-modal', function () {
-            $('#add-modal').modal('show');
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+        {{--//add modal--}}
+        {{--$(document).on('click', '.add-modal', function () {--}}
+            {{--$('#add-modal').modal('show');--}}
+        {{--});--}}
+    {{--</script>--}}
 
-    <script type="text/javascript">
-        //add modal alternative form
-        $(document).on('click', '.add-modal-alternative-form', function () {
-            $('#add-modal-alternative-form').modal('show');
-        });
-    </script>
-
-    <script type="text/javascript">
-        //show-alternative-modal
-        $(document).on('click', '.show-alternative-modal', function () {
-            $('#show-alternative-modal').modal('show');
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+        {{--//show-alternative-modal--}}
+        {{--$(document).on('click', '.show-alternative-modal', function () {--}}
+            {{--$('#show-alternative-modal').modal('show');--}}
+        {{--});--}}
+    {{--</script>--}}
 @endsection

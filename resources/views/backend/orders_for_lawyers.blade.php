@@ -180,14 +180,16 @@
                     swal.close();
 
                     $('.get-data').html(response.data);
+
+                    $('#data-modal').modal('show');
                 }
             });
         }
 
         //data (image) modal
-        $(document).on('click', '.data-modal', function() {
-            $('#data-modal').modal('show');
-        });
+        // $(document).on('click', '.data-modal', function() {
+        //     $('#data-modal').modal('show');
+        // });
 
         //cancel order
         function cancel_order(e, order_id, purchase_id, row_id) {

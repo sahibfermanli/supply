@@ -310,19 +310,19 @@
     <script src="/js/jquery.validate.min.js"></script>
     <script src="/js/sweetalert2.min.js"></script>
 
-    <script type="text/javascript">
-        //update-doc-modal
-        $(document).on('click', '.update-doc-modal', function () {
-            $('#update-doc-modal').modal('show');
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+        {{--//update-doc-modal--}}
+        {{--$(document).on('click', '.update-doc-modal', function () {--}}
+            {{--$('#update-doc-modal').modal('show');--}}
+        {{--});--}}
+    {{--</script>--}}
 
-    <script type="text/javascript">
-        //show purchases modal
-        $(document).on('click', '.show-purchases-modal', function () {
-            $('#show-purchases-modal').modal('show');
-        });
-    </script>
+    {{--<script type="text/javascript">--}}
+        {{--//show purchases modal--}}
+        {{--$(document).on('click', '.show-purchases-modal', function () {--}}
+            {{--$('#show-purchases-modal').modal('show');--}}
+        {{--});--}}
+    {{--</script>--}}
 
 
     <script>
@@ -428,6 +428,8 @@
             var inputs = id_input + no_input;
 
             $('#document-form-modal').html(inputs);
+
+            $('#update-doc-modal').modal('show');
         }
 
         //show new account form
@@ -512,6 +514,8 @@
                         }
 
                         $('#selected_purchases_table').html(table);
+
+                        $('#show-purchases-modal').modal('show');
                     }
                 }
             });
