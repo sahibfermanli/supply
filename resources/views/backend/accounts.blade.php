@@ -54,6 +54,7 @@
                                             <th class="column-title">Hesab No</th>
                                             <th class="column-title">Şirkət</th>
                                             <th class="column-title">Yaradılma tarixi</th>
+                                            <th class="column-title">Qeydlər</th>
                                             <th class="column-title">Fayl</th>
                                             <th class="column-title">#Əməliyyatlar</th>
                                         </tr>
@@ -93,6 +94,15 @@
                                                     </select>
                                                 </td>
                                                 <td>{{$account_date}}</td>
+                                                <td id="lawyer_remark_{{$account->id}}">
+                                                    @if(!empty($account->lawyer_remark))
+                                                        <span class="btn btn-success btn-xs" onclick="show_remark({{$account->id}});">Qeydi göstər</span>
+                                                        <span class="btn btn-danger btn-xs" onclick="clear_remark({{$account->id}});">Qeydi sıfırla</span>
+                                                    @else
+                                                        <span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi göstər</span>
+                                                        <span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi sıfırla</span>
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     <center>
                                                         <a title="Faylı endir" href="{{$account->account_doc}}"
@@ -299,6 +309,25 @@
         </div>
     </div>
     {{--update document modal finish--}}
+
+    {{--show remark modal start--}}
+    <div class="modal fade" id="show-remark-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span id="show-remark"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{--show remark modal finish--}}
 @endsection
 
 @section('css')
@@ -326,6 +355,96 @@
 
 
     <script>
+        function show_remark(account_id) {
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'id': account_id,
+                    '_token': CSRF_TOKEN,
+                    'type': 'show_remark'
+                },
+                beforeSubmit: function () {
+                    //loading
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                        text: 'Gözləyin, əməliyyat aparılır..',
+                        showConfirmButton: false
+                    });
+                },
+                success: function (response) {
+                    if (response.case === 'success') {
+                        swal.close();
+
+                        $('#show-remark').html(response.data);
+
+                        $('#show-remark-modal').modal('show');
+                    }
+                    else {
+                        swal(
+                            response.title,
+                            response.content,
+                            response.case
+                        );
+                    }
+                }
+            });
+        }
+
+        function clear_remark(account_id) {
+            swal({
+                title: 'Qeydi sıfırlamaq istədiyinizdən əminsiniz?',
+                text: 'Bu əməliyyatın geri dönüşü yoxdur...',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Geri',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sıfırla!'
+            }).then(function (result) {
+                if (result.value) {
+                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                    $.ajax({
+                        type: "Post",
+                        url: '',
+                        data: {
+                            'id': account_id,
+                            '_token': CSRF_TOKEN,
+                            'type': 'clear_remark'
+                        },
+                        beforeSubmit: function () {
+                            //loading
+                            swal({
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                text: 'Gözləyin, əməliyyat aparılır..',
+                                showConfirmButton: false
+                            });
+                        },
+                        success: function (response) {
+                            if (response.case === 'success') {
+                                var show = '<span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi göstər</span>';
+                                var clear = '<span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi sıfırla</span>';
+
+                                var spans = show + clear;
+
+                                $('#lawyer_remark_'+account_id).html(spans);
+                            }
+                            else {
+                                swal(
+                                    response.title,
+                                    response.content,
+                                    response.case
+                                );
+                            }
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        }
+
         function del(e, id, row_id) {
             swal({
                 title: 'Silmək istədiyinizdən əminsiniz?',
@@ -351,8 +470,8 @@
                         beforeSubmit: function () {
                             //loading
                             swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Zəhmət olmasa gözləyin...</span>',
-                                text: 'Loading, please wait..',
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                text: 'Gözləyin, əməliyyat aparılır..',
                                 showConfirmButton: false
                             });
                         },

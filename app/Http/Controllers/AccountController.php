@@ -81,6 +81,14 @@ class AccountController extends HomeController
                 return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Bu əməliyyat üçün icazəniz yoxdur!']);
             }
         }
+        else if ($request->type == 'show_remark') {
+            //show lawyer remark
+            return $this->show_remark($request);
+        }
+        else if ($request->type == 'clear_remark') {
+            //clear lawyer remark
+            return $this->clear_remark($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
@@ -274,6 +282,42 @@ class AccountController extends HomeController
             }
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Hüquqa göndərildi!']);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
+
+    public function show_remark(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
+        }
+        try {
+            $id = $request->id;
+
+            $account = Accounts::where(['id'=>$id, 'deleted'=>0])->select('lawyer_remark')->first();
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'data' => $account['lawyer_remark']]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
+
+    public function clear_remark(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
+        }
+        try {
+            $id = $request->id;
+
+            Accounts::where(['id'=>$id, 'deleted'=>0])->update(['lawyer_remark'=>null]);
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!']);
         } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }

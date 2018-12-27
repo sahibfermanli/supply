@@ -18,6 +18,8 @@ class LawyerController extends HomeController
             $account_id = 0;
             $table_display = 'none';
             $message_display = 'block';
+
+            $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftjoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['accounts.deleted'=>0, 'Purchases.deleted'=>0])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'c.name as company', 'c.phone', 'c.address', 'u.Unit', 'accounts.account_no', 'accounts.account_doc', 'accounts.send_at as account_date', 'users.name', 'users.surname', 'd.Department', 'o.image', 'o.deffect_doc', 'o.id as order_id', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date')->get();
         }
         else {
             $account_id = Input::get('account_id');
@@ -30,9 +32,9 @@ class LawyerController extends HomeController
 
             $table_display = 'block';
             $message_display = 'none';
-        }
 
-        $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftjoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Purchases.account_id'=>$account_id, 'accounts.deleted'=>0, 'Purchases.deleted'=>0])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'c.name as company', 'c.phone', 'c.address', 'u.Unit', 'accounts.account_no', 'accounts.account_doc', 'accounts.send_at as account_date', 'users.name', 'users.surname', 'd.Department', 'o.image', 'o.deffect_doc', 'o.id as order_id', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date')->get();
+            $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftjoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Purchases.account_id'=>$account_id, 'accounts.deleted'=>0, 'Purchases.deleted'=>0])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'c.name as company', 'c.phone', 'c.address', 'u.Unit', 'accounts.account_no', 'accounts.account_doc', 'accounts.send_at as account_date', 'users.name', 'users.surname', 'd.Department', 'o.image', 'o.deffect_doc', 'o.id as order_id', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date')->get();
+        }
 
         return view('backend.orders_for_lawyers')->with(['orders'=>$orders, 'table_display'=>$table_display, 'message_display'=>$message_display]);
     }
@@ -48,7 +50,7 @@ class LawyerController extends HomeController
         }
         else if ($request->type == 'confirm_account') {
             //confirm account
-            return $this->confirm_account($request);
+            return $this->confirm_account();
         }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
@@ -75,6 +77,7 @@ class LawyerController extends HomeController
         $validator = Validator::make($request->all(), [
             'purchase_id' => 'required|integer',
             'order_id' => 'required|integer',
+            'remark' => 'required|string|max:1000',
         ]);
         if ($validator->fails()) {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Sifariş tapılmadı!']);
@@ -85,7 +88,7 @@ class LawyerController extends HomeController
 
             if (Purchase::where(['account_id'=>$account_id, 'deleted'=>0, 'completed'=>0])->count() == 1) {
                 $curent_date = Carbon::now();
-                Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_confirm'=>0, 'lawyer_confirm_at'=>$curent_date]);
+                Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_confirm'=>0, 'lawyer_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
             }
 
             Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>null]);
@@ -99,7 +102,7 @@ class LawyerController extends HomeController
     }
 
     //confirm account
-    public function confirm_account(Request $request) {
+    public function confirm_account() {
         if (empty(Input::get('account_id'))) {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Hesab tapılmadı!']);
         }
@@ -108,14 +111,11 @@ class LawyerController extends HomeController
             $account_id = Input::get('account_id');
             $account_id = trim($account_id);
 
-            $current_date = Carbon::now();
+            if (Purchase::where(['deleted'=>0, 'completed'=>0, 'account_id'=>$account_id])->count() == 0) {
+                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Bu hesabda heç bir sifariş yoxdur!']);
+            }
 
-//            $file = Input::file('file');
-//            $file_ext = $file->getClientOriginalExtension();
-//            $file_name = 'lawyer_' . str_random(4) . '_' . microtime() . '.' . $file_ext;
-//            Storage::disk('uploads')->makeDirectory('files/accounts');
-//            $file->move('uploads/files/accounts/', $file_name);
-//            $file_address = '/uploads/files/accounts/' . $file_name;
+            $current_date = Carbon::now();
 
             $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_confirm'=>1, 'lawyer_confirm_at'=>$current_date]);
 
@@ -126,7 +126,7 @@ class LawyerController extends HomeController
             }
 
 
-            return redirect('/law/pending/orders');
+            return response(['case' => 'success']);
         } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
