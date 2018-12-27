@@ -22,24 +22,20 @@
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
-                                        <th class="column-title">Malın adı </th>
-                                        <th class="column-title">Marka </th>
-                                        <th class="column-title">Model </th>
+                                        <th class="column-title" style="min-width: 200px;">Sifarişçi </th>
+                                        <th class="column-title" style="min-width: 100px;">Malın adı </th>
+                                        <th class="column-title" style="min-width: 150px;">Marka </th>
+                                        <th class="column-title" style="min-width: 100px;">Model </th>
                                         <th class="column-title">Miqdar </th>
                                         <th class="column-title">Ölçü vahidi </th>
                                         <th class="column-title">Qiymət </th>
                                         <th class="column-title">Ümumi qiymət </th>
                                         <th class="column-title">Yaradılma tarixi </th>
-                                        <th class="column-title">Sirket </th>
-                                        <th class="column-title">Təslimatçı </th>
-                                        <th class="column-title">Ödəniş tarixi </th>
-                                        <th class="column-title">Hesab doc. </th>
-                                        <th class="column-title">Qaime doc. </th>
-                                        <th class="column-title">AWB_Akt doc. </th>
-                                        <th class="column-title">Icraci doc. </th>
-                                        <th class="column-title">Verilib MHIS </th>
-                                        <th class="column-title">Verilib MS </th>
-                                        {{--<th class="column-title">#Edit </th>--}}
+                                        <th class="column-title">Şirkət </th>
+                                        {{--<th class="column-title">Ödəniş tarixi </th>--}}
+                                        <th class="column-title">Hesab </th>
+                                        <th class="column-title">Qaime </th>
+                                        <th class="column-title">Hüquq </th>
                                     </tr>
                                     </thead>
 
@@ -49,21 +45,22 @@
                                     @endphp
                                     @foreach($purchases as $purchase)
                                         <?php
-                                            $date = date('d.m.Y', strtotime($purchase->created_at));
-                                            //deadline
-                                            $dead_line = $purchase->deadline;
-                                            $difference = intval(abs(strtotime($current_date)-strtotime($dead_line))/86400);
-                                            $color = 'white';
+                                        $date = date('d.m.Y', strtotime($purchase->created_at));
+                                        //deadline
+                                        $dead_line = $purchase->deadline;
+                                        $difference = intval(abs(strtotime($current_date)-strtotime($dead_line))/86400);
+                                        $color = 'white';
 
-                                            foreach ($deadlines as $deadline) {
-                                              if ($difference <= $deadline->deadline) {
+                                        foreach ($deadlines as $deadline) {
+                                            if ($difference <= $deadline->deadline) {
                                                 $color = $deadline->color;
                                                 break;
-                                              }
                                             }
+                                        }
                                         ?>
                                         <tr class="even pointer" id="row_{{$row}}">
                                             <td style="background-color: {{$color}};">{{$row}}</td>
+                                            <td>{{$purchase->name}} {{$purchase->surname}} , {{$purchase->Department}}</td>
                                             <td>{{$purchase->Product}}</td>
                                             <td>{{$purchase->Brend}}</td>
                                             <td>{{$purchase->Model}}</td>
@@ -73,41 +70,28 @@
                                             <td>{{$purchase->total_cost}}</td>
                                             <td>{{$date}}</td>
                                             <td title="{{$purchase->phone}} , {{$purchase->address}}">{{$purchase->company}}</td>
-                                            <td title="{{$purchase->delivery_date}}">{{$purchase->name}} {{$purchase->surname}}</td>
-                                            <td>{{$purchase->odenish_date}}</td>
-                                            @if(isset($purchase->hesab_doc))
-                                                <td title="{{$purchase->hesab_doc_date}}"><a href="{{$purchase->hesab_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
+                                            {{--<td></td>--}}
+                                            <td>
+                                                @if(isset($purchase->account_id))
+                                                    <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="{{$purchase->account_doc}}"><i class="fa fa-download"></i> {{$purchase->account_no}}</a>
+                                                @else
+                                                    <span title="Heç bir hesaba əlavə edilməyib" disabled="true" class="btn btn-success btn-xs" style="background-color: #b6a338; border-color: #b6a338;"><i class="fa fa-download"></i></span>
+                                                @endif
+                                            </td>
+                                            <td style="min-width: 150px;">
+                                                @if(isset($purchase->qaime_doc))
+                                                    <a href="{{$purchase->qaime_doc}}" title="{{$purchase->qaime_date}}" class="btn btn-success btn-xs" style="background-color: #1b6d85; border-color: #1b6d85;"><i class="fa fa-download"></i> {{$purchase->qaime_no}}</a>
+                                                @else
+                                                    <span title="Qaiməni yoxdur" disabled="true" class="btn btn-success btn-xs" style="background-color: #b6a338; border-color: #b6a338;"><i class="fa fa-download"></i></span>
+                                                @endif
+                                            </td>
+
+                                            @if(isset($purchase->lawyer_doc))
+                                                <td title="{{$purchase->lawyer_confirm_at}}"><a href="{{$purchase->lawyer_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
                                             @else
-                                                <td title="{{$purchase->hesab_doc_date}}"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
+                                                <td title="Fayl yoxdur"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
                                             @endif
-                                            @if(isset($purchase->qaime_doc))
-                                                <td title="{{$purchase->qaime_doc_date}}"><a href="{{$purchase->qaime_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
-                                            @else
-                                                <td title="{{$purchase->qaime_doc_date}}"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
-                                            @endif
-                                            @if(isset($purchase->AWB_Akt_doc))
-                                                <td title="{{$purchase->AWB_Akt_doc_date}}"><a href="{{$purchase->AWB_Akt_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
-                                            @else
-                                                <td title="{{$purchase->AWB_Akt_doc_date}}"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
-                                            @endif
-                                            @if(isset($purchase->icrachi_doc))
-                                                <td title="{{$purchase->icrachi_doc_date}}"><a href="{{$purchase->icrachi_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
-                                            @else
-                                                <td title="{{$purchase->icrachi_doc_date}}"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
-                                            @endif
-                                            @if(isset($purchase->Verilib_MHIS))
-                                                <td title="{{$purchase->Verilib_MHIS_date}}"><a href="{{$purchase->Verilib_MHIS}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
-                                            @else
-                                                <td title="{{$purchase->Verilib_MHIS_date}}"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
-                                            @endif
-                                            @if(isset($purchase->Verilib_MS))
-                                                <td title="{{$purchase->Verilib_MS_date}}"><a href="{{$purchase->Verilib_MS}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
-                                            @else
-                                                <td title="{{$purchase->Verilib_MS_date}}"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
-                                            @endif
-                                            {{--<td>--}}
-                                                {{--<span class="btn btn-danger btn-xs" onclick="del(this, '{{$purchase->id}}', '{{$row}}');"><i class="fa fa-trash-o"></i> Delete </span>--}}
-                                            {{--</td>--}}
+
                                         </tr>
                                         @php
                                             $row++;
@@ -128,61 +112,9 @@
 @endsection
 
 @section('css')
-    <link rel="stylesheet" href="/css/sweetalert2.min.css">
+
 @endsection
 
 @section('js')
-    <script src="/js/jquery.form.min.js"></script>
-    <script src="/js/jquery.validate.min.js"></script>
-    <script src="/js/sweetalert2.min.js"></script>
 
-    {{--alert--}}
-    <script>
-        // function del(e, id, row_id) {
-        //     swal({
-        //         title: 'Are you sure you want to delete?',
-        //         text: 'This process has no return...',
-        //         type: 'warning',
-        //         showCancelButton: true,
-        //         cancelButtonText: 'Cancel',
-        //         confirmButtonColor: '#3085d6',
-        //         cancelButtonColor: '#d33',
-        //         confirmButtonText: 'Delete!'
-        //     }).then(function (result) {
-        //         if (result.value) {
-        //             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-        //             $.ajax({
-        //                 type: "Post",
-        //                 url: '',
-        //                 data: {
-        //                     'id': id,
-        //                     '_token': CSRF_TOKEN,
-        //                     'row_id': row_id
-        //                 },
-        //                 beforeSubmit: function () {
-        //                     //loading
-        //                     swal({
-        //                         title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
-        //                         text: 'Loading, please wait..',
-        //                         showConfirmButton: false
-        //                     });
-        //                 },
-        //                 success: function (response) {
-        //                     swal(
-        //                         response.title,
-        //                         response.content,
-        //                         response.case
-        //                     );
-        //                     if (response.case === 'success') {
-        //                         var elem = document.getElementById('row_' + response.row_id);
-        //                         elem.parentNode.removeChild(elem);
-        //                     }
-        //                 }
-        //             });
-        //         } else {
-        //             return false;
-        //         }
-        //     });
-        // }
-    </script>
 @endsection
