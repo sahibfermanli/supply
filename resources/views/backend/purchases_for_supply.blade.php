@@ -23,6 +23,7 @@
                                     <tr class="headings">
                                         <th class="column-title">#</th>
                                         <th class="column-title" style="min-width: 200px;">Sifarişçi </th>
+                                        <th class="column-title">Status </th>
                                         <th class="column-title" style="min-width: 100px;">Malın adı </th>
                                         <th class="column-title" style="min-width: 150px;">Marka </th>
                                         <th class="column-title" style="min-width: 100px;">Model </th>
@@ -35,7 +36,6 @@
                                         {{--<th class="column-title">Ödəniş tarixi </th>--}}
                                         <th class="column-title">Hesab </th>
                                         <th class="column-title">Qaime </th>
-                                        <th class="column-title">Hüquq </th>
                                     </tr>
                                     </thead>
 
@@ -61,6 +61,7 @@
                                         <tr class="even pointer" id="row_{{$row}}">
                                             <td style="background-color: {{$color}};">{{$row}}</td>
                                             <td>{{$purchase->name}} {{$purchase->surname}} , {{$purchase->Department}}</td>
+                                            <td style="color: {{$purchase->color}};">{{$purchase->status}}</td>
                                             <td>{{$purchase->Product}}</td>
                                             <td>{{$purchase->Brend}}</td>
                                             <td>{{$purchase->Model}}</td>
@@ -91,12 +92,6 @@
                                                     <span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-upload"></i></span>
                                                 @endif
                                             </td>
-
-                                            @if(isset($purchase->lawyer_doc))
-                                                <td title="{{$purchase->lawyer_confirm_at}}"><a href="{{$purchase->lawyer_doc}}" class="btn btn-success btn-xs"><i class="fa fa-download"></i></a></td>
-                                            @else
-                                                <td title="Fayl yoxdur"><span disabled="true" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></td>
-                                            @endif
 
                                         </tr>
                                         @php
