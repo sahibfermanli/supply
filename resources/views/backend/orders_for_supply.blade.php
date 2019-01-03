@@ -1254,13 +1254,7 @@
                     if (response.case === 'success') {
                         //add alternative
                         if (response.type === 'add_alternative') {
-                            // //add new alternative
-                            // $(':input','#alt-form')
-                            //     .not(':button, :submit, :reset, :hidden')
-                            //     .val('')
-                            //     .prop('checked', false)
-                            //     .prop('selected', false);
-
+                            //add new alternative
                             var now = new Date();
                             var day = ("0" + now.getDate()).slice(-2);
                             var month = ("0" + (now.getMonth() + 1)).slice(-2);
@@ -1324,6 +1318,8 @@
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);
+
+                            $('#status_'+response.order_id).html('Alternativ yaradılıb').css('color', 'green');
                         }
 
                         //add order

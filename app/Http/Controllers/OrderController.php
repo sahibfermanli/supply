@@ -233,6 +233,10 @@ class OrderController extends HomeController
                 unset($request['picture']);
 //                $request = Input::except('picture');
 
+                if (Auth::user()->chief() == 1) {
+                    $request->merge(['confirm_chief'=>1]);
+                }
+
                 $create_alternative = Alternatives::create($request->all());
                 Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
                 $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company')->first();
@@ -546,7 +550,13 @@ class OrderController extends HomeController
             $unit_id = $request['unit_id'];
 
             $situation_id = 1; //pending
-            $request->merge(['deleted' => 0, 'canceled'=>0, 'MainPerson' => Auth::id(), 'DepartmentID' => Auth::user()->DepartmentID(), 'situation_id' => $situation_id]);
+
+//            if (Auth::user()->chief() == 1) {
+//                $request->merge(['confirmed'=>1, 'confirmed_at'=>Carbon::now()]);
+//                $situation_id = 2; //Təsdiqləndi
+//            }
+
+            $request->merge(['deleted' => 0, 'MainPerson' => Auth::id(), 'DepartmentID' => Auth::user()->DepartmentID(), 'situation_id' => $situation_id]);
 
             unset($request['picture']);
             $request = Input::except('picture');
