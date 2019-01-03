@@ -60,7 +60,6 @@
                                             <th class="column-title" id="Remark_th">Qeyd</th>
                                             <th class="column-title" id="Image_th">Şəkil</th>
                                             <th class="column-title" id="Defect_th">Qüsur aktı</th>
-                                            <th class="column-title" id="Report_th">Raport</th>
                                         </tr>
                                         </thead>
 
@@ -426,8 +425,6 @@
                         $('#Pcs_th').css('display', 'table-cell');
                         $('#unit_th').css('display', 'table-cell');
                         $('#vehicle_th').css('display', 'table-cell');
-                        $('#ReportNo_th').css('display', 'table-cell');
-                        $('#ReportDate_th').css('display', 'table-cell');
                         $('#Defect_th').css('display', 'none');
                         $('#position_th').css('display', 'none');
 
@@ -619,13 +616,6 @@
                                 var defect = '<td><center><a title="Xəta sənədini endir" href="' + order['deffect_doc'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
                             }
 
-                            if (order['ReportDocument'] == null) {
-                                var report = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Raportu endir" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></center></td>';
-                            }
-                            else{
-                                var report = '<td><center><a title="Raportu endir" href="' + order['ReportDocument'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
-                            }
-
                             var status = '<td><span id="status_' + id + '" class="btn btn-xs" style="color: ' + order['color'] + ';">' + order['status'] + '</span></td>';
 
                             if(order['confirmed'] === 1 && order['SupplyID'] !== null) {
@@ -745,7 +735,7 @@
                             }
 
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>'+ select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + status + remark + picture + defect + report;
+                            tr = tr + '<td>' + count + '</td>'+ select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -819,9 +809,8 @@
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -854,9 +843,8 @@
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -887,9 +875,8 @@
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -914,9 +901,8 @@
 
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
 
                 }
                     break;
@@ -942,9 +928,8 @@
 
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -977,9 +962,8 @@
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -1011,9 +995,8 @@
 
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + position_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + position_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -1037,9 +1020,8 @@
 
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -1063,9 +1045,8 @@
 
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
@@ -1098,9 +1079,8 @@
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-                    report_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="report" placeholder="Doc"></td>';
 
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc + report_doc;
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
 
