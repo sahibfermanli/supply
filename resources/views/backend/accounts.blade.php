@@ -4,7 +4,35 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left" style="width: 100%; !important;">
-                    <h3 style="display: inline-block;"> hesablar</h3>
+                    <h5>Düymələrin mənaları</h5>
+                    <ul>
+                        <li>
+                            <span disabled="true" title="Alımları göstər"
+                                  class="btn btn-success btn-xs"><i
+                                        class="fa fa-eye"></i>
+                            </span>
+                            <span>Sifarişləri göstər, yeni sifariş əlavə et, mövcud sifarişi çıxar</span>
+                        </li>
+                        <li>
+                            <span disabled="true" style="background-color: #0b97c4;"
+                                  title="Hüquqa göndər"
+                                  class="btn btn-success btn-xs"><i
+                                        class="fa fa-share-square"></i></span>
+                            <span>Hüquqa göndər</span>
+                        </li>
+                        <li>
+                            <span disabled="true" title="Düzəliş et"
+                                  class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></span>
+                            <span>Edilən dəyişiklikləri təsdiqlə</span>
+                        </li>
+                        <li>
+                            <span disabled="true" title="Sil"
+                                  class="btn btn-danger btn-xs"><i
+                                        class="fa fa-trash-o"></i></span>
+                            <span>Hesabı sil</span>
+                        </li>
+                    </ul>
+                    <h3 style="display: inline-block;"> Hesablar</h3>
                     <span style="float: right;" class="btn btn-success btn-add-new-account"
                           onclick="show_account_add_form();"><i class="fa fa-plus"></i></span>
                     <span type="button" onclick="remove_account_add_form();"
@@ -124,7 +152,7 @@
                                                     <td id="btns_{{$account->id}}">
                                                         <span title="Alımları göstər"
                                                               class="btn btn-success btn-xs show-purchases-modal"
-                                                              onclick="show_purchases(this, '{{$account->id}}');"><i
+                                                              onclick="show_purchases(this, '{{$account->id}}', '{{$account->company_id}}');"><i
                                                                     class="fa fa-eye"></i></span>
                                                         @if(Auth::user()->chief() == 1)
                                                             <span style="background-color: #0b97c4;"
@@ -141,7 +169,7 @@
                                                     </td>
                                                 @else
                                                     <td>
-                                                        <span title="Sifarişləri gör" onclick="show_purchases(this, '{{$account->id}}', 1);"
+                                                        <span title="Sifarişləri gör" onclick="show_purchases(this, '{{$account->id}}', 0, 1);"
                                                               class="btn btn-success btn-xs show-purchases-modal"><i
                                                                     class="fa fa-eye"></i></span>
                                                         @if(Auth::user()->chief() == 1)
@@ -207,6 +235,7 @@
                                                 <th class="column-title">Ölçü vahidi</th>
                                                 <th class="column-title">Qiymət</th>
                                                 <th class="column-title">Ümumi qiymət</th>
+                                                <th class="column-title">Şirkət</th>
                                                 <th class="column-title">Status</th>
                                                 <th class="column-title">Yaradılma tarixi</th>
                                             </tr>
@@ -222,8 +251,8 @@
                                                 <tr class="even pointer" id="move_{{$purchase->id}}">
                                                     <td>{{$row}}</td>
                                                     <td>
-                                                        <span onclick="add_purchase_to_selected_account({{$purchase->id}});"
-                                                              class="btn btn-success btn-xs"><i class="fa fa-plus"></i></span>
+                                                        <span id="add_purchase_to_account_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_account('{{$purchase->id}}', '{{$purchase->company_id}}');"
+                                                              class="add_purchase_to_account_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span>
                                                     </td>
                                                     <td>{{$purchase->Product}}</td>
                                                     <td>{{$purchase->Brend}}</td>
@@ -232,6 +261,7 @@
                                                     <td>{{$purchase->Unit}}</td>
                                                     <td>{{$purchase->cost}}</td>
                                                     <td>{{$purchase->total_cost}}</td>
+                                                    <td>{{$purchase->company}}</td>
                                                     <td><span style="color: {{$purchase->color}}">{{$purchase->status}}</span></td>
                                                     <td>{{$date}}</td>
                                                 </tr>
@@ -263,6 +293,7 @@
                                                 <th class="column-title">Ölçü vahidi</th>
                                                 <th class="column-title">Qiymət</th>
                                                 <th class="column-title">Ümumi qiymət</th>
+                                                <th class="column-title">Şirkət</th>
                                                 <th class="column-title">Status</th>
                                                 <th class="column-title">Yaradılma tarixi</th>
                                             </tr>
@@ -566,7 +597,7 @@
         }
 
         //show selected purchases when clicked account
-        function show_purchases(e, account_id, disabled=0) {
+        function show_purchases(e, account_id, company_id, disabled=0) {
             if (disabled === 0) {
                 $('#account_id_div').html('<input type="hidden" id="account_id" value="' + account_id + '">');
             }
@@ -588,6 +619,10 @@
                     );
                     if (response.case === 'success') {
                         swal.close();
+
+                        $('.add_purchase_to_account_span').removeClass('btn-warning').addClass('btn-success').attr( "disabled", false).attr('title', 'Hesaba əlavə et');
+                        $('.add_purchase_to_account_span').not('#add_purchase_to_account_span_'+company_id).removeClass('btn-success').addClass('btn-warning').attr( "disabled", true).attr('title', 'Şirkətlər uyğun deyil');
+
                         var table = '';
                         var purchases = response.selected_purchases;
                         var i = 0;
@@ -670,7 +705,7 @@
                             if (response.case === 'success') {
                                 swal.close();
 
-                                var show = '<span onclick="show_purchases(this, ' + account_id + ', 1)" title="Sifarişləri gör" class="btn btn-success btn-xs  show-purchases-modal"><i class="fa fa-eye"></i></span>';
+                                var show = '<span onclick="show_purchases(this, ' + account_id + ', 0, 1)" title="Sifarişləri gör" class="btn btn-success btn-xs  show-purchases-modal"><i class="fa fa-eye"></i></span>';
                                 var send = '<span disabled="true" style="background-color: #0b97c4;" title="Düymə deaktivdir" class="btn btn-success btn-xs"><i class="fa fa-share-square"></i></span>';
                                 var edit = '<span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></span>';
                                 var del = '<span disabled="true" title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></span>';
@@ -694,7 +729,7 @@
 
         @endif
 
-        function add_purchase_to_selected_account(purchase_id) {
+        function add_purchase_to_selected_account(purchase_id, company_id) {
             var account_id = $('#account_id').val();
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
@@ -703,15 +738,11 @@
                 data: {
                     'account_id': account_id,
                     'purchase_id': purchase_id,
+                    'company_id': company_id,
                     '_token': CSRF_TOKEN,
                     'type': 'add_purchase_to_selected_account'
                 },
                 success: function (response) {
-                    swal(
-                        response.title,
-                        response.content,
-                        response.case
-                    );
                     if (response.case === 'success') {
                         swal.close();
                         var table = '';
@@ -725,16 +756,27 @@
                         var unit = '<td>' + purchase['Unit'] + '</td>';
                         var cost = '<td>' + purchase['cost'] + '</td>';
                         var total_cost = '<td>' + purchase['total_cost'] + '</td>';
+                        var company = '<td>' + purchase['company'] + '</td>';
                         var status = '<td><span style="color: ' + purchase['color'] + '">' + purchase['status'] + '</span></td>';
                         var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                         var tr = '<tr class="even pointer" id="remove_' + purchase['id'] + '">';
-                        tr = tr + '<td>' + '<span style="color: green;">new</span>' + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + status + date;
+                        tr = tr + '<td>' + '<span style="color: green;">new</span>' + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
                         tr = tr + '</tr>';
                         table = table + tr;
 
                         $('#move_' + purchase['id']).remove();
                         $('#selected_purchases_table').append(table);
+                    }
+                    else if (response.type === 'company_false') {
+                        swal.close();
+                    }
+                    else {
+                        swal(
+                            response.title,
+                            response.content,
+                            response.case
+                        );
                     }
                 }
             });
@@ -761,7 +803,7 @@
                         var table = '';
                         var purchase = response.purchase;
 
-                        var move_btn = '<td><span onclick="add_purchase_to_selected_account(' + purchase['id'] + ');" class="btn btn-success btn-xs"><i class="fa fa-plus"></i></span></td>';
+                        var move_btn = '<td><span id="add_purchase_to_account_span_' + purchase['company_id'] + '" onclick="add_purchase_to_selected_account(' + purchase['id'] + ',' + purchase['company_id'] + ');" class="add_purchase_to_account_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span></td>';
                         var product = '<td>' + purchase['Product'] + '</td>';
                         var brend = '<td>' + purchase['Brend'] + '</td>';
                         var model = '<td>' + purchase['Model'] + '</td>';
@@ -769,11 +811,12 @@
                         var unit = '<td>' + purchase['Unit'] + '</td>';
                         var cost = '<td>' + purchase['cost'] + '</td>';
                         var total_cost = '<td>' + purchase['total_cost'] + '</td>';
+                        var company = '<td>' + purchase['company'] + '</td>';
                         var status = '<td><span style="color: ' + purchase['color'] + '">' + purchase['status'] + '</span></td>';
                         var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                         var tr = '<tr class="even pointer" id="move_' + purchase['id'] + '">';
-                        tr = tr + '<td>' + '<span style="color: green;">new</span>' + '</td>' + move_btn + product + brend + model + pcs + unit + cost + total_cost + status + date;
+                        tr = tr + '<td>' + '<span style="color: green;">new</span>' + '</td>' + move_btn + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
                         tr = tr + '</tr>';
                         table = table + tr;
 
