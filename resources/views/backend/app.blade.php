@@ -176,11 +176,19 @@
                                     </ul>
                                 </li>
 
-                                <li><a href="/law/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                @if(Auth::user()->chief() == 1)
+                                    <li><a href="/law/chief/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                @else
+                                    <li><a href="/law/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                @endif
                                 <li class="active">
                                     <ul class="nav child_menu show-accounts">
                                         @foreach($accounts as $account)
-                                            <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                            @if(Auth::user()->chief() == 1)
+                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/chief/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                            @else
+                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                            @endif
                                         @endforeach
                                     </ul>
                                 </li>

@@ -7,6 +7,7 @@ use App\Orders;
 use App\Purchase;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -26,8 +27,17 @@ class LawyerController extends HomeController
 
             $account_id = trim($account_id);
 
-            if (Accounts::where(['id'=>$account_id, 'send'=>1, 'deleted'=>0])->count() == 0) {
-                return redirect('/law/pending/orders');
+            if (Auth::user()->chief() == 1) {
+                //lawyer chief
+                if (Accounts::where(['id'=>$account_id, 'send'=>1, 'lawyer_confirm'=>1, 'deleted'=>0])->count() == 0) {
+                    return redirect('/law/chief/pending/orders');
+                }
+            }
+            else {
+                //lawyer user
+                if (Accounts::where(['id'=>$account_id, 'send'=>1, 'deleted'=>0])->count() == 0) {
+                    return redirect('/law/pending/orders');
+                }
             }
 
             $table_display = 'block';
@@ -88,7 +98,14 @@ class LawyerController extends HomeController
 
             if (Purchase::where(['account_id'=>$account_id, 'deleted'=>0, 'completed'=>0])->count() == 1) {
                 $curent_date = Carbon::now();
-                Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_confirm'=>0, 'lawyer_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                if (Auth::user()->chief == 1) {
+                    //lawyer chief
+                    Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_chief_confirm'=>0, 'lawyer_chief_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                }
+                else {
+                    //lawyer user
+                    Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_confirm'=>0, 'lawyer_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                }
             }
 
             Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>null]);
@@ -117,12 +134,21 @@ class LawyerController extends HomeController
 
             $current_date = Carbon::now();
 
-            $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_confirm'=>1, 'lawyer_confirm_at'=>$current_date]);
+            if (Auth::user()->chief() == 1) {
+                //lawyer chief
+                $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_chief_confirm'=>1, 'lawyer_chief_confirm_at'=>$current_date]);
+                $status_id = 13; //Mühasibat şöbəsinə göndərildi
+            }
+            else {
+                //lawyer user
+                $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_confirm'=>1, 'lawyer_confirm_at'=>$current_date]);
+                $status_id = 14; //Hüquq şöbəsinin rəhbərindən təsdiq gözləyir
+            }
 
             if ($update) {
                 $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.account_id'=>$account_id, 'Purchases.deleted'=>0])->select('a.OrderID')->get();
 
-                Orders::whereIn('id', $orders)->update(['situation_id'=>13]); //Mühasibat şöbəsinə göndərildi
+                Orders::whereIn('id', $orders)->update(['situation_id'=>$status_id]);
             }
 
 
