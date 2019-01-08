@@ -73,6 +73,7 @@
                                 {{--admin--}}
                                 <li><a href="/admins"><i class="fa fa-user-secret"></i> Adminlər</a></li>
                                 <li><a href="/chiefs"><i class="fa fa-user"></i> Rəhbərlər</a></li>
+                                <li><a href="/directors"><i class="fa fa-user-plus"></i> Direktorlar</a></li>
                                 <li><a href="/supply-users"><i class="fa fa-user-times"></i> Təchizatçılar</a></li>
                                 <li><a href="/departments"><i class="fa fa-building"></i> Departmentlər</a></li>
                                 <li><a href="/companies"><i class="fa fa-building-o"></i> Şirkətlər</a></li>
@@ -151,8 +152,19 @@
                                     </ul>
                                 </li>
 
-                            @elseif(Auth::user()->authority() == 6)
+                                @if(Auth::user()->auditor() == 8)
+                                    <li><a href="/director/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-accounts">
+                                            @foreach($accounts as $account)
+                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/director/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endif
 
+                            @elseif(Auth::user()->authority() == 6)
+                                {{--Lawyer--}}
                                 @if(Auth::user()->chief() == 1)
                                     {{--Lawyer Chief--}}
                                     <li><a href="/law/users"><i class="fa fa-user"></i> İşçilər</a></li>
@@ -165,7 +177,7 @@
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
                                     <!-- @php($cat_count = 0) -->
-                                    @foreach($categories as $category)
+                                        @foreach($categories as $category)
                                         <!-- @php($cat_count++) -->
                                             @if($category->orders_count > 0)
                                                 <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}  <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a></li>
@@ -188,6 +200,47 @@
                                                 <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/chief/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
                                             @else
                                                 <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </li>
+
+                            @elseif(Auth::user()->authority() == 7)
+                                {{--Finance--}}
+                                @if(Auth::user()->chief() == 1)
+                                    {{--Lawyer Chief--}}
+                                    <li><a href="/finance/users"><i class="fa fa-user"></i> İşçilər</a></li>
+                                    <li><a href="/finance/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                @else
+                                    <li><a href="/finance/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                @endif
+
+                                <li class="active">
+                                    <ul class="nav child_menu show-categories">
+                                    <!-- @php($cat_count = 0) -->
+                                    @foreach($categories as $category)
+                                        <!-- @php($cat_count++) -->
+                                            @if($category->orders_count > 0)
+                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}  <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a></li>
+                                            @else
+                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </li>
+
+                                @if(Auth::user()->chief() == 1)
+                                    <li><a href="/finance/chief/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                @else
+                                    <li><a href="/finance/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                @endif
+                                <li class="active">
+                                    <ul class="nav child_menu show-accounts">
+                                        @foreach($accounts as $account)
+                                            @if(Auth::user()->chief() == 1)
+                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/finance/chief/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                            @else
+                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/finance/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
                                             @endif
                                         @endforeach
                                     </ul>

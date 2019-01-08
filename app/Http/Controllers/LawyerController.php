@@ -98,13 +98,35 @@ class LawyerController extends HomeController
 
             if (Purchase::where(['account_id'=>$account_id, 'deleted'=>0, 'completed'=>0])->count() == 1) {
                 $curent_date = Carbon::now();
-                if (Auth::user()->chief == 1) {
-                    //lawyer chief
-                    Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_chief_confirm'=>0, 'lawyer_chief_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+
+                if (Auth::user()->authority() == 6) {
+                    //lawyer
+                    if (Auth::user()->chief == 1) {
+                        //lawyer chief
+                        Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_chief_confirm'=>0, 'lawyer_chief_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                    }
+                    else {
+                        //lawyer user
+                        Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_confirm'=>0, 'lawyer_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                    }
+                }
+                else if (Auth::user()->authority() == 7) {
+                    //finance
+                    if (Auth::user()->chief() == 1) {
+                        //chief
+                        Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'finance_chief_confirm'=>0, 'finance_chief_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                    }
+                    else {
+                        //user
+                        Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'finance_confirm'=>0, 'finance_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                    }
+                }
+                else if (Auth::user()->authority() == 5 && Auth::user()->auditor() == 8) {
+                    //Vuqar Zeynalov
+                    Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'director_lawyer_confirm'=>0, 'director_lawyer_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
                 }
                 else {
-                    //lawyer user
-                    Accounts::where(['id'=>$account_id])->update(['send'=>0, 'send_at'=>null, 'lawyer_confirm'=>0, 'lawyer_confirm_at'=>$curent_date, 'lawyer_remark'=>$request->remark]);
+                    return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
                 }
             }
 
@@ -134,15 +156,41 @@ class LawyerController extends HomeController
 
             $current_date = Carbon::now();
 
-            if (Auth::user()->chief() == 1) {
-                //lawyer chief
-                $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_chief_confirm'=>1, 'lawyer_chief_confirm_at'=>$current_date]);
+            if (Auth::user()->authority() == 6) {
+                //lawyer
+                if (Auth::user()->chief() == 1) {
+                    //lawyer chief
+                    $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_chief_confirm'=>1, 'lawyer_chief_confirm_at'=>$current_date]);
+                    $status_id = 17; //Direktorun hüquqi məsələlər üzrə müavini
+                }
+                else {
+                    //lawyer user
+                    $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_confirm'=>1, 'lawyer_confirm_at'=>$current_date]);
+                    $status_id = 14; //Hüquq şöbəsinin rəhbərindən təsdiq gözləyir
+                }
+            }
+            else if (Auth::user()->authority() == 7) {
+                //finance
+                if (Auth::user()->chief() == 1) {
+                    //chief
+                    $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['finance_chief_confirm'=>1, 'finance_chief_confirm_at'=>$current_date]);
+                    $status_id = 15; //Sifariş tamamlandı
+                    //complete order
+                    Purchase::where(['account_id'=>$account_id, 'deleted'=>0, 'completed'=>0])->update(['completed'=>1, 'completed_at'=>$current_date]);
+                }
+                else {
+                    //user
+                    $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['finance_confirm'=>1, 'finance_confirm_at'=>$current_date]);
+                    $status_id = 16; //Mühasibat şöbəsinin rəhbərindən təsdiq gözləyir
+                }
+            }
+            else if (Auth::user()->authority() == 5 && Auth::user()->auditor() == 8) {
+                //Vuqar Zeynalov
+                $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['director_lawyer_confirm'=>1, 'director_lawyer_confirm_at'=>$current_date]);
                 $status_id = 13; //Mühasibat şöbəsinə göndərildi
             }
             else {
-                //lawyer user
-                $update = Accounts::where(['id'=>$account_id, 'deleted'=>0, 'send'=>1])->update(['lawyer_confirm'=>1, 'lawyer_confirm_at'=>$current_date]);
-                $status_id = 14; //Hüquq şöbəsinin rəhbərindən təsdiq gözləyir
+                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
             }
 
             if ($update) {

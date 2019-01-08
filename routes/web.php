@@ -76,6 +76,12 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::get('/', 'DirectorController@get_orders');
             Route::post('/', 'DirectorController@post_order');
         });
+
+        //pending orders
+        Route::group(['prefix'=>'/pending/orders', 'middleware'=>'DirectorLawyer'], function () {
+            Route::get('/', 'LawyerController@get_pending_orders');
+            Route::post('/', 'LawyerController@post_pending_orders');
+        });
     });
 
     //chiefs for admins
@@ -86,6 +92,16 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/add', 'ChiefController@post_add_chief');
         Route::get('/update/{id}', 'ChiefController@get_update_chief');
         Route::post('/update/{id}', 'ChiefController@post_update_chief');
+    });
+
+    //directors for admins
+    Route::group(['prefix'=>'directors', 'middleware'=>'Admin'], function () {
+        Route::get('/', 'DirectorController@get_directors');
+        Route::post('/', 'DirectorController@post_delete_director');
+        Route::get('/add', 'DirectorController@get_add_director');
+        Route::post('/add', 'DirectorController@post_add_director');
+        Route::get('/update/{id}', 'DirectorController@get_update_director');
+        Route::post('/update/{id}', 'DirectorController@post_update_director');
     });
 
     //authorities for admins
@@ -168,6 +184,42 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     //lawyer chief
     Route::group(['prefix'=>'/law', 'middleware'=>'LawyerChief'], function () {
         //users for lawyer chiefs
+        Route::group(['prefix'=>'/users'], function () {
+            Route::get('/', 'UserController@get_users');
+            Route::post('/', 'UserController@post_delete_or_approve_user');
+        });
+
+        //orders for chiefs
+        Route::group(['prefix'=>'/chief/orders'], function () {
+            Route::get('/', 'OrderController@get_orders_for_chief');
+            Route::post('/', 'OrderController@post_delete_order_for_chief');
+        });
+
+        //pending orders
+        Route::group(['prefix'=>'/chief/pending/orders'], function () {
+            Route::get('/', 'LawyerController@get_pending_orders');
+            Route::post('/', 'LawyerController@post_pending_orders');
+        });
+    });
+
+    //finance
+    Route::group(['prefix'=>'finance', 'middleware'=>'Finance'], function () {
+        //orders for users
+        Route::group(['prefix'=>'/orders'], function () {
+            Route::get('/', 'OrderController@get_orders');
+            Route::post('/', 'OrderController@post_delete_order');
+        });
+
+        //pending orders
+        Route::group(['prefix'=>'/pending/orders'], function () {
+            Route::get('/', 'LawyerController@get_pending_orders');
+            Route::post('/', 'LawyerController@post_pending_orders');
+        });
+    });
+
+    //finance chief
+    Route::group(['prefix'=>'/finance', 'middleware'=>'FinanceChief'], function () {
+        //users for chiefs
         Route::group(['prefix'=>'/users'], function () {
             Route::get('/', 'UserController@get_users');
             Route::post('/', 'UserController@post_delete_or_approve_user');

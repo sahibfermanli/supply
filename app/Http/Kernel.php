@@ -2,6 +2,9 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\DirectorLawyer;
+use App\Http\Middleware\Finance;
+use App\Http\Middleware\FinanceChief;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -66,5 +69,8 @@ class Kernel extends HttpKernel
         'Director' => \App\Http\Middleware\Director::class,
         'Lawyer' => \App\Http\Middleware\Lawyer::class,
         'LawyerChief' => \App\Http\Middleware\LawyerChief::class,
+        'DirectorLawyer' => \App\Http\Middleware\DirectorLawyer::class,
+        'Finance' => \App\Http\Middleware\Finance::class,
+        'FinanceChief' => \App\Http\Middleware\FinanceChief::class,
     ];
 }

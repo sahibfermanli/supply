@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'surname', 'slug', 'confirmed', 'deleted', 'deleted_at', 'email', 'password', 'DepartmentID', 'chief',
+        'name', 'surname', 'slug', 'confirmed', 'deleted', 'deleted_at', 'email', 'password', 'DepartmentID', 'chief', 'auditor',
     ];
 
     /**
@@ -47,5 +47,9 @@ class User extends Authenticatable
 
     public function DepartmentID() {
         return $this->DepartmentID;
+    }
+
+    public function auditor() {
+        return $this->auditor;
     }
 }

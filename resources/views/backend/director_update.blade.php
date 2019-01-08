@@ -4,7 +4,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h3>Update chief</h3>
+                    <h3>Update director</h3>
                 </div>
             </div>
 
@@ -17,12 +17,12 @@
                             <form id="form" data-parsley-validate class="form-horizontal form-label-left" method="post" action="">
                                 {{csrf_field()}}
                                 <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="DepartmentID">Department
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="DepartmentID">Auditor
                                     </label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select name="DepartmentID" id="DepartmentID" class="form-control col-md-7 col-xs-12" required>
+                                        <select name="auditor" id="DepartmentID" class="form-control col-md-7 col-xs-12" required>
                                             @foreach($departments as $department)
-                                                @if($department->id == $chief->DepartmentID)
+                                                @if($department->id == $director->auditor)
                                                     <option value="{{$department->id}}" selected>{{$department->Department}}</option>
                                                 @else
                                                     <option value="{{$department->id}}">{{$department->Department}}</option>
@@ -31,9 +31,9 @@
                                         </select>
                                     </div>
                                 </div>
-                                {{Form::bsTextRequired('name', 'Name', $chief->name)}}
-                                {{Form::bsTextRequired('surname', 'Surname', $chief->surname)}}
-                                {{Form::bsEmailRequired('email', 'E-mail', $chief->email)}}
+                                {{Form::bsTextRequired('name', 'Name', $director->name)}}
+                                {{Form::bsTextRequired('surname', 'Surname', $director->surname)}}
+                                {{Form::bsEmailRequired('email', 'E-mail', $director->email)}}
                                 {{Form::bsPassword('password', 'Password', ['id'=>'password','class'=>'form-control col-md-7 col-xs-12'])}}
                                 <div class="ln_solid"></div>
                                 <div class="form-group">
@@ -79,7 +79,7 @@
                         response.case
                     );
                     if (response.case === 'success') {
-                        location.replace('/chiefs');
+                        location.replace('/directors');
                     }
                 }
             });

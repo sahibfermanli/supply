@@ -4,7 +4,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h3>Update chief</h3>
+                    <h3>Add director</h3>
                 </div>
             </div>
 
@@ -17,29 +17,26 @@
                             <form id="form" data-parsley-validate class="form-horizontal form-label-left" method="post" action="">
                                 {{csrf_field()}}
                                 <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="DepartmentID">Department
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="DepartmentID">Auditor
                                     </label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
-                                        <select name="DepartmentID" id="DepartmentID" class="form-control col-md-7 col-xs-12" required>
+                                        <select name="auditor" id="DepartmentID" class="form-control col-md-7 col-xs-12" required>
+                                            <option value="">Select department</option>
                                             @foreach($departments as $department)
-                                                @if($department->id == $chief->DepartmentID)
-                                                    <option value="{{$department->id}}" selected>{{$department->Department}}</option>
-                                                @else
-                                                    <option value="{{$department->id}}">{{$department->Department}}</option>
-                                                @endif
+                                                <option value="{{$department->id}}">{{$department->Department}}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                {{Form::bsTextRequired('name', 'Name', $chief->name)}}
-                                {{Form::bsTextRequired('surname', 'Surname', $chief->surname)}}
-                                {{Form::bsEmailRequired('email', 'E-mail', $chief->email)}}
-                                {{Form::bsPassword('password', 'Password', ['id'=>'password','class'=>'form-control col-md-7 col-xs-12'])}}
+                                {{Form::bsTextRequired('name', 'Name')}}
+                                {{Form::bsTextRequired('surname', 'Surname')}}
+                                {{Form::bsEmailRequired('email', 'E-mail')}}
+                                {{Form::bsPasswordRequired('password', 'Password', ['id'=>'password','class'=>'form-control col-md-7 col-xs-12', 'required'])}}
                                 <div class="ln_solid"></div>
                                 <div class="form-group">
                                     <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
                                         <button type="reset" class="btn btn-primary">Clear</button>
-                                        <button type="submit" class="btn btn-success">Update</button>
+                                        <button type="submit" class="btn btn-success">Add</button>
                                     </div>
                                 </div>
                             </form>
@@ -79,7 +76,7 @@
                         response.case
                     );
                     if (response.case === 'success') {
-                        location.replace('/chiefs');
+                        location.replace('/directors');
                     }
                 }
             });

@@ -7,9 +7,11 @@ use App\Alternatives;
 use App\Categories;
 use App\Countries;
 use App\Currencies;
+use App\Departments;
 use App\Orders;
 use App\Positions;
 use App\Units;
+use App\User;
 use App\Vehicles;
 use App\Purchase;
 use App\Reports;
@@ -25,6 +27,116 @@ use Illuminate\Support\Facades\View;
 
 class DirectorController extends HomeController
 {
+    //directors
+    //show
+    public function get_directors() {
+        $directors = User::leftJoin('Departments as a', 'users.auditor', '=', 'a.id')->where(['users.deleted'=>0, 'users.DepartmentID'=>5])->select('users.id', 'users.name', 'users.surname', 'users.email', 'users.created_at', 'a.Department')->paginate(30);
+
+        return view('backend.directors')->with(['directors'=>$directors]);
+    }
+
+    //delete
+    public function post_delete_director(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'row_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Id not found!']);
+        }
+        try {
+            $id = $request->id;
+            $date = Carbon::now();
+            User::where(['id'=>$id])->update(['deleted'=>1, 'deleted_at'=>$date]);
+
+            return response(['case' => 'success', 'title' => 'Success!', 'content' => 'Director deleted!', 'row_id'=>$request->row_id]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Director could not be deleted!']);
+        }
+    }
+
+    //add
+    public function get_add_director() {
+        $departments = Departments::where(['deleted'=>0])->select('id', 'Department')->get();
+
+        return view('backend.director_add')->with(['departments'=>$departments]);
+    }
+
+    public function post_add_director(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'auditor' => 'required|integer',
+            'name' => 'required|string|max:191',
+            'surname' => 'required|string|max:191',
+            'email' => 'required|string|email|max:191|unique:users',
+            'password' => 'required|string|min:6',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Fill in the required fields!']);
+        }
+        try {
+            $slug = str_slug($request->name.'-'.$request->surname.'-'.microtime());
+
+            $pass = bcrypt($request->password);
+            unset($request['password']);
+
+//            if (isset($request->auditor) && !empty($request->auditor)) {
+//                $auditor = $request->auditor;
+//            }
+//            else {
+//                $auditor = null;
+//            }
+
+            $request->merge(['slug'=>$slug, 'deleted'=>0, 'confirmed'=>1, 'password'=>$pass, 'auditor'=>$request->auditor, 'DepartmentID'=>5]);
+
+            User::create($request->all());
+
+            return response(['case' => 'success', 'title' => 'Success!', 'content' => 'Director added!']);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Director could not be added!']);
+        }
+    }
+
+    //update
+    public function get_update_director($id) {
+        $departments = Departments::where(['deleted'=>0])->select('id', 'Department')->get();
+        $director = User::where(['id'=>$id, 'deleted'=>0, 'DepartmentID'=>5])->select('id', 'auditor', 'name', 'surname', 'email')->first();
+
+        return view('backend.director_update')->with(['departments'=>$departments, 'director'=>$director]);
+    }
+
+    public function post_update_director($id, Request $request) {
+        $validator = Validator::make($request->all(), [
+            'auditor' => 'required|integer',
+            'name' => 'required|string|max:191',
+            'surname' => 'required|string|max:191',
+            //'email' => 'required|email|max:191|unique:users,id,'.$id,
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Fill in the required fields!']);
+        }
+        try {
+            unset($request['_token']);
+
+            if (!empty($request->password)) {
+                $pass = bcrypt($request->password);
+                unset($request['password']);
+                $request->merge(['password'=>$pass]);
+            }
+            else {
+                unset($request['password']);
+            }
+
+            User::where('id', $id)->update($request->all());
+
+            return response(['case' => 'success', 'title' => 'Success!', 'content' => 'Director updated!']);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Director could not be updated!']);
+        }
+    }
+    
+    
+    
     //show orders
     public function get_orders()
     {

@@ -647,11 +647,12 @@
                             var unit = '<td>' + purchase['Unit'] + '</td>';
                             var cost = '<td>' + purchase['cost'] + '</td>';
                             var total_cost = '<td>' + purchase['total_cost'] + '</td>';
+                            var company = '<td>' + purchase['company'] + '</td>';
                             var status = '<td><span style="color: ' + purchase['color'] + '">' + purchase['status'] + '</span></td>';
                             var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                             var tr = '<tr class="even pointer" id="remove_' + purchase['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + status + date;
+                            tr = tr + '<td>' + count + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }

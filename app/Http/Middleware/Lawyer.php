@@ -21,7 +21,7 @@ class Lawyer
     {
         if (Auth::user()->authority() == 6 && Auth::user()->chief() == 0) {
             $purchases = Purchase::where(['deleted'=>0, 'completed'=>0])->select('account_id')->get();
-            $accounts = Accounts::leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0])->whereNull('lawyer_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.name as company')->get();
+            $accounts = Accounts::leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0])->whereNull('accounts.lawyer_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.name as company')->get();
 
             View::share(['accounts'=>$accounts]);
 

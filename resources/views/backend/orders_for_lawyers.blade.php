@@ -264,7 +264,11 @@
                         },
                         success: function (response) {
                             if (response.case === 'success') {
-                                location.href = '/law/pending/orders';
+                                @if(Auth::user()->chief() == 1)
+                                    location.href = '/law/chief/pending/orders';
+                                @else
+                                    location.href = '/law/pending/orders';
+                                @endif
                             } else {
                                 swal(
                                     response.title,
