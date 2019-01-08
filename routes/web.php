@@ -179,6 +179,11 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::get('/', 'LawyerController@get_pending_orders');
             Route::post('/', 'LawyerController@post_pending_orders');
         });
+
+        //purchase
+        Route::group(['prefix'=>'/purchases'], function () {
+            Route::get('/', 'PurchaseController@get_purchases');
+        });
     });
 
     //lawyer chief
@@ -200,6 +205,11 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::get('/', 'LawyerController@get_pending_orders');
             Route::post('/', 'LawyerController@post_pending_orders');
         });
+
+        //purchase
+        Route::group(['prefix'=>'/chief/purchases'], function () {
+            Route::get('/', 'PurchaseController@get_purchases');
+        });
     });
 
     //finance
@@ -214,6 +224,11 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::group(['prefix'=>'/pending/orders'], function () {
             Route::get('/', 'LawyerController@get_pending_orders');
             Route::post('/', 'LawyerController@post_pending_orders');
+        });
+
+        //purchase
+        Route::group(['prefix'=>'/purchases'], function () {
+            Route::get('/', 'PurchaseController@get_purchases');
         });
     });
 
@@ -235,6 +250,11 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::group(['prefix'=>'/chief/pending/orders'], function () {
             Route::get('/', 'LawyerController@get_pending_orders');
             Route::post('/', 'LawyerController@post_pending_orders');
+        });
+
+        //purchase
+        Route::group(['prefix'=>'/chief/purchases'], function () {
+            Route::get('/', 'PurchaseController@get_purchases');
         });
     });
 });

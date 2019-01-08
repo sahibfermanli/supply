@@ -168,8 +168,10 @@
                                 @if(Auth::user()->chief() == 1)
                                     {{--Lawyer Chief--}}
                                     <li><a href="/law/users"><i class="fa fa-user"></i> İşçilər</a></li>
+                                    <li><a href="/law/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/law/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
                                 @else
+                                    <li><a href="/law/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/law/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
                                 @endif
 
@@ -210,8 +212,10 @@
                                 @if(Auth::user()->chief() == 1)
                                     {{--Lawyer Chief--}}
                                     <li><a href="/finance/users"><i class="fa fa-user"></i> İşçilər</a></li>
+                                    <li><a href="/finance/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/finance/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
                                 @else
+                                    <li><a href="/finance/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/finance/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
                                 @endif
 
