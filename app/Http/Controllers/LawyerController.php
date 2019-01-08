@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Storage;
 class LawyerController extends HomeController
 {
     public function get_pending_orders() {
+        if (Accounts::where(['deleted'=>0])->count() == 0) {
+            return redirect('/');
+        }
+
         if (empty(Input::get('account_id'))) {
             $account_id = 0;
             $table_display = 'none';
