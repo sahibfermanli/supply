@@ -35,13 +35,23 @@ class UserController extends HomeController
             }
             else if ($request->type == 2) {
                 //approve
-                User::where('id', $request->id)->update(['confirmed' => 1]);
-//                $seller = User::where('id', $request->id)->select()->first();
-//                $email = $seller['email'];
-//                $to = $seller['name']." ".$seller['surname'];
-//                $message = "Hörmətli, ".$seller['name']." ".$seller['surname']."! Sizin, <a href='https://stock.arshinmall.com'>https://stock.arshinmall.com</a> saytindakı hesabınız təsdiqləndi. Hesabınıza giriş edə bilərsiniz...";
-//                $title = 'Hesabınız təsdiqləndi';
-//                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                $confirm_user = User::where('id', $request->id)->update(['confirmed' => 1]);
+
+                if ($confirm_user) {
+                    $user = User::where('id', $request->id)->select('name', 'surname', 'email')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = "
+                    Hörmətli istifadəçi, sizin hesabınız təsdiqlənmişdir.</br> 
+                    E-mail və şifrənizi daxil edərək sistemə daxil ola bilərsiniz.</br>
+                    Link: <a target='_blank' href='https://supply.swgh.az'>https://supply.swgh.az</a></br>
+                    Sizin e-mail adresiniz: ". $user['email'];
+                    $title = 'Hesabın təsdiqlənməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
+
                 return response(['case' => 'success', 'title' => 'Success!', 'content' => 'User approved!', 'row_id' => $request->row_id]);
             }
             else {
