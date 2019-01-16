@@ -58,7 +58,19 @@ class OrderController extends HomeController
             try {
                 $id = $request->id;
                 $date = Carbon::now();
-                Orders::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
+                $delete_order = Orders::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
+
+                if ($delete_order) {
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                    sizin '" . $user['Product'] . "' adlı sifarişiniz silinmişdir.";
+                    $title = 'Sifarişin silinməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
 
                 return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş silindi!', 'id' => $id]);
             } catch (\Exception $e) {
@@ -146,7 +158,19 @@ class OrderController extends HomeController
             }
             try {
                 $id = $request->id;
-                Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+                $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+
+                if ($cancel_order) {
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                    sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz department rəhbəriniz tərəfindən qəbul edilmədi.";
+                    $title = 'Sifarişin geri çevrilməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
 
                 return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş geri çevrildi!', 'id' => $id]);
             } catch (\Exception $e) {
@@ -296,7 +320,26 @@ class OrderController extends HomeController
 
             $cat_id = $request->cat_id;
 
-            Orders::where(['id'=>$request->order_id, 'deleted'=>0])->update(['SupplyID'=>$request->supply_id]);
+            $select_supply = Orders::where(['id'=>$request->order_id, 'deleted'=>0])->update(['SupplyID'=>$request->supply_id]);
+
+            if ($select_supply) {
+                $supply = User::where(['id'=>$request->supply_id])->select('name', 'surname', 'email')->first();
+
+                $order = Orders::leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->leftJoin('Departments as d', 'u.DepartmentID', '=', 'd.id')->where(['Orders.id'=>$request->order_id])->select('Orders.Product', 'c.process', 'u.name', 'u.surname', 'd.Department')->first();
+
+                $email = $supply['email'];
+                $to = $supply['name'] . ' ' . $supply['surname'];
+                $message = $supply['name'] . " " . $supply['surname'] . ",
+                    yeni sifariş var. </br>
+                    Sifarişi verən şəxs: ".$order->name." ".$order->surname .".</br>
+                    Sifarişi verən department: ".$order->Department.".</br>
+                    Sifarişin adı: ". $order->Product .".</br>
+                    Sifarişin kateqoriyası: ". $order->process .".
+                ";
+                $title = 'Yeni sifariş';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+            }
 
             return response(['case'=>'success', 'title'=>'Uğurlu!', 'content'=>'Təchizatçı uğurla seçildi.', 'type'=>'add_order', 'category_id'=>$cat_id]);
         }
@@ -313,7 +356,32 @@ class OrderController extends HomeController
                 Alternatives::where(['id' => $id])->update(['confirm_chief' => 1]);
                 $order = Alternatives::where(['id'=>$id])->select('OrderID')->first();
                 $order_id = $order['OrderID'];
-                Orders::where(['id'=>$order_id])->update(['situation_id'=>10]); //direktora gonderilib
+
+                if (Orders::where(['id'=>$order_id, 'situation_id'=>10, 'deleted'=>0])->count() == 0) {
+                    Orders::where(['id'=>$order_id])->update(['situation_id'=>10]); //direktora gonderilib
+
+                    //send mail to user
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                        sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz direktora göndərilib.";
+                    $title = 'Sifarişin direktora göndərilməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+
+                    //send mail to supply
+                    $supply = Orders::leftJoin('users as u', 'Orders.SupplyID', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $supply['email'];
+                    $to = $supply['name'] . ' ' . $supply['surname'];
+                    $message = $supply['name'] . " " . $supply['surname'] . ",
+                        </br><b>" . $user['Product'] . "</b> adlı sifarişi üçün alternativ təsdiqləndi və direktora göndərildi.";
+                    $title = 'Alternativin təsdiqlənməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
 
                 return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Təsdiq edildi!']);
             } catch (\Exception $e) {
@@ -359,7 +427,19 @@ class OrderController extends HomeController
             }
             try {
                 $id = $request->id;
-                Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+                $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+
+                if ($cancel_order) {
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                    sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz department rəhbəriniz tərəfindən qəbul edilmədi.";
+                    $title = 'Sifarişin geri çevrilməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
 
                 return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş geri çevrildi!', 'id' => $id]);
             } catch (\Exception $e) {
@@ -479,7 +559,39 @@ class OrderController extends HomeController
             $arr['confirmed'] = 1;
             $arr['situation_id'] = 2; //tesdiqlendi
 
-            Orders::where(['id'=>$order_id, 'deleted'=>0])->update($arr);
+            $confirm_order = Orders::where(['id'=>$order_id, 'deleted'=>0])->update($arr);
+
+            if ($confirm_order) {
+                //send mail to user
+                $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                $email = $user['email'];
+                $to = $user['name'] . ' ' . $user['surname'];
+                $message = $user['name'] . " " . $user['surname'] . ",
+                    sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz department rəhbəriniz tərəfindən təsdiq edildi.</br>
+                    Sifarişiniz təchizat şöbəsinə göndərilib.";
+                $title = 'Sifarişin təsdiqlənməsi';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+
+                //send mail to supply chief
+                $supply = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.chief'=>1, 'users.deleted'=>0])->select('users.name', 'users.surname', 'users.email')->first();
+
+                $order = Orders::leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->leftJoin('Departments as d', 'u.DepartmentID', '=', 'd.id')->where(['Orders.id'=>$order_id])->select('Orders.Product', 'c.process', 'u.name', 'u.surname', 'd.Department')->first();
+
+                $email = $supply['email'];
+                $to = $supply['name'] . ' ' . $supply['surname'];
+                $message = $supply['name'] . " " . $supply['surname'] . ",
+                    yeni sifariş var. </br>
+                    Sifarişi verən şəxs: ".$order->name." ".$order->surname .".</br>
+                    Sifarişi verən department: ".$order->Department.".</br>
+                    Sifarişin adı: ". $order->Product .".</br>
+                    Sifarişin kateqoriyası: ". $order->process .".
+                ";
+                $title = 'Yeni sifariş';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+            }
 
             return response(['case' => 'success', 'order_id'=>$order_id, 'cat_id'=>$request->cat_id]);
         } catch (\Exception $e) {
@@ -498,6 +610,8 @@ class OrderController extends HomeController
         if ($validator->fails()) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Lazımlı xanaları doldurun!']);
         }
+
+        $product = $request->Product;
 
         if (isset($request->picture)) {
             $validator_file = Validator::make($request->all(), [
@@ -551,11 +665,6 @@ class OrderController extends HomeController
 
             $situation_id = 1; //pending
 
-//            if (Auth::user()->chief() == 1) {
-//                $request->merge(['confirmed'=>1, 'confirmed_at'=>Carbon::now()]);
-//                $situation_id = 2; //Təsdiqləndi
-//            }
-
             $request->merge(['deleted' => 0, 'MainPerson' => Auth::id(), 'DepartmentID' => Auth::user()->DepartmentID(), 'situation_id' => $situation_id]);
 
             unset($request['picture']);
@@ -573,6 +682,21 @@ class OrderController extends HomeController
 
             if ($add_order) {
                 Units::where('id', $unit_id)->increment('use_count');
+
+                $user = User::where(['DepartmentID'=>Auth::user()->DepartmentID(), 'chief'=>1, 'deleted'=>0])->select('name', 'surname', 'email')->first();
+                $category = Categories::where(['id'=>$cat_id])->select('process')->first();
+
+                $email = $user['email'];
+                $to = $user['name'] . ' ' . $user['surname'];
+                $message = $user['name'] . " " . $user['surname'] . ",
+                    yeni sifariş var. </br>
+                    Sifarişi verən: ". Auth::user()->name." ".Auth::user()->surname .".</br>
+                    Sifariş: ". $product .".</br>
+                    Sifarşin kateqoriyası: ". $category->process .".
+                    ";
+                $title = 'Yeni sifariş';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
             }
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş yaradıldı!', 'type'=>'add_order', 'category_id'=>$cat_id]);
