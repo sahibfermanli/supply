@@ -162,7 +162,19 @@ class DirectorController extends HomeController
             try {
                 $id = $request->id;
                 $date = Carbon::now();
-                Orders::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
+                $delete_order = Orders::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
+
+                if ($delete_order) {
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                    sizin '" . $user['Product'] . "' adlı sifarişiniz direktor tərəfindən silinmişdir.";
+                    $title = 'Sifarişin silinməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
 
                 return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş silindi!', 'row_id' => $request->row_id]);
             } catch (\Exception $e) {
@@ -209,8 +221,8 @@ class DirectorController extends HomeController
 
             return response(['case' => 'success', 'data' => $image]);
         } else if ($request->type == 5) {
-            //add new order
-            return $this->add_order($request);
+            //free
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
         else if ($request->type == 6) {
             //show alternatives
@@ -249,6 +261,41 @@ class DirectorController extends HomeController
 
                 Orders::where(['id'=>$order_id])->update(['situation_id'=>5, 'deadline'=>$deadline]); //Alımlara əlavə olundu
 
+                //send email to user
+                $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                $email = $user['email'];
+                $to = $user['name'] . ' ' . $user['surname'];
+                $message = $user['name'] . " " . $user['surname'] . ",
+                    sizin '" . $user['Product'] . "' adlı sifarişiniz alımlara əlavə edilmişdir, hüquq şöbəsinə göndərilməsi üçün təchizat şöbəsində gözləyir.";
+                $title = 'Sifarişin alımlara əlavə edilməsi';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+
+                //send email to supply chief
+                $suplly_chief = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.chief'=>1])->select('users.name', 'users.surname', 'users.email')->first();
+
+                $email2 = $suplly_chief['email'];
+                $to2 = $suplly_chief['name'] . ' ' . $suplly_chief['surname'];
+                $message2 = $suplly_chief['name'] . " " . $suplly_chief['surname'] . ",
+                    '" . $user['Product'] . "' adlı sifariş alımlara əlavə edilmişdir, hüquq şöbəsinə göndərilməsi üçün təchizat şöbəsində gözləyir.</br>
+                    Sifarişi hesaba əlavə edin və hüquq şöbəsinə göndərin.";
+                $title2 = 'Sifarişin alımlara əlavə edilməsi';
+
+                app('App\Http\Controllers\MailController')->get_send($email2, $to2, $title2, $message2);
+
+                //send email to supply
+                $supply = Orders::leftJoin('users as u', 'Orders.SupplyID', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                $email3 = $supply['email'];
+                $to3 = $supply['name'] . ' ' . $supply['surname'];
+                $message3 = $supply['name'] . " " . $supply['surname'] . ",
+                    '" . $supply['Product'] . "' adlı sifariş alımlara əlavə edilmişdir, hüquq şöbəsinə göndərilməsi üçün təchizat şöbəsində gözləyir.</br>
+                    Sifarişi hesaba əlavə edin və hüquq şöbəsinə göndərin.";
+                $title3 = 'Sifarişin alımlara əlavə edilməsi';
+
+                app('App\Http\Controllers\MailController')->get_send($email3, $to3, $title3, $message3);
+
                 return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ əlavə edildi!']);
             } catch (\Exception $e) {
                 return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Alternativ əlavə edilərkən səhv baş verdi!']);
@@ -279,6 +326,42 @@ class DirectorController extends HomeController
 
                 Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>$remark]);
                 Orders::where(['id'=>$order_id])->update(['situation_id'=>$status_id]);
+
+                //send email to user
+                $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                $email = $user['email'];
+                $to = $user['name'] . ' ' . $user['surname'];
+                $message = $user['name'] . " " . $user['surname'] . ",
+                    sizin '" . $user['Product'] . "' adlı sifarişiniz direktor tərəfindən təchizatçıya geri göndərilmişdir.</br>
+                    Direktorun qeydi:</br>".$remark;
+                $title = 'Sifarişin təchizatçıya geri göndərilməsi';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+
+                //send email to supply chief
+                $suplly_chief = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.chief'=>1])->select('users.name', 'users.surname', 'users.email')->first();
+
+                $email2 = $suplly_chief['email'];
+                $to2 = $suplly_chief['name'] . ' ' . $suplly_chief['surname'];
+                $message2 = $suplly_chief['name'] . " " . $suplly_chief['surname'] . ",
+                    '" . $user['Product'] . "' adlı sifariş direktor tərəfindən təchizatçıya geri göndərilmişdir.</br>
+                    Direktorun qeydi:</br>".$remark;
+                $title2 = 'Sifarişin təchizatçıya geri göndərilməsi';
+
+                app('App\Http\Controllers\MailController')->get_send($email2, $to2, $title2, $message2);
+
+                //send email to supply
+                $supply = Orders::leftJoin('users as u', 'Orders.SupplyID', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                $email3 = $supply['email'];
+                $to3 = $supply['name'] . ' ' . $supply['surname'];
+                $message3 = $supply['name'] . " " . $supply['surname'] . ",
+                    '" . $supply['Product'] . "' adlı sifariş direktor tərəfindən təchizatçıya geri göndərilmişdir.</br>
+                    Direktorun qeydi:</br>".$remark;
+                $title3 = 'Sifarişin təchizatçıya geri göndərilməsi';
+
+                app('App\Http\Controllers\MailController')->get_send($email3, $to3, $title3, $message3);
 
                 return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Uğurlu!']);
             } catch (\Exception $e) {
