@@ -33,6 +33,13 @@ class HomeController extends Controller
     }
 
     public function get_index() {
+//        $email = ['sfermanli@swgh.az', 'sahibfermanli230@gmail.com'];
+//        $to = ['Sahib Fermanli', 'Gmail Com'];
+//        $message = "Azerbaycan";
+//        $title = 'Azerbaycan';
+//
+//        app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+
         return view('backend.index');
     }
 }

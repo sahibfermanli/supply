@@ -32,6 +32,7 @@
                                     <tr class="headings">
                                         <th class="column-title">#</th>
                                         <th class="column-title">Alternativ</th>
+                                        <th class="column-title">Sifarişçi</th>
                                         <th class="column-title" id="Product_th">Malın adı</th>
                                         <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
                                         <th class="column-title" id="Part_th">Part No</th>
@@ -41,7 +42,7 @@
                                         <th class="column-title" id="vehicle_th">Qaraj No</th>
                                         <th class="column-title" id="position_th">Vəzifə</th>
                                         <th class="column-title" id="Status_th">Status</th>
-                                        <th class="column-title" id="Remark_th">Qeyd</th>
+                                        <th class="column-title" id="Remark_th">Sifariş səbəbi</th>
                                         <th class="column-title" id="Image_th">Şəkil</th>
                                         <th class="column-title" id="Defect_th">Qüsur aktı</th>
                                     </tr>
@@ -433,6 +434,7 @@
                             count++;
                             var order = orders[i];
                             var id = order['id'];
+                            var user_detail = '<td style="min-width: 150px;">' + order['user_name'] + ' ' + order['user_surname'] + ' , ' + order['user_department'] + '</td>';
                             var product = '<td>' + order['Product'] + '</td>';
                             var translation_brand = '<td>' + order['Translation_Brand'] + '</td>';
                             var part = '<td>' + order['Part'] + '</td>';
@@ -523,7 +525,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>' + show_alt + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
+                            tr = tr + '<td>' + count + '</td>' + show_alt + user_detail + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
