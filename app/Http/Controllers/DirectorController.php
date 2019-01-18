@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 
 use App\Alternatives;
-use App\Categories;
-use App\Countries;
-use App\Currencies;
 use App\Departments;
 use App\Orders;
 use App\Positions;
@@ -14,16 +11,10 @@ use App\Units;
 use App\User;
 use App\Vehicles;
 use App\Purchase;
-use App\Reports;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Input;
 use Image;
-
-use Illuminate\Support\Facades\View;
 
 class DirectorController extends HomeController
 {
@@ -234,7 +225,7 @@ class DirectorController extends HomeController
             }
             $order_id = $request->order_id;
 
-            $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$order_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->select('lb_Alternatives.Brend', 'lb_Alternatives.Model', 'lb_Alternatives.PartSerialNo', 'lb_Alternatives.total_cost', 'lb_Alternatives.pcs', 'u.Unit', 'lb_Alternatives.date', 'c.country_name as country', 'lb_Alternatives.store_type', 'lb_Alternatives.id as alternative_id', 'cur.cur_name as currency', 'companies.name as company')->get();
+            $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$order_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->select('lb_Alternatives.Brend', 'lb_Alternatives.Model', 'lb_Alternatives.PartSerialNo', 'lb_Alternatives.total_cost', 'lb_Alternatives.pcs', 'u.Unit', 'lb_Alternatives.date', 'c.country_name as country', 'lb_Alternatives.store_type', 'lb_Alternatives.id as alternative_id', 'cur.cur_name as currency', 'companies.name as company', 'lb_Alternatives.Remark', 'lb_Alternatives.image')->get();
 
             return response(['case' => 'success', 'alternatives'=>$alternatives, 'order_id'=>$request->order_id]);
         }
@@ -368,9 +359,28 @@ class DirectorController extends HomeController
                 return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
             }
         }
+        else if ($request->type == 9) {
+            //get alternative image
+            return $this->get_alt_image($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
+    }
+
+    //get alternative image
+    public function get_alt_image(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Sifariş tapılmadı!']);
+        }
+
+        $alt = Alternatives::where(['id' => $request->id])->select('image')->first();
+        $image = '<img src="' . $alt->image . '"  width="200" height="200">';
+
+        return response(['case' => 'success', 'data' => $image]);
     }
 
 }

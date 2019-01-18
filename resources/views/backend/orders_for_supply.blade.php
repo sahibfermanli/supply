@@ -57,7 +57,7 @@
                                             <th class="column-title" id="position_th">Vəzifə</th>
                                             <th class="column-title">Sifarişçi</th>
                                             <th class="column-title" id="Status_th">Status</th>
-                                            <th class="column-title" id="Remark_th">Qeyd</th>
+                                            <th class="column-title" id="Remark_th">Sifariş səbəbi</th>
                                             <th class="column-title" id="Image_th">Şəkil</th>
                                             <th class="column-title" id="Defect_th">Qüsur aktı</th>
                                         </tr>
@@ -806,7 +806,7 @@
                     @endforeach
                         vehicle_id = vehicle_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -840,7 +840,7 @@
                     @endforeach
                         vehicle_id = vehicle_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -872,7 +872,7 @@
                     @endforeach
                         vehicle_id = vehicle_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -899,7 +899,7 @@
                             @endforeach
                         unit_id = unit_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                     inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -926,7 +926,7 @@
                             @endforeach
                         unit_id = unit_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                     inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -959,7 +959,7 @@
                     @endforeach
                         vehicle_id = vehicle_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -993,7 +993,7 @@
                     @endforeach
                         position_id = position_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                     inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + position_id + Remark + image + deffect_doc;
@@ -1018,7 +1018,7 @@
                             @endforeach
                         unit_id = unit_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                     inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -1043,7 +1043,7 @@
                             @endforeach
                         unit_id = unit_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                     inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -1076,7 +1076,7 @@
                     @endforeach
                         vehicle_id = vehicle_id + '</select></td>';
 
-                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -1415,6 +1415,7 @@
                         var i = 0;
                         var count = 0;
                         var confirm_btn = '';
+                        var suggestion_btn = '';
 
                         for (i = 0; i < alternatives.length; i++) {
                             var alternative = alternatives[i];
@@ -1427,6 +1428,13 @@
                                 }
                                 else {
                                     confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
+                                }
+
+                                if (alternative['suggestion'] == 1) {
+                                    suggestion_btn = '<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>';
+                                }
+                                else {
+                                    suggestion_btn = '<span onclick="suggestion_alternative(' + alternative['id'] + ');" title="Tövsiyyə et" class="btn btn-primary btn-xs"><i class="fa fa-check-circle"></i></span>';
                                 }
                             @endif
 
@@ -1463,7 +1471,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + count + '</td><td id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            tr = tr + '<td>' + count + '</td><td style="min-width: 80px;"><span id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</span><span id="suggestion_alternative_tr_' + alternative['id'] + '">' + suggestion_btn + '</span></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -1653,6 +1661,39 @@
                     });
                 } else {
                     return false;
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function suggestion_alternative(id) {
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'id': id,
+                    '_token': CSRF_TOKEN,
+                    'type': 16
+                },
+                beforeSubmit: function () {
+                    //loading
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                        text: 'Yüklənir, lütfən gözləyin..',
+                        showConfirmButton: false
+                    });
+                },
+                success: function (response) {
+                    swal(
+                        response.title,
+                        response.content,
+                        response.case
+                    );
+                    if (response.case === 'success') {
+                        $('#suggestion_alternative_tr_'+response.id).html('<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>');
+                    }
                 }
             });
         }

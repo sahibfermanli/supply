@@ -451,17 +451,17 @@
                             }
 
                             if (order['Remark'] == null) {
-                                var remark = '<td><center><span disabled="true" title="Qeydi göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
+                                var remark = '<td><center><span disabled="true" title="Qeyd yoxdur" class="btn btn-warning btn-xs"><i class="fa fa-eye"></i></span></center></td>';
                             }
                             else{
                                 var remark = '<td><center><span title="Qeydi göstər" onclick="get_data(' + id + ', 3);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
                             }
 
                             if (order['image'] == null) {
-                                var picture = '<td><center><span disabled="true" title="Şəkli göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
+                                var picture = '<td><center><span disabled="true" title="Şəkil yoxdur" class="btn btn-warning btn-xs"><i class="fa fa-image"></i></span></center></td>';
                             }
                             else{
-                                var picture = '<td><center><span title="Şəkli göstər" onclick="get_data(' + id + ', 4);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
+                                var picture = '<td><center><span title="Şəkili göstər" onclick="get_data(' + id + ', 4);" class="btn btn-success btn-xs add-modal"><i class="fa fa-image"></i></span></center></td>';
                             }
 
                             if (order['deffect_doc'] == null) {
@@ -566,6 +566,7 @@
                         var alternatives = response.alternatives;
                         var i = 0;
                         var count = 0;
+                        var image = '';
 
                         for (i=0; i< alternatives.length; i++) {
                             count++;
@@ -582,10 +583,18 @@
                             var country = '<td>' + alternative['country'] + '</td>';
                             var company = '<td>' + alternative['company'] + '</td>';
                             var store_type = '<td>' + alternative['store_type'] + '</td>';
+                            var remark = '<td>' + alternative['Remark'] + '</td>';
+
+                            if(alternative['image'] !== null) {
+                                image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alt_id + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
+                            }
+                            else {
+                                image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
+                            }
 
                             var radio = '<input type="radio" value="' + alternative['alternative_id'] + '" name="AlternativeID">';
                             var tr = '<tr class="even pointer">';
-                            tr = tr + '<td>' + radio + '</td><td>' + count + brend + model + part + pcs + unit + total_cost + currency + date + country + company + store_type;
+                            tr = tr + '<td>' + radio + '</td><td>' + count + brend + model + part + pcs + unit + total_cost + currency + date + country + company + store_type + remark + image;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -596,6 +605,34 @@
 
                         $('#add-modal-alternatives').modal('show');
                     }
+                }
+            });
+        }
+
+        function get_alt_image(id) {
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'id': id,
+                    '_token': CSRF_TOKEN,
+                    'type': 9
+                },
+                beforeSubmit: function () {
+                    //loading
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
+                        text: 'Loading, please wait..',
+                        showConfirmButton: false
+                    });
+                },
+                success: function (response) {
+                    swal.close();
+
+                    $('.alt-image').html(response.data);
+
+                    $('#alt-image').modal('show');
                 }
             });
         }

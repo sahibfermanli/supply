@@ -50,7 +50,7 @@
                                             <th class="column-title" id="vehicle_th">Qaraj No</th>
                                             <th class="column-title" id="position_th">Vəzifə</th>
                                             <th class="column-title" id="Status_th">Status</th>
-                                            <th class="column-title" id="Remark_th">Qeyd</th>
+                                            <th class="column-title" id="Remark_th">Sifariş səbəbi</th>
                                             <th class="column-title" id="Image_th">Şəkil</th>
                                             <th class="column-title" id="Defect_th">Qüsur aktı</th>
                                         </tr>
@@ -436,10 +436,10 @@
                         }
 
                         if (order['Remark'] == null) {
-                            var remark = '<td><center><span disabled="true" title="Qeydi göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
+                            var remark = '<td><center><span disabled="true" title="Sifariş səbəbii göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
                         }
                         else{
-                            var remark = '<td><center><span title="Qeydi göstər" onclick="get_data(' + id + ', 3);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
+                            var remark = '<td><center><span title="Sifariş səbəbii göstər" onclick="get_data(' + id + ', 3);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
                         }
 
                         if (order['image'] == null) {
@@ -588,7 +588,7 @@
                 @endforeach
                     vehicle_id = vehicle_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                 deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -622,7 +622,7 @@
                 @endforeach
                     vehicle_id = vehicle_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                 deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -654,7 +654,7 @@
                 @endforeach
                     vehicle_id = vehicle_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                 deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -681,7 +681,7 @@
                         @endforeach
                     unit_id = unit_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                 inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -708,7 +708,7 @@
                         @endforeach
                     unit_id = unit_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                 inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -741,7 +741,7 @@
                 @endforeach
                     vehicle_id = vehicle_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                 deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
@@ -775,7 +775,7 @@
                 @endforeach
                     position_id = position_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                 inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + position_id + Remark + image + deffect_doc;
@@ -800,7 +800,7 @@
                         @endforeach
                     unit_id = unit_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                 inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -825,7 +825,7 @@
                         @endforeach
                     unit_id = unit_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                 inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
@@ -858,7 +858,7 @@
                 @endforeach
                     vehicle_id = vehicle_id + '</select></td>';
 
-                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                 deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 

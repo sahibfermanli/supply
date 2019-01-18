@@ -302,7 +302,7 @@ class OrderController extends HomeController
         }
         else if ($request->type == 8) {
             //show alternative
-            $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->order_id, 'lb_Alternatives.deleted'=>0])->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company')->get();
+            $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->order_id, 'lb_Alternatives.deleted'=>0])->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company', 'suggestion')->get();
             $order = Orders::where(['id'=>$request->order_id])->select('Product', 'Translation_Brand', 'Part')->first();
 
             return response(['case'=>'success', 'alternatives'=>$alternatives, 'order'=>$order]);
@@ -344,6 +344,10 @@ class OrderController extends HomeController
             return response(['case'=>'success', 'title'=>'Uğurlu!', 'content'=>'Təchizatçı uğurla seçildi.', 'type'=>'add_order', 'category_id'=>$cat_id]);
         }
         else if ($request->type == 10) {
+            if (Auth::user()->chief() == 0) {
+                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Sizin bu əməliyyat üçün hüququnuz yoxdur!']);
+            }
+
             //confirm alternative for chief supply
             $validator = Validator::make($request->all(), [
                 'id' => 'required|integer'
@@ -408,6 +412,10 @@ class OrderController extends HomeController
         else if ($request->type == 15) {
             //delete alternative
             return $this->delete_alternative($request);
+        }
+        else if ($request->type == 16) {
+            //suggestion alternative
+            return $this->suggestion_alternative($request);
         }
         else {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
@@ -538,6 +546,32 @@ class OrderController extends HomeController
             Alternatives::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ silindi!', 'id' => $id, 'type' => 'alt_del']);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
+        }
+    }
+
+    //suggestion alternative
+    public function suggestion_alternative(Request $request) {
+        if (Auth::user()->chief() == 0) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Sizin bu əməliyyat üçün hüququnuz yoxdur!']);
+        }
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Alternativ tapılmadı!']);
+        }
+        try {
+            $id = $request->id;
+
+            $alts = Alternatives::where(['id'=>$id])->select('OrderID')->first();
+
+            Alternatives::where(['OrderID'=>$alts['OrderID']])->update(['suggestion'=>0]);
+
+            Alternatives::where(['id' => $id])->update(['suggestion' => 1]);
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ tövsiyyə edildi!', 'id' => $id]);
         } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
         }
