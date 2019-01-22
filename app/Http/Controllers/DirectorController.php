@@ -138,7 +138,7 @@ class DirectorController extends HomeController
         return view('backend.orders_for_director')->with(['units' => $units, 'vehicles' => $vehicles, 'positions' => $positions]);
     }
 
-    //post order for user
+    //post order
     public function post_order(Request $request)
     {
         if ($request->type == 1) {

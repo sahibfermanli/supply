@@ -174,6 +174,12 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::post('/', 'OrderController@post_delete_order');
         });
 
+        //alternatuves
+        Route::group(['prefix'=>'/alternatives'], function () {
+            Route::get('/', 'LawyerController@get_orders_for_alts');
+            Route::post('/', 'LawyerController@post_order_for_alts');
+        });
+
         //pending orders
         Route::group(['prefix'=>'/pending/orders'], function () {
             Route::get('/', 'LawyerController@get_pending_orders');

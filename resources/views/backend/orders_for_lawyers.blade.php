@@ -59,7 +59,7 @@
                                             {{--<th class="column-title">Hesab </th>--}}
                                             <th class="column-title">Qaimə</th>
                                             <th class="column-title">Fayllar</th>
-                                            <th class="column-title">Qəbul edilmə tarixi</th>
+                                            <th class="column-title">Təchizatçılardan çıxış tarixi</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -111,7 +111,7 @@
                                                                         class="fa fa-image"></i></span>
                                                         @else
                                                             <span title="Şəkil yoxdur" disabled="true"
-                                                                  class="btn btn-success"><i
+                                                                  class="btn btn-warning btn-xs"><i
                                                                         class="fa fa-image"></i></span>
                                                         @endif
 

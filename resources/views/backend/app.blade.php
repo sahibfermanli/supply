@@ -153,7 +153,12 @@
                                 </li>
 
                                 @if(Auth::user()->auditor() == 8)
-                                    <li><a href="/director/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                    @if(count($accounts) > 0)
+                                        @php($accounts_menu_color = 'green')
+                                    @else
+                                        @php($accounts_menu_color = 'red')
+                                    @endif
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/director/pending/orders/"><i class="fa fa-folder-open"></i> Hesablar (şirkətlər)</a></li>
                                     <li class="active">
                                         <ul class="nav child_menu show-accounts">
                                             @foreach($accounts as $account)
@@ -170,30 +175,51 @@
                                     <li><a href="/law/users"><i class="fa fa-user"></i> İşçilər</a></li>
                                     <li><a href="/law/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/law/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories">
+                                            @foreach($categories as $category)
+                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
                                 @else
                                     <li><a href="/law/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
-                                    <li><a href="/law/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                    <li><a href="/law/orders/"><i class="fa fa-folder"></i> Daxili sifarişlər</a></li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories">
+                                            @foreach($categories as $category)
+                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+
+                                    @php($alts_for_law_total_count = 0)
+                                    @php($lis = '')
+                                    @foreach($categories as $category)
+                                        @if($category->orders_count > 0)
+                                            @php($lis .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->orders_count.')<span></a></li>')
+                                            @php($alts_for_law_total_count += $category->orders_count)
+                                        @else
+                                            @php($lis .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
+                                        @endif
+                                    @endforeach
+                                    <li><a href="/law/alternatives/"><i class="fa fa-list-alt"></i> Alternativlər <span style="color: #4CF632; font-weight: bold;">({{$alts_for_law_total_count}})<span></a></li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories-for-alts">
+                                            {!! $lis !!}
+                                        </ul>
+                                    </li>
                                 @endif
 
-                                {{--LawyerUser--}}
-                                <li class="active">
-                                    <ul class="nav child_menu show-categories">
-                                    <!-- @php($cat_count = 0) -->
-                                        @foreach($categories as $category)
-                                        <!-- @php($cat_count++) -->
-                                            @if($category->orders_count > 0)
-                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}  <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a></li>
-                                            @else
-                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                </li>
-
-                                @if(Auth::user()->chief() == 1)
-                                    <li><a href="/law/chief/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                @if(count($accounts) > 0)
+                                    @php($accounts_menu_color = 'green')
                                 @else
-                                    <li><a href="/law/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                    @php($accounts_menu_color = 'red')
+                                @endif
+                                @if(Auth::user()->chief() == 1)
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/law/chief/pending/orders/"><i class="fa fa-money"></i> Hesablar (şirkətlər)</a></li>
+                                @else
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/law/pending/orders/"><i class="fa fa-money"></i> Hesablar (şirkətlər)</a></li>
                                 @endif
                                 <li class="active">
                                     <ul class="nav child_menu show-accounts">
@@ -233,10 +259,15 @@
                                     </ul>
                                 </li>
 
-                                @if(Auth::user()->chief() == 1)
-                                    <li><a href="/finance/chief/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                @if(count($accounts) > 0)
+                                    @php($accounts_menu_color = 'green')
                                 @else
-                                    <li><a href="/finance/pending/orders/"><i class="fa fa-folder-open"></i> Gözləyən sifarişlər</a></li>
+                                    @php($accounts_menu_color = 'red')
+                                @endif
+                                @if(Auth::user()->chief() == 1)
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/finance/chief/pending/orders/"><i class="fa fa-folder-open"></i> Hesablar (Şirkətlər)</a></li>
+                                @else
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/finance/pending/orders/"><i class="fa fa-folder-open"></i> Hesablar (Şirkətlər)</a></li>
                                 @endif
                                 <li class="active">
                                     <ul class="nav child_menu show-accounts">
