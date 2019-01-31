@@ -21,7 +21,7 @@
                             <p>Seçim sehifenin sol kenarında, menyudadır...</p>
                         </div>
                         <div class="cats-mobile">
-                            <ul class="nav child_menu show-categories">
+                            <ul class="nav child_menu show-categories-for-alts-supply">
                                 @foreach($categories as $category)
                                     <li class="cat-li"><a style="color: black;" class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
                                 @endforeach
@@ -356,7 +356,7 @@
 
     <script>
         $(document).ready(function () {
-            $('.show-categories').css('display', 'block');
+            $('.show-categories-for-alts-supply').css('display', 'block');
         });
     </script>
 

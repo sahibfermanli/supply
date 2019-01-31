@@ -38,18 +38,25 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/', 'UserController@post_delete_or_approve_user');
     });
 
-    //orders for supply user
-    Route::group(['prefix'=>'supply/orders', 'middleware'=>'Supply'], function () {
-        Route::get('/', 'OrderController@get_orders_for_supply');
-        Route::post('/', 'OrderController@post_delete_order_for_supply');
-        Route::get('/add', 'OrderController@get_add_order');
-        Route::post('/add', 'OrderController@post_add_order');
+    //orders for supply
+    Route::group(['prefix'=>'supply', 'middleware'=>'Supply'], function () {
+        Route::get('/orders', 'OrderController@get_orders');
+        Route::post('/orders', 'OrderController@post_delete_order');
+        Route::get('/alternatives', 'OrderController@get_orders_for_supply');
+        Route::post('/alternatives', 'OrderController@post_delete_order_for_supply');
+    });
+
+    //orders for supply chief
+    Route::group(['prefix'=>'supply/chief', 'middleware'=>'SupplyChief'], function () {
+        Route::get('/orders', 'OrderController@get_orders_for_chief');
+        Route::post('/orders', 'OrderController@post_delete_order_for_chief');
     });
 
     //accounts for supply
     Route::group(['prefix'=>'supply/accounts', 'middleware'=>'Supply'], function () {
         Route::get('/', 'AccountController@get_accounts_for_supply');
         Route::post('/', 'AccountController@post_accounts_for_supply');
+        Route::get('/print', 'AccountController@print_orders_in_account_for_supply');
     });
 
     //purchase for supply user

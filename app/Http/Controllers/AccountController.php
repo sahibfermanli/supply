@@ -15,6 +15,27 @@ use Illuminate\Support\Facades\Storage;
 
 class AccountController extends HomeController
 {
+    public function print_orders_in_account_for_supply() {
+        $account_id = Input::get('a');
+
+        if (empty($account_id)) {
+            return redirect('/');
+        }
+
+        try {
+            if (Auth::user()->chief() == 1) {
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company')->get();
+            }
+            else {
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company')->get();
+            }
+
+            return view('backend._print_orders_in_account')->with(['orders'=>$orders]);
+        } catch (\Exception $e) {
+            return redirect('/');
+        }
+    }
+
     public function get_accounts_for_supply() {
         $companies = Company::where(['deleted'=>0])->select('id', 'name')->orderBy('name')->get();
         $accounts = Accounts::where(['deleted'=>0])->select()->paginate(30);

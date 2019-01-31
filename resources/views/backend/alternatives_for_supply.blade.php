@@ -170,6 +170,26 @@
         </div>
     </div>
     <!-- /.end cancel alternatives form modal-->
+
+    {{--start alt image modal--}}
+    <div class="modal fade" id="alt-image" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alt-image">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{--finish alt image modal--}}
 @endsection
 
 @section('css')
@@ -570,6 +590,8 @@
                         var count = 0;
                         var image = '';
 
+                        console.log(alternatives);
+
                         for (i=0; i< alternatives.length; i++) {
                             count++;
                             var alternative = alternatives[i];
@@ -588,7 +610,7 @@
                             var remark = '<td>' + alternative['Remark'] + '</td>';
 
                             if(alternative['image'] !== null) {
-                                image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alt_id + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
+                                image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alternative['id'] + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
                             }
                             else {
                                 image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';

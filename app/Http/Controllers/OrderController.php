@@ -9,6 +9,7 @@ use App\Countries;
 use App\Currencies;
 use App\Orders;
 use App\Positions;
+use App\Settings;
 use App\Units;
 use App\User;
 use App\Vehicles;
@@ -24,7 +25,8 @@ use Image;
 
 class OrderController extends HomeController
 {
-    //show orders
+    //user
+    //get orders
     public function get_orders()
     {
         $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
@@ -34,89 +36,21 @@ class OrderController extends HomeController
         return view('backend.orders')->with(['units' => $units, 'vehicles' => $vehicles, 'positions' => $positions]);
     }
 
-    public function get_orders_for_chief()
-    {
-        $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
-        $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
-        $positions = Positions::where(['deleted' => 0])->orderBy('position')->select('id', 'position')->get();
-
-        return view('backend.orders_for_chief')->with(['units' => $units, 'vehicles' => $vehicles, 'positions' => $positions]);
-    }
-
-
     //post order for user
     public function post_delete_order(Request $request)
     {
         if ($request->type == 1) {
             //delete
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Id not found!']);
-            }
-            try {
-                $id = $request->id;
-                $date = Carbon::now();
-                $delete_order = Orders::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
-
-                if ($delete_order) {
-                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
-
-                    $email = $user['email'];
-                    $to = $user['name'] . ' ' . $user['surname'];
-                    $message = $user['name'] . " " . $user['surname'] . ",
-                    sizin '" . $user['Product'] . "' adlı sifarişiniz silinmişdir.";
-                    $title = 'Sifarişin silinməsi';
-
-                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
-                }
-
-                return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş silindi!', 'id' => $id]);
-            } catch (\Exception $e) {
-                return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
-            }
+            return $this->delete_order($request);
         } else if ($request->type == 2) {
-            //get orders
-            $validator = Validator::make($request->all(), [
-                'cat_id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Category not found!']);
-            }
-
-            $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.MainPerson' => Auth::id()])->select('Orders.id', 'Orders.position_id', 'Orders.vehicle_id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.ReportDocument', 'Orders.confirmed', 'Orders.confirmed_at', 'Orders.ReportNo')->orderBy('Orders.id', 'DESC')->get();
-
-            $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
-            $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
-            $positions = Positions::where(['deleted' => 0])->orderBy('position')->select('id', 'position')->get();
-
-            return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'units'=>$units, 'positions'=>$positions, 'vehicles'=>$vehicles]);
+            //show orders
+            return $this->show_orders_for_users($request);
         } else if ($request->type == 3) {
             //get remark
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Id not found!']);
-            }
-
-            $order = Orders::where(['id' => $request->id, 'MainPerson' => Auth::id()])->select('Remark')->first();
-
-            return response(['case' => 'success', 'data' => $order['Remark']]);
+            return $this->get_remark($request);
         } else if ($request->type == 4) {
             //get image
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Id not found!']);
-            }
-
-            $order = Orders::where(['id' => $request->id, 'MainPerson' => Auth::id()])->select('image')->first();
-            $image = '<img src="' . $order->image . '"  width="200" height="200">';
-
-            return response(['case' => 'success', 'data' => $image]);
+            return $this->get_image($request);
         }
         else if ($request->type == 5) {
             //add new order
@@ -131,6 +65,51 @@ class OrderController extends HomeController
         }
     }
 
+    //chief
+    //get orders for chiefs
+    public function get_orders_for_chief()
+    {
+        $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
+        $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
+        $positions = Positions::where(['deleted' => 0])->orderBy('position')->select('id', 'position')->get();
+
+        return view('backend.orders_for_chief')->with(['units' => $units, 'vehicles' => $vehicles, 'positions' => $positions]);
+    }
+
+    //post order for chief
+    public function post_delete_order_for_chief(Request $request)
+    {
+        if ($request->type == 1) {
+            //cancel
+            return $this->cancel_order_for_chief($request);
+        } else if ($request->type == 2) {
+            //show orders
+            return $this->show_orders_for_chief($request);
+        } else if ($request->type == 3) {
+            //get remark
+            return $this->get_remark($request);
+        } else if ($request->type == 4) {
+            //get image
+            return $this->get_image($request);
+        }
+        else if ($request->type == 5) {
+            //add new order
+            return $this->add_order($request);
+        }
+        else if ($request->type == 6) {
+            //update order
+            return $this->update_order($request);
+        }
+        else if ($request->type == 7) {
+            //confirm order
+            return $this->confirm_order($request);
+        }
+        else {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
+
+    //supply
     //orders for supply
     public function get_orders_for_supply()
     {
@@ -150,151 +129,23 @@ class OrderController extends HomeController
     {
         if ($request->type == 1) {
             //cancel
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadl!']);
-            }
-            try {
-                $id = $request->id;
-                $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
-
-                if ($cancel_order) {
-                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
-
-                    $email = $user['email'];
-                    $to = $user['name'] . ' ' . $user['surname'];
-                    $message = $user['name'] . " " . $user['surname'] . ",
-                    sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz department rəhbəriniz tərəfindən qəbul edilmədi.";
-                    $title = 'Sifarişin geri çevrilməsi';
-
-                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
-                }
-
-                return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş geri çevrildi!', 'id' => $id]);
-            } catch (\Exception $e) {
-                return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
-            }
+            return $this->cancel_order_for_supply($request);
         } else if ($request->type == 2) {
             //empty
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
         } else if ($request->type == 3) {
             //get remark
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'İd tapılmadı!']);
-            }
-
-            $order = Orders::where(['id' => $request->id])->select('Remark')->first();
-
-            return response(['case' => 'success', 'data' => $order['Remark']]);
+            return $this->get_remark($request);
         } else if ($request->type == 4) {
             //get image
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadı!']);
-            }
-
-            $order = Orders::where(['id' => $request->id])->select('image')->first();
-            $image = '<img src="' . $order->image . '"  width="400" height="200">';
-
-            return response(['case' => 'success', 'data' => $image]);
+            return $this->get_image($request);
         } else if ($request->type == 5) {
             //create alternative
-            $validator = Validator::make($request->all(), [
-                'OrderID' => 'required|integer',
-                'unit_id' => 'required|integer',
-                'Brend' => 'required|string|max:255',
-                'Model' => 'required|string|max:255',
-                'PartSerialNo' => 'required|string|max:255',
-                'date' => 'required|date',
-                'cost' => 'required',
-                'country_id' => 'required|integer',
-                'currency_id' => 'required|integer',
-                'company_id' => 'required|integer',
-                'pcs' => 'required|integer',
-                'Remark' => 'required|string',
-                'store_type' => 'required|string|max:50',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Lazımlı xanaları doldurun!']);
-            }
-
-            $order_id = $request->OrderID;
-
-            $order = Orders::where(['id'=>$order_id, 'deleted'=>0, 'confirmed'=>1])->count();
-            if ($order == 0) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Sifariş tapılmadı!']);
-            }
-
-            $request->merge(['deleted' => 0, 'confirm_chief'=>0]);
-
-            if (isset($request->picture)) {
-                $validator_file = Validator::make($request->all(), [
-                    'picture' => 'mimes:jpeg,png,jpg,gif,svg',
-                ]);
-                if ($validator_file->fails()) {
-                    return response(['case' => 'error', 'title' => 'Xəta! (Şəkil)', 'content' => 'Fayl tipləri: jpeg,png,jpg,gif,svg!']);
-                }
-
-                $image = Input::file('picture');
-                $image_ext = $image->getClientOriginalExtension();
-                $image_name = 'order_' . str_random(4) . '_' . microtime() . '.' . $image_ext;
-                Storage::disk('uploads')->makeDirectory('files/alternatives/images');
-                Image::make($image->getRealPath())->save('uploads/files/alternatives/images/' . $image_name);
-                Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
-                $image_address = '/uploads/files/alternatives/images/' . $image_name;
-
-                $request['image'] = $image_address;
-            }
-
-            try {
-                unset($request['picture']);
-//                $request = Input::except('picture');
-
-                if (Auth::user()->chief() == 1) {
-                    $request->merge(['confirm_chief'=>1]);
-                }
-
-                $create_alternative = Alternatives::create($request->all());
-                Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
-                $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company')->first();
-
-                Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
-
-                return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ əlavə edildi!', 'order_id' => $order_id, 'type' => 'add_alternative', 'alts'=>$alts]);
-            } catch (\Exception $e) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Alternativ əlavə edilərkən səhv baş verdi!']);
-            }
+            return $this->create_alternative($request);
         }
         else if ($request->type == 6) {
-            //get orders
-            $validator = Validator::make($request->all(), [
-                'cat_id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadl!']);
-            }
-
-            if (Auth::user()->chief() == 1) {
-                $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka as vehicle', 'v.QN', 'v.Tipi', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department')->get();
-            }
-            else {
-                $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.SupplyID', '=', Auth::id())->orWhere('Orders.MainPerson', '=', Auth::id());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department')->get();
-            }
-
-            $purchases = Purchase::leftjoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.deleted'=>0])->select('a.OrderID')->get();
-
-            $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
-            $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
-            $positions = Positions::where(['deleted' => 0])->orderBy('position')->select('id', 'position')->get();
-
-            return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'purchases'=>$purchases, 'units'=>$units, 'vehicles'=>$vehicles, 'positions'=>$positions]);
+            //show orders
+            return $this->show_orders_for_supply($request);
         }
         else if ($request->type == 7) {
             //add new order
@@ -302,100 +153,22 @@ class OrderController extends HomeController
         }
         else if ($request->type == 8) {
             //show alternative
-            $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->order_id, 'lb_Alternatives.deleted'=>0])->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company', 'suggestion')->get();
-            $order = Orders::where(['id'=>$request->order_id])->select('Product', 'Translation_Brand', 'Part')->first();
-
-            return response(['case'=>'success', 'alternatives'=>$alternatives, 'order'=>$order]);
+            return $this->show_alternative($request);
         }
         else if ($request->type == 9) {
             //select supply for order
-            $validator = Validator::make($request->all(), [
-                'supply_id' => 'required|integer',
-                'order_id' => 'required|integer',
-                'cat_id' => 'integer'
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadı!']);
-            }
-
-            $cat_id = $request->cat_id;
-
-            $select_supply = Orders::where(['id'=>$request->order_id, 'deleted'=>0])->update(['SupplyID'=>$request->supply_id]);
-
-            if ($select_supply) {
-                $supply = User::where(['id'=>$request->supply_id])->select('name', 'surname', 'email')->first();
-
-                $order = Orders::leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->leftJoin('Departments as d', 'u.DepartmentID', '=', 'd.id')->where(['Orders.id'=>$request->order_id])->select('Orders.Product', 'c.process', 'u.name', 'u.surname', 'd.Department')->first();
-
-                $email = $supply['email'];
-                $to = $supply['name'] . ' ' . $supply['surname'];
-                $message = $supply['name'] . " " . $supply['surname'] . ",
-                    yeni sifariş var. </br>
-                    Sifarişi verən şəxs: ".$order->name." ".$order->surname .".</br>
-                    Sifarişi verən department: ".$order->Department.".</br>
-                    Sifarişin adı: ". $order->Product .".</br>
-                    Sifarişin kateqoriyası: ". $order->process .".
-                ";
-                $title = 'Yeni sifariş';
-
-                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
-            }
-
-            return response(['case'=>'success', 'title'=>'Uğurlu!', 'content'=>'Təchizatçı uğurla seçildi.', 'type'=>'add_order', 'category_id'=>$cat_id]);
+            return $this->select_supply_for_order($request);
         }
         else if ($request->type == 10) {
             if (Auth::user()->chief() == 0) {
                 return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Sizin bu əməliyyat üçün hüququnuz yoxdur!']);
             }
-
             //confirm alternative for chief supply
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer'
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Error!', 'content' => 'İd tapılmadı!']);
-            }
-            try {
-                $id = $request->id;
-                Alternatives::where(['id' => $id])->update(['confirm_chief' => 1]);
-                $order = Alternatives::where(['id'=>$id])->select('OrderID')->first();
-                $order_id = $order['OrderID'];
-
-                if (Orders::where(['id'=>$order_id, 'situation_id'=>10, 'deleted'=>0])->count() == 0) {
-                    Orders::where(['id'=>$order_id])->update(['situation_id'=>10]); //direktora gonderilib
-
-                    //send mail to user
-                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
-
-                    $email = $user['email'];
-                    $to = $user['name'] . ' ' . $user['surname'];
-                    $message = $user['name'] . " " . $user['surname'] . ",
-                        sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz direktora göndərilib.";
-                    $title = 'Sifarişin direktora göndərilməsi';
-
-                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
-
-                    //send mail to supply
-                    $supply = Orders::leftJoin('users as u', 'Orders.SupplyID', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
-
-                    $email = $supply['email'];
-                    $to = $supply['name'] . ' ' . $supply['surname'];
-                    $message = $supply['name'] . " " . $supply['surname'] . ",
-                        </br><b>" . $user['Product'] . "</b> adlı sifarişi üçün alternativ təsdiqləndi və direktora göndərildi.";
-                    $title = 'Alternativin təsdiqlənməsi';
-
-                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
-                }
-
-                return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Təsdiq edildi!']);
-            } catch (\Exception $e) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
-            }
+            return $this->confirm_alternative_for_supply_chief($request);
         }
         else if ($request->type == 11 && Auth::user()->chief() == 1) {
             //confirm order for chief
             return $this->confirm_order($request);
-
         }
         else if ($request->type == 12) {
             //update order
@@ -422,22 +195,90 @@ class OrderController extends HomeController
         }
     }
 
-    //post order for chief
-    public function post_delete_order_for_chief(Request $request)
-    {
-        if ($request->type == 1) {
-            //cancel
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadl!']);
-            }
-            try {
-                $id = $request->id;
-                $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
 
-                if ($cancel_order) {
+    //private functions
+
+    //show order for users
+    private function show_orders_for_users(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'cat_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Category not found!']);
+        }
+
+        $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.MainPerson' => Auth::id()])->select('Orders.id', 'Orders.position_id', 'Orders.vehicle_id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.ReportDocument', 'Orders.confirmed', 'Orders.confirmed_at', 'Orders.ReportNo')->orderBy('Orders.id', 'DESC')->get();
+
+        $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
+        $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
+        $positions = Positions::where(['deleted' => 0])->orderBy('position')->select('id', 'position')->get();
+
+        return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'units'=>$units, 'positions'=>$positions, 'vehicles'=>$vehicles]);
+    }
+
+    //delete order
+    private function delete_order(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Id not found!']);
+        }
+        try {
+            $id = $request->id;
+            $date = Carbon::now();
+            $delete_order = Orders::where(['id' => $id])->update(['deleted' => 1, 'deleted_at' => $date]);
+
+            if ($delete_order) {
+                if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                            sizin '" . $user['Product'] . "' adlı sifarişiniz silinmişdir.";
+                    $title = 'Sifarişin silinməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
+            }
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş silindi!', 'id' => $id]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
+        }
+    }
+
+    //show order for chief
+    private function show_orders_for_chief(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'cat_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadı!']);
+        }
+
+        $orders = Orders::leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.DepartmentID' => Auth::user()->DepartmentID()])->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.confirmed', 'Orders.confirmed_at' , 'Orders.ReportDocument', 'Orders.ReportNo', 'Orders.confirmed_at', 'users.name as user_name', 'users.surname as user_surname')->orderBy('Orders.id', 'DESC')->get();
+
+        $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
+
+        return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'units'=>$units]);
+    }
+
+    //cancel order for chief
+    private function cancel_order_for_chief(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadl!']);
+        }
+        try {
+            $id = $request->id;
+            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+
+            if ($cancel_order) {
+                if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
                     $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
 
                     $email = $user['email'];
@@ -448,71 +289,266 @@ class OrderController extends HomeController
 
                     app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
                 }
-
-                return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş geri çevrildi!', 'id' => $id]);
-            } catch (\Exception $e) {
-                return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
-            }
-        } else if ($request->type == 2) {
-            //get orders
-            $validator = Validator::make($request->all(), [
-                'cat_id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadı!']);
             }
 
-            $orders = Orders::leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.DepartmentID' => Auth::user()->DepartmentID()])->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.confirmed', 'Orders.confirmed_at' , 'Orders.ReportDocument', 'Orders.ReportNo', 'Orders.confirmed_at', 'users.name as user_name', 'users.surname as user_surname')->orderBy('Orders.id', 'DESC')->get();
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş geri çevrildi!', 'id' => $id]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
+        }
+    }
 
-            $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
+    //confirm alternative for supply chief
+    private function confirm_alternative_for_supply_chief(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'İd tapılmadı!']);
+        }
+        try {
+            $id = $request->id;
+            Alternatives::where(['id' => $id])->update(['confirm_chief' => 1]);
+            $order = Alternatives::where(['id'=>$id])->select('OrderID')->first();
+            $order_id = $order['OrderID'];
 
-            return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'units'=>$units]);
+            if (Orders::where(['id'=>$order_id, 'situation_id'=>10, 'deleted'=>0])->count() == 0) {
+                Orders::where(['id'=>$order_id])->update(['situation_id'=>10]); //direktora gonderilib
 
-        } else if ($request->type == 3) {
-            //get remark
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadı!']);
+                if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                    //send mail to user
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                        sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz direktora göndərilib.";
+                    $title = 'Sifarişin direktora göndərilməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+
+                    //send mail to supply
+                    $supply = Orders::leftJoin('users as u', 'Orders.SupplyID', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $supply['email'];
+                    $to = $supply['name'] . ' ' . $supply['surname'];
+                    $message = $supply['name'] . " " . $supply['surname'] . ",
+                        </br><b>" . $user['Product'] . "</b> adlı sifarişi üçün alternativ təsdiqləndi və direktora göndərildi.";
+                    $title = 'Alternativin təsdiqlənməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
             }
 
-            $order = Orders::where(['id' => $request->id, 'DepartmentID' => Auth::user()->DepartmentID()])->select('Remark')->first();
-
-            return response(['case' => 'success', 'data' => $order['Remark']]);
-        } else if ($request->type == 4) {
-            //get image
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|integer',
-            ]);
-            if ($validator->fails()) {
-                return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'İd tapılmadı!']);
-            }
-
-            $order = Orders::where(['id' => $request->id, 'DepartmentID' => Auth::user()->DepartmentID()])->select('image')->first();
-            $image = '<img src="' . $order->image . '"  width="200" height="200">';
-
-            return response(['case' => 'success', 'data' => $image]);
-        }
-        else if ($request->type == 5) {
-            //add new order
-            return $this->add_order($request);
-        }
-        else if ($request->type == 6) {
-            //update order
-            return $this->update_order($request);
-        }
-        else if ($request->type == 7) {
-            //confirm order
-            return $this->confirm_order($request);
-        }
-        else {
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Təsdiq edildi!']);
+        } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
     }
 
+    //select supply for order
+    private function select_supply_for_order(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'supply_id' => 'required|integer',
+            'order_id' => 'required|integer',
+            'cat_id' => 'integer'
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadı!']);
+        }
+
+        $cat_id = $request->cat_id;
+
+        $select_supply = Orders::where(['id'=>$request->order_id, 'deleted'=>0])->update(['SupplyID'=>$request->supply_id]);
+
+        if ($select_supply) {
+            if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                $supply = User::where(['id'=>$request->supply_id])->select('name', 'surname', 'email')->first();
+
+                $order = Orders::leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->leftJoin('Departments as d', 'u.DepartmentID', '=', 'd.id')->where(['Orders.id'=>$request->order_id])->select('Orders.Product', 'c.process', 'u.name', 'u.surname', 'd.Department')->first();
+
+                $email = $supply['email'];
+                $to = $supply['name'] . ' ' . $supply['surname'];
+                $message = $supply['name'] . " " . $supply['surname'] . ",
+                    yeni sifariş var. </br>
+                    Sifarişi verən şəxs: ".$order->name." ".$order->surname .".</br>
+                    Sifarişi verən department: ".$order->Department.".</br>
+                    Sifarişin adı: ". $order->Product .".</br>
+                    Sifarişin kateqoriyası: ". $order->process .".
+                ";
+                $title = 'Yeni sifariş';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+            }
+        }
+
+        return response(['case'=>'success', 'title'=>'Uğurlu!', 'content'=>'Təchizatçı uğurla seçildi.', 'type'=>'add_order', 'category_id'=>$cat_id]);
+    }
+
+    //show alternative
+    private function show_alternative(Request $request) {
+        $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->order_id, 'lb_Alternatives.deleted'=>0])->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company', 'suggestion')->get();
+        $order = Orders::where(['id'=>$request->order_id])->select('Product', 'Translation_Brand', 'Part')->first();
+
+        return response(['case'=>'success', 'alternatives'=>$alternatives, 'order'=>$order]);
+    }
+
+    //show orders for supply
+    private function show_orders_for_supply(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'cat_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadl!']);
+        }
+
+        if (Auth::user()->chief() == 1) {
+            $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka as vehicle', 'v.QN', 'v.Tipi', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department')->get();
+        }
+        else {
+            $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.SupplyID', '=', Auth::id())->orWhere('Orders.MainPerson', '=', Auth::id());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department')->get();
+        }
+
+        $purchases = Purchase::leftjoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.deleted'=>0])->select('a.OrderID')->get();
+
+        $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
+        $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
+        $positions = Positions::where(['deleted' => 0])->orderBy('position')->select('id', 'position')->get();
+
+        return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'purchases'=>$purchases, 'units'=>$units, 'vehicles'=>$vehicles, 'positions'=>$positions]);
+    }
+
+    //create alternative
+    private function create_alternative(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'OrderID' => 'required|integer',
+            'unit_id' => 'required|integer',
+            'Brend' => 'required|string|max:255',
+            'Model' => 'required|string|max:255',
+            'PartSerialNo' => 'required|string|max:255',
+            'date' => 'required|date',
+            'cost' => 'required',
+            'country_id' => 'required|integer',
+            'currency_id' => 'required|integer',
+            'company_id' => 'required|integer',
+            'pcs' => 'required|integer',
+            'Remark' => 'required|string',
+            'store_type' => 'required|string|max:50',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Lazımlı xanaları doldurun!']);
+        }
+
+        $order_id = $request->OrderID;
+
+        $order = Orders::where(['id'=>$order_id, 'deleted'=>0, 'confirmed'=>1])->count();
+        if ($order == 0) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Sifariş tapılmadı!']);
+        }
+
+        $request->merge(['deleted' => 0, 'confirm_chief'=>0]);
+
+        if (isset($request->picture)) {
+            $validator_file = Validator::make($request->all(), [
+                'picture' => 'mimes:jpeg,png,jpg,gif,svg',
+            ]);
+            if ($validator_file->fails()) {
+                return response(['case' => 'error', 'title' => 'Xəta! (Şəkil)', 'content' => 'Fayl tipləri: jpeg,png,jpg,gif,svg!']);
+            }
+
+            $image = Input::file('picture');
+            $image_ext = $image->getClientOriginalExtension();
+            $image_name = 'order_' . str_random(4) . '_' . microtime() . '.' . $image_ext;
+            Storage::disk('uploads')->makeDirectory('files/alternatives/images');
+            Image::make($image->getRealPath())->save('uploads/files/alternatives/images/' . $image_name);
+            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
+            $image_address = '/uploads/files/alternatives/images/' . $image_name;
+
+            $request['image'] = $image_address;
+        }
+
+        try {
+            unset($request['picture']);
+//                $request = Input::except('picture');
+
+            if (Auth::user()->chief() == 1) {
+                $request->merge(['confirm_chief'=>1]);
+            }
+
+            $create_alternative = Alternatives::create($request->all());
+            Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
+            $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company')->first();
+
+            Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ əlavə edildi!', 'order_id' => $order_id, 'type' => 'add_alternative', 'alts'=>$alts]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Alternativ əlavə edilərkən səhv baş verdi!']);
+        }
+    }
+
+    //get image
+    private function get_image(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadı!']);
+        }
+
+        $order = Orders::where(['id' => $request->id])->select('image')->first();
+        $image = '<img src="' . $order->image . '"  width="400" height="200">';
+
+        return response(['case' => 'success', 'data' => $image]);
+    }
+
+    //get remark
+    private function get_remark(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'İd tapılmadı!']);
+        }
+
+        $order = Orders::where(['id' => $request->id])->select('Remark')->first();
+
+        return response(['case' => 'success', 'data' => $order['Remark']]);
+    }
+
+    //cancel order for supply
+    private function cancel_order_for_supply(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadl!']);
+        }
+        try {
+            $id = $request->id;
+            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+
+            if ($cancel_order) {
+                if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                            sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz department rəhbəriniz tərəfindən qəbul edilmədi.";
+                    $title = 'Sifarişin geri çevrilməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
+            }
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş geri çevrildi!', 'id' => $id]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
+        }
+    }
+
     //get alternative image
-    public function get_alt_image(Request $request) {
+    private function get_alt_image(Request $request) {
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
         ]);
@@ -527,7 +563,7 @@ class OrderController extends HomeController
     }
 
     //delete alternative
-    public function delete_alternative(Request $request) {
+    private function delete_alternative(Request $request) {
         //delete
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
@@ -552,7 +588,7 @@ class OrderController extends HomeController
     }
 
     //suggestion alternative
-    public function suggestion_alternative(Request $request) {
+    private function suggestion_alternative(Request $request) {
         if (Auth::user()->chief() == 0) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Sizin bu əməliyyat üçün hüququnuz yoxdur!']);
         }
@@ -577,7 +613,8 @@ class OrderController extends HomeController
         }
     }
 
-    public function confirm_order(Request $request) {
+    //confirm order
+    private function confirm_order(Request $request) {
         $validator = Validator::make($request->all(), [
             'order_id' => 'required',
         ]);
@@ -596,35 +633,37 @@ class OrderController extends HomeController
             $confirm_order = Orders::where(['id'=>$order_id, 'deleted'=>0])->update($arr);
 
             if ($confirm_order) {
-                //send mail to user
-                $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+                if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                    //send mail to user
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$order_id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
 
-                $email = $user['email'];
-                $to = $user['name'] . ' ' . $user['surname'];
-                $message = $user['name'] . " " . $user['surname'] . ",
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
                     sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz department rəhbəriniz tərəfindən təsdiq edildi.</br>
                     Sifarişiniz təchizat şöbəsinə göndərilib.";
-                $title = 'Sifarişin təsdiqlənməsi';
+                    $title = 'Sifarişin təsdiqlənməsi';
 
-                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
 
-                //send mail to supply chief
-                $supply = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.chief'=>1, 'users.deleted'=>0])->select('users.name', 'users.surname', 'users.email')->first();
+                    //send mail to supply chief
+                    $supply = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.chief'=>1, 'users.deleted'=>0])->select('users.name', 'users.surname', 'users.email')->first();
 
-                $order = Orders::leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->leftJoin('Departments as d', 'u.DepartmentID', '=', 'd.id')->where(['Orders.id'=>$order_id])->select('Orders.Product', 'c.process', 'u.name', 'u.surname', 'd.Department')->first();
+                    $order = Orders::leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->leftJoin('Departments as d', 'u.DepartmentID', '=', 'd.id')->where(['Orders.id'=>$order_id])->select('Orders.Product', 'c.process', 'u.name', 'u.surname', 'd.Department')->first();
 
-                $email = $supply['email'];
-                $to = $supply['name'] . ' ' . $supply['surname'];
-                $message = $supply['name'] . " " . $supply['surname'] . ",
+                    $email = $supply['email'];
+                    $to = $supply['name'] . ' ' . $supply['surname'];
+                    $message = $supply['name'] . " " . $supply['surname'] . ",
                     yeni sifariş var. </br>
                     Sifarişi verən şəxs: ".$order->name." ".$order->surname .".</br>
                     Sifarişi verən department: ".$order->Department.".</br>
                     Sifarişin adı: ". $order->Product .".</br>
                     Sifarişin kateqoriyası: ". $order->process .".
                 ";
-                $title = 'Yeni sifariş';
+                    $title = 'Yeni sifariş';
 
-                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
             }
 
             return response(['case' => 'success', 'order_id'=>$order_id, 'cat_id'=>$request->cat_id]);
@@ -633,7 +672,8 @@ class OrderController extends HomeController
         }
     }
 
-    public function add_order(Request $request)
+    //add order
+    private function add_order(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'Product' => 'required|string|max:300',
@@ -717,20 +757,22 @@ class OrderController extends HomeController
             if ($add_order) {
                 Units::where('id', $unit_id)->increment('use_count');
 
-                $user = User::where(['DepartmentID'=>Auth::user()->DepartmentID(), 'chief'=>1, 'deleted'=>0])->select('name', 'surname', 'email')->first();
-                $category = Categories::where(['id'=>$cat_id])->select('process')->first();
+                if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                    $user = User::where(['DepartmentID'=>Auth::user()->DepartmentID(), 'chief'=>1, 'deleted'=>0])->select('name', 'surname', 'email')->first();
+                    $category = Categories::where(['id'=>$cat_id])->select('process')->first();
 
-                $email = $user['email'];
-                $to = $user['name'] . ' ' . $user['surname'];
-                $message = $user['name'] . " " . $user['surname'] . ",
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
                     yeni sifariş var. </br>
                     Sifarişi verən: ". Auth::user()->name." ".Auth::user()->surname .".</br>
                     Sifariş: ". $product .".</br>
                     Sifarşin kateqoriyası: ". $category->process .".
                     ";
-                $title = 'Yeni sifariş';
+                    $title = 'Yeni sifariş';
 
-                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
             }
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş yaradıldı!', 'type'=>'add_order', 'category_id'=>$cat_id]);
@@ -739,7 +781,8 @@ class OrderController extends HomeController
         }
     }
 
-    public function update_order(Request $request)
+    //update order
+    private function update_order(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
@@ -769,7 +812,7 @@ class OrderController extends HomeController
     }
 
     //update order image function
-    public function update_order_image(Request $request) {
+    private function update_order_image(Request $request) {
         if (isset($request->picture)) {
             $validator_file = Validator::make($request->all(), [
                 'id' => 'required|integer',
@@ -803,7 +846,7 @@ class OrderController extends HomeController
     }
 
     //add new report
-    public function add_report(Request $request)
+    private function add_report(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'file' => 'mimes:doc,docx,pdf|required',
@@ -841,7 +884,7 @@ class OrderController extends HomeController
     }
 
     //add orders to report (report_id add to orders)
-    public function orders_add_to_report($report_id, $orders_str) {
+    private function orders_add_to_report($report_id, $orders_str) {
       $success = 0;
       $error = 0;
       $situation_id = 2; //raporta elave edildi

@@ -43,7 +43,9 @@
                     </div>
                     <div class="profile_info">
                         <span>Xoş gəlmisiniz,</span>
-                        <h2 style="text-transform: capitalize;">{{Auth::user()->name}} <span style="color: white; text-transform: uppercase;">{{Auth::user()->surname}}</span></h2>
+                        <h2 style="text-transform: capitalize;">{{Auth::user()->name}} <span
+                                    style="color: white; text-transform: uppercase;">{{Auth::user()->surname}}</span>
+                        </h2>
                         @if(Auth::user()->authority() == 1)
                             <small>Admin</small>
                         @elseif(Auth::user()->chief() == 1)
@@ -61,7 +63,7 @@
                 </div>
                 <!-- /menu profile quick info -->
 
-                <br />
+                <br/>
 
                 <!-- sidebar menu -->
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
@@ -79,7 +81,8 @@
                                 <li><a href="/companies"><i class="fa fa-building-o"></i> Şirkətlər</a></li>
                                 <li><a href="/situations"><i class="fa fa-bars"></i> Statuslar</a></li>
                                 <li><a href="/authorities"><i class="fa fa-lock"></i> Səlahiyyətlər</a></li>
-                                <li><a href="/deadlines"><i class="fa fa-user-times"></i> Bitmə vaxtı (deadline)</a></li>
+                                <li><a href="/deadlines"><i class="fa fa-user-times"></i> Bitmə vaxtı (deadline)</a>
+                                </li>
 
                             @elseif(Auth::user()->authority() == 3  && Auth::user()->chief() == 1)
                                 {{--Chief--}}
@@ -87,10 +90,12 @@
                                 <li><a href="/chief/orders"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
-                                        <!-- @php($cat_count = 0) -->
-                                        @foreach($categories as $category)
-                                            <!-- @php($cat_count++) -->
-                                            <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                    <!-- @php($cat_count = 0) -->
+                                    @foreach($categories as $category)
+                                        <!-- @php($cat_count++) -->
+                                            <li class="cat-li"><a class="cat-select" href="#"
+                                                                  cat_id="{{$category->id}}">{{$category->process}}</a>
+                                            </li>
                                         @endforeach
                                     </ul>
                                 </li>
@@ -100,10 +105,12 @@
                                 <li><a href="/orders"><i class="fa fa-folder-open"></i> Sifarişlər </a></li>
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
-                                        <!-- @php($cat_count = 0) -->
-                                        @foreach($categories as $category)
-                                            <!-- @php($cat_count++) -->
-                                            <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                    <!-- @php($cat_count = 0) -->
+                                    @foreach($categories as $category)
+                                        <!-- @php($cat_count++) -->
+                                            <li class="cat-li"><a class="cat-select" href="#"
+                                                                  cat_id="{{$category->id}}">{{$category->process}}</a>
+                                            </li>
                                         @endforeach
                                     </ul>
                                 </li>
@@ -119,20 +126,58 @@
                                 <li><a href="/supply/companies"><i class="fa fa-building"></i> Şirkətlər</a></li>
                                 <li><a href="/supply/accounts"><i class="fa fa-money"></i> Hesablar</a></li>
                                 <li><a href="/supply/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
-                                <li><a href="/supply/orders/"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
+
+                                @php($alts_for_supply_total_count = 0)
+                                @php($li_for_alts_supply = '')
+                                @foreach($categories_for_supply as $category)
+                                    @if($category->alts_count > 0)
+                                        @php($li_for_alts_supply .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->alts_count.')<span></a></li>')
+                                        @php($alts_for_supply_total_count += $category->alts_count)
+                                    @else
+                                        @php($li_for_alts_supply .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
+                                    @endif
+                                @endforeach
+                                <li><a href="/supply/alternatives/"><i class="fa fa-list-alt"></i> Alternativlər <span
+                                                style="color: #4CF632; font-weight: bold;">({{$alts_for_supply_total_count}})<span></a>
+                                </li>
                                 <li class="active">
-                                    <ul class="nav child_menu show-categories">
-                                        <!-- @php($cat_count = 0) -->
-                                        @foreach($categories as $category)
-                                            <!-- @php($cat_count++) -->
-                                            @if($category->orders_count > 0)
-                                              <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}  <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a></li>
-                                            @else
-                                              <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
-                                            @endif
-                                        @endforeach
+                                    <ul class="nav child_menu show-categories-for-alts-supply">
+                                        {!! $li_for_alts_supply !!}
                                     </ul>
                                 </li>
+
+                                @if(Auth::user()->chief() == 1)
+                                    @php($orders_for_supply_chief_total_count = 0)
+                                    @php($li_supply_chief = '')
+                                    @foreach($categories_for_supply as $category)
+                                        @if($category->orders_count > 0)
+                                            @php($li_supply_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->orders_count.')<span></a></li>')
+                                            @php($orders_for_supply_chief_total_count += $category->orders_count)
+                                        @else
+                                            @php($li_supply_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
+                                        @endif
+                                    @endforeach
+                                    <li><a href="/supply/chief/orders/"><i class="fa fa-folder-open"></i> Daxili
+                                            sifarişlər <span style="color: #4CF632; font-weight: bold;">({{$orders_for_supply_chief_total_count}})<span></a>
+                                    </li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories">
+                                            {!! $li_supply_chief !!}
+                                        </ul>
+                                    </li>
+                                @else
+                                    <li><a href="/supply/orders/"><i class="fa fa-folder-open"></i> Daxili
+                                            sifarişlər</a></li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories">
+                                            @foreach($categories as $category)
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endif
 
                             @elseif(Auth::user()->authority() == 5)
                                 {{--Director--}}
@@ -140,13 +185,18 @@
                                 <li><a href="/director/orders/"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
-                                        <!-- @php($cat_count = 0) -->
-                                        @foreach($categories as $category)
-                                            <!-- @php($cat_count++) -->
+                                    <!-- @php($cat_count = 0) -->
+                                    @foreach($categories as $category)
+                                        <!-- @php($cat_count++) -->
                                             @if($category->orders_count > 0)
-                                              <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}  <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a></li>
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}
+                                                        <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a>
+                                                </li>
                                             @else
-                                              <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
+                                                </li>
                                             @endif
                                         @endforeach
                                     </ul>
@@ -158,11 +208,15 @@
                                     @else
                                         @php($accounts_menu_color = 'red')
                                     @endif
-                                    <li><a style="color: {{$accounts_menu_color}};" href="/director/pending/orders/"><i class="fa fa-folder-open"></i> Hesablar (şirkətlər)</a></li>
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/director/pending/orders/"><i
+                                                    class="fa fa-folder-open"></i> Hesablar (şirkətlər)</a></li>
                                     <li class="active">
                                         <ul class="nav child_menu show-accounts">
                                             @foreach($accounts as $account)
-                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/director/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                                <li class="account-li" title="{{$account->account_no}}"><a
+                                                            class="account-select"
+                                                            href="/director/pending/orders?account_id={{$account->id}}">{{$account->company}}</a>
+                                                </li>
                                             @endforeach
                                         </ul>
                                     </li>
@@ -173,12 +227,16 @@
                                 @if(Auth::user()->chief() == 1)
                                     {{--Lawyer Chief--}}
                                     <li><a href="/law/users"><i class="fa fa-user"></i> İşçilər</a></li>
-                                    <li><a href="/law/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
-                                    <li><a href="/law/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                    <li><a href="/law/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a>
+                                    </li>
+                                    <li><a href="/law/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a>
+                                    </li>
                                     <li class="active">
                                         <ul class="nav child_menu show-categories">
                                             @foreach($categories as $category)
-                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
+                                                </li>
                                             @endforeach
                                         </ul>
                                     </li>
@@ -188,7 +246,9 @@
                                     <li class="active">
                                         <ul class="nav child_menu show-categories">
                                             @foreach($categories as $category)
-                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
+                                                </li>
                                             @endforeach
                                         </ul>
                                     </li>
@@ -203,7 +263,9 @@
                                             @php($lis .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
                                         @endif
                                     @endforeach
-                                    <li><a href="/law/alternatives/"><i class="fa fa-list-alt"></i> Alternativlər <span style="color: #4CF632; font-weight: bold;">({{$alts_for_law_total_count}})<span></a></li>
+                                    <li><a href="/law/alternatives/"><i class="fa fa-list-alt"></i> Alternativlər <span
+                                                    style="color: #4CF632; font-weight: bold;">({{$alts_for_law_total_count}})<span></a>
+                                    </li>
                                     <li class="active">
                                         <ul class="nav child_menu show-categories-for-alts">
                                             {!! $lis !!}
@@ -217,17 +279,25 @@
                                     @php($accounts_menu_color = 'red')
                                 @endif
                                 @if(Auth::user()->chief() == 1)
-                                    <li><a style="color: {{$accounts_menu_color}};" href="/law/chief/pending/orders/"><i class="fa fa-money"></i> Hesablar (şirkətlər)</a></li>
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/law/chief/pending/orders/"><i
+                                                    class="fa fa-money"></i> Hesablar (şirkətlər)</a></li>
                                 @else
-                                    <li><a style="color: {{$accounts_menu_color}};" href="/law/pending/orders/"><i class="fa fa-money"></i> Hesablar (şirkətlər)</a></li>
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/law/pending/orders/"><i
+                                                    class="fa fa-money"></i> Hesablar (şirkətlər)</a></li>
                                 @endif
                                 <li class="active">
                                     <ul class="nav child_menu show-accounts">
                                         @foreach($accounts as $account)
                                             @if(Auth::user()->chief() == 1)
-                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/chief/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                                <li class="account-li" title="{{$account->account_no}}"><a
+                                                            class="account-select"
+                                                            href="/law/chief/pending/orders?account_id={{$account->id}}">{{$account->company}}</a>
+                                                </li>
                                             @else
-                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/law/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                                <li class="account-li" title="{{$account->account_no}}"><a
+                                                            class="account-select"
+                                                            href="/law/pending/orders?account_id={{$account->id}}">{{$account->company}}</a>
+                                                </li>
                                             @endif
                                         @endforeach
                                     </ul>
@@ -238,11 +308,14 @@
                                 @if(Auth::user()->chief() == 1)
                                     {{--Lawyer Chief--}}
                                     <li><a href="/finance/users"><i class="fa fa-user"></i> İşçilər</a></li>
-                                    <li><a href="/finance/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
-                                    <li><a href="/finance/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                    <li><a href="/finance/chief/purchases"><i class="fa fa-shopping-bag"></i>
+                                            Alımlar</a></li>
+                                    <li><a href="/finance/chief/orders/"><i class="fa fa-folder-open"></i> Daxili
+                                            sifarişlər</a></li>
                                 @else
                                     <li><a href="/finance/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
-                                    <li><a href="/finance/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a></li>
+                                    <li><a href="/finance/orders/"><i class="fa fa-folder-open"></i> Daxili
+                                            sifarişlər</a></li>
                                 @endif
 
                                 <li class="active">
@@ -251,9 +324,14 @@
                                     @foreach($categories as $category)
                                         <!-- @php($cat_count++) -->
                                             @if($category->orders_count > 0)
-                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}  <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a></li>
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}
+                                                        <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a>
+                                                </li>
                                             @else
-                                                <li class="cat-li"><a class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
+                                                </li>
                                             @endif
                                         @endforeach
                                     </ul>
@@ -265,17 +343,26 @@
                                     @php($accounts_menu_color = 'red')
                                 @endif
                                 @if(Auth::user()->chief() == 1)
-                                    <li><a style="color: {{$accounts_menu_color}};" href="/finance/chief/pending/orders/"><i class="fa fa-folder-open"></i> Hesablar (Şirkətlər)</a></li>
+                                    <li><a style="color: {{$accounts_menu_color}};"
+                                           href="/finance/chief/pending/orders/"><i class="fa fa-folder-open"></i>
+                                            Hesablar (Şirkətlər)</a></li>
                                 @else
-                                    <li><a style="color: {{$accounts_menu_color}};" href="/finance/pending/orders/"><i class="fa fa-folder-open"></i> Hesablar (Şirkətlər)</a></li>
+                                    <li><a style="color: {{$accounts_menu_color}};" href="/finance/pending/orders/"><i
+                                                    class="fa fa-folder-open"></i> Hesablar (Şirkətlər)</a></li>
                                 @endif
                                 <li class="active">
                                     <ul class="nav child_menu show-accounts">
                                         @foreach($accounts as $account)
                                             @if(Auth::user()->chief() == 1)
-                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/finance/chief/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                                <li class="account-li" title="{{$account->account_no}}"><a
+                                                            class="account-select"
+                                                            href="/finance/chief/pending/orders?account_id={{$account->id}}">{{$account->company}}</a>
+                                                </li>
                                             @else
-                                                <li class="account-li" title="{{$account->account_no}}"><a class="account-select" href="/finance/pending/orders?account_id={{$account->id}}">{{$account->company}}</a></li>
+                                                <li class="account-li" title="{{$account->account_no}}"><a
+                                                            class="account-select"
+                                                            href="/finance/pending/orders?account_id={{$account->id}}">{{$account->company}}</a>
+                                                </li>
                                             @endif
                                         @endforeach
                                     </ul>
@@ -301,8 +388,10 @@
 
                     <ul class="nav navbar-nav navbar-right">
                         <li class="">
-                            <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                <span style="text-transform: capitalize;">{{Auth::user()->name}} <span style="text-transform: uppercase;">{{Auth::user()->surname}}</span></span>
+                            <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <span style="text-transform: capitalize;">{{Auth::user()->name}} <span
+                                            style="text-transform: uppercase;">{{Auth::user()->surname}}</span></span>
                                 <span class=" fa fa-angle-down"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">

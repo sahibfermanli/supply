@@ -218,7 +218,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 col-sm-6 col-xs-6" id="free_purchases_table_div">
-                            <h5>Gözləmədə olan sifarişlər</h5>
+                            <h5 style="margin-bottom: 22px;">Gözləmədə olan sifarişlər</h5>
                             <div class="x_panel">
                                 <div class="x_content">
                                     <div class="table-responsive" style="max-height: 300px !important;">
@@ -277,7 +277,7 @@
                         </div>
 
                         <div class="col-md-6 col-sm-6 col-xs-6" id="selected_purchases_table_div">
-                            <h5>Cari hesaba aid sifarişlər</h5>
+                            <h5>Cari hesaba aid sifarişlər <span id="print-page-link"></span></h5>
                             <div class="x_panel">
                                 <div class="x_content">
                                     <div class="table-responsive" style="max-height: 300px !important;">
@@ -601,6 +601,8 @@
             if (disabled === 0) {
                 $('#account_id_div').html('<input type="hidden" id="account_id" value="' + account_id + '">');
             }
+
+            $('#print-page-link').html('<a href="/supply/accounts/print?a=' + account_id + '" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>');
 
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({

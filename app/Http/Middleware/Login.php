@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Accounts;
 use App\Alternatives;
 use App\Categories;
+use App\Orders;
 use App\Purchase;
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +79,33 @@ class Login
 
                     View::share(['accounts'=>$accounts]);
                 }
+            }
+            ////////////// supply
+            else if (Auth::user()->authority() == 4) {
+                $categories = Categories::where(['deleted'=>0])->orderBy('process')->select('id', 'process')->get();
+
+                $i = 0;
+                $purchases = Purchase::leftjoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.deleted'=>0])->select('a.OrderID')->get();
+
+                foreach ($categories as $category) {
+                    if (Auth::user()->chief() == 1) {
+                        //not confirmed orders for chief
+                        $orders = Orders::where(['DepartmentID'=>4, 'confirmed'=>0, 'deleted'=>0, 'category_id'=>$category->id])->count();
+                        $categories[$i]['orders_count'] = $orders;
+
+                        //alternatives for chief
+                        $alts = Orders::where(['Orders.deleted' => 0, 'category_id' => $category->id, 'confirmed'=>1])->whereNotIn('id', $purchases)->count();
+                        $categories[$i]['alts_count'] = $alts;
+                    }
+                    else {
+                        //alternatives for supply user
+                        $alts = Orders::where(['Orders.deleted' => 0, 'category_id' => $category->id, 'SupplyID'=>Auth::id(), 'confirmed'=>1])->whereNotIn('id', $purchases)->count();
+                        $categories[$i]['alts_count'] = $alts;
+                    }
+                    $i++;
+                }
+
+                View::share(['categories_for_supply'=>$categories]);
             }
 
             return $next($request);
