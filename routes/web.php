@@ -278,3 +278,10 @@ Route::get('/logout', 'Auth\LoginController@logout');
 Route::get('/wait', function () {
     return view('home');
 });
+
+
+//sellers form
+Route::group(['prefix'=>'/sellers'], function () {
+    Route::get('/', 'SellerController@get_sellers_form');
+    Route::post('/', 'SellerController@post_sellers_form');
+});

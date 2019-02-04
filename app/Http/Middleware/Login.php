@@ -105,7 +105,7 @@ class Login
                     $i++;
                 }
 
-                View::share(['categories_for_supply'=>$categories]);
+                View::share(['categories_for_supply'=>$categories, 'categories'=>$categories]);
             }
 
             return $next($request);
