@@ -74,3 +74,7 @@
 #orders-add-inputs {
     min-width: 120px !important;
 }
+
+td, th {
+    white-space: nowrap !important;
+}

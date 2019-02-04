@@ -27,27 +27,33 @@
                                     <thead>
                                     <tr class="jsgrid-filter-row" style="display: none;" id="company-add-form">
                                         <td id="add-btn-td"><center><button type="submit" id="add-btn" class="btn btn-success btn-xs"><i class="fa fa-save"></i></button></center></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="name" placeholder="Şirkət adı *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="address" placeholder="Ünvan *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="zip_code" placeholder="Zip kod *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="phone" placeholder="Telefon *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="fax" placeholder="Faks *"></td>
-                                        <td id="orders-add-inputs" colspan="3">
-                                            <select name="local" class="form-control input-sm">
-                                                <option value="0">Yerli</option>
-                                                <option value="1">Xarici</option>
-                                            </select>
-                                        </td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_name" placeholder="Satıcı adı *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_director" placeholder="Satıcı direktor *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_voen" placeholder="Satıcı VÖEN *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_account_no" placeholder="Satıcı hesab № *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_name" placeholder="Bank adı *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_voen" placeholder="Bank VÖEN *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_code" placeholder="Bank kodu *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_m_n" placeholder="Bank M/Hesab № *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_swift" placeholder="Bank SWIFT *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="contract_no" placeholder="Müqavilə № *"></td>
+                                        <td id="orders-add-inputs" ><input type="date" class="form-control input-sm" name="contract_date"></td>
                                     </tr>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
-                                        <th class="column-title">Şirkət adı</th>
-                                        <th class="column-title">Ünvan</th>
-                                        <th class="column-title">Zip kod</th>
-                                        <th class="column-title">Telefon</th>
-                                        <th class="column-title">Faks</th>
-                                        <th class="column-title">Yerli/Xarici</th>
+                                        <th class="column-title">Satıcı</th>
+                                        <th class="column-title">Direktor</th>
+                                        <th class="column-title">Satıcı VÖEN</th>
+                                        <th class="column-title">Satıcı Hesab №</th>
+                                        <th class="column-title">Bank</th>
+                                        <th class="column-title">Bank VÖEN</th>
+                                        <th class="column-title">Bank KOD</th>
+                                        <th class="column-title">Bank M/Hesab №</th>
+                                        <th class="column-title">Bank SWIFT</th>
+                                        <th class="column-title">Müqavilə №</th>
+                                        <th class="column-title">Müqavilə tarixi</th>
                                         <th class="column-title">Yaradılma tarixi</th>
+                                        <th class="column-title">Əlavə edən</th>
                                         <th class="column-title">#Əməliyyatlar</th>
                                     </tr>
                                     </thead>
@@ -57,26 +63,22 @@
                                         $row = 1;
                                     @endphp
                                     @foreach($companies as $company)
-                                        <?php $company_date = date('d.m.Y', strtotime($company->created_at)); ?>
                                         <tr class="even pointer" id="row_{{$row}}">
                                             <td>{{$row}}</td>
-                                            <td><input style="border: none;" type="text" class="form-control input-sm" id="name_edit_{{$company->id}}" value="{{$company->name}}"></td>
-                                            <td><input style="border: none;" type="text" class="form-control input-sm" id="address_edit_{{$company->id}}" value="{{$company->address}}"></td>
-                                            <td><input style="border: none;" type="text" class="form-control input-sm" id="zip_code_edit_{{$company->id}}" value="{{$company->zip_code}}"></td>
-                                            <td><input style="border: none;" type="text" class="form-control input-sm" id="phone_edit_{{$company->id}}" value="{{$company->phone}}"></td>
-                                            <td><input style="border: none;" type="text" class="form-control input-sm" id="fax_edit_{{$company->id}}" value="{{$company->fax}}"></td>
-                                            <td>
-                                                <select style="border: none;" type="text" class="form-control input-sm" id="local_edit_{{$company->id}}">
-                                                    @if($company->local == 0)
-                                                        <option selected value="0">Yerli</option>
-                                                        <option value="1">Xarici</option>
-                                                    @else
-                                                        <option value="0">Yerli</option>
-                                                        <option selected value="1">Xarici</option>
-                                                    @endif
-                                                </select>
-                                            </td>
-                                            <td>{{$company_date}}</td>
+                                            <td>{{$company->seller_name}}</td>
+                                            <td>{{$company->seller_director}}</td>
+                                            <td>{{$company->seller_voen}}</td>
+                                            <td>{{$company->seller_account_no}}</td>
+                                            <td>{{$company->bank_name}}</td>
+                                            <td>{{$company->bank_voen}}</td>
+                                            <td>{{$company->bank_code}}</td>
+                                            <td>{{$company->bank_m_n}}</td>
+                                            <td>{{$company->bank_swift}}</td>
+                                            <td>{{$company->contract_no}}</td>
+                                            <td>{{$company->contract_date}}</td>
+                                            <td>{{$company->created_at}}</td>
+                                            <td>{{$company->edited_ip}}</td>
+
                                             <td>
                                                 <span title="Düzəliş et" class="btn btn-warning btn-xs" onclick="update(this, '{{$company->id}}');"><i class="fa fa-edit"></i></span>
                                                 <span title="Sil" class="btn btn-danger btn-xs" onclick="del(this, '{{$company->id}}', '{{$row}}');"><i class="fa fa-trash-o"></i></span>
@@ -165,62 +167,6 @@
                                 var elem = document.getElementById('row_' + response.row_id);
                                 elem.parentNode.removeChild(elem);
                             }
-                        }
-                    });
-                } else {
-                    return false;
-                }
-            });
-        }
-
-        function update(e, id) {
-            swal({
-                title: 'Dəyişiklik etmək istədiyinizdən əminsiniz?',
-                type: 'warning',
-                showCancelButton: true,
-                cancelButtonText: 'Geri',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Dəyişdir!'
-            }).then(function (result) {
-                if (result.value) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-
-                    var name = $('#name_edit_'+id).val();
-                    var address = $('#address_edit_'+id).val();
-                    var zip_code = $('#zip_code_edit_'+id).val();
-                    var phone = $('#phone_edit_'+id).val();
-                    var fax = $('#fax_edit_'+id).val();
-                    var local = $('#local_edit_'+id).val();
-
-                    $.ajax({
-                        type: "Post",
-                        url: '',
-                        data: {
-                            'id': id,
-                            'name': name,
-                            'address': address,
-                            'zip_code': zip_code,
-                            'phone': phone,
-                            'fax': fax,
-                            'local': local,
-                            '_token': CSRF_TOKEN,
-                            'type': 'update'
-                        },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Zəhmət olmasa gözləyin...</span>',
-                                text: 'Loading, please wait..',
-                                showConfirmButton: false
-                            });
-                        },
-                        success: function (response) {
-                            swal(
-                                response.title,
-                                response.content,
-                                response.case
-                            );
                         }
                     });
                 } else {

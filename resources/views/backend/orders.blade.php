@@ -412,17 +412,17 @@
                         }
                         unit = unit + '</select></td>';
 
-                        var vehicle_id = order['unit_id'];
+                        var vehicle_id = order['vehicle_id'];
                         var vehicles = response.vehicles;
                         var vehicle = '';
                         var j = 0;
                         vehicle = vehicle + '<td><select id="vehicle_id_edit_' + id + '" class="form-control input-sm">';
                         for(j=0; j<vehicles.length; j++) {
                             if (vehicles[j]['id'] == vehicle_id) {
-                                vehicle = vehicle+ '<option selected value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
+                                vehicle = vehicle+ '<option selected value="' + vehicles[j]['id'] + '">' + vehicles[j]['QN'] + '-' + vehicles[j]['Marka'] + '-' + vehicles[j]['Tipi'] + '</option>';
                             }
                             else {
-                                vehicle = vehicle+ '<option value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
+                                vehicle = vehicle+ '<option value="' + vehicles[j]['id'] + '">' + vehicles[j]['QN'] + '-' + vehicles[j]['Marka'] + '-' + vehicles[j]['Tipi'] + '</option>';
                             }
                         }
                         vehicle = vehicle + '</select></td>';

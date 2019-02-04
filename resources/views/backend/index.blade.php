@@ -7,6 +7,11 @@
           <h1>Ana səhifə</h1>
           <p>Tezliklə bildirişlər burada olacaq...</p>
       </div>
+        @if(session('display') == 'block')
+            <div class="alert alert-{{session('class')}}" role="alert">
+                {{session('message')}}
+            </div>
+        @endif
         {{--<div class="">--}}
             {{--<div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">--}}
                 {{--<div class="tile-stats">--}}

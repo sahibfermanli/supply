@@ -7,6 +7,13 @@
                     <h5>Düymələrin mənaları</h5>
                     <ul>
                         <li>
+                            <span disabled="true" title="Çap et"
+                                  class="btn btn-primary btn-xs"><i
+                                        class="fa fa-print"></i>
+                            </span>
+                            <span>Hesabı çap et</span>
+                        </li>
+                        <li>
                             <span disabled="true" title="Alımları göstər"
                                   class="btn btn-success btn-xs"><i
                                         class="fa fa-eye"></i>
@@ -66,24 +73,21 @@
                                             <td id="orders-add-inputs"><input type="text" class="form-control input-sm"
                                                                               name="account_no"
                                                                               placeholder="Hesab No *"></td>
-                                            <td id="orders-add-inputs">
+                                            <td id="orders-add-inputs" colspan="2">
                                                 <select class="form-control input-sm" name="company_id">
                                                     @foreach($companies as $company)
-                                                        <option value="{{$company->id}}">{{$company->name}}</option>
+                                                        <option value="{{$company->id}}">{{$company->seller_name}}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            <td colspan="3" id="orders-add-inputs"><input type="file"
-                                                                                          class="form-control input-sm"
-                                                                                          name="file"></td>
                                         </tr>
                                         <tr class="headings">
                                             <th class="column-title">#</th>
                                             <th class="column-title">Hesab No</th>
-                                            <th class="column-title">Şirkət</th>
+                                            <th class="column-title">Satıcı</th>
+                                            <th class="column-title">Yaradan istifadəçi</th>
                                             <th class="column-title">Yaradılma tarixi</th>
                                             <th class="column-title">Qeydlər</th>
-                                            <th class="column-title">Fayl</th>
                                             <th class="column-title">#Əməliyyatlar</th>
                                         </tr>
                                         </thead>
@@ -114,13 +118,14 @@
                                                         @foreach($companies as $company)
                                                             @if($company->id == $account->company_id)
                                                                 <option selected
-                                                                        value="{{$company->id}}">{{$company->name}}</option>
+                                                                        value="{{$company->id}}">{{$company->seller_name}}</option>
                                                             @else
-                                                                <option value="{{$company->id}}">{{$company->name}}</option>
+                                                                <option value="{{$company->id}}">{{$company->seller_name}}</option>
                                                             @endif
                                                         @endforeach
                                                     </select>
                                                 </td>
+                                                <td>{{$account->edited_name}} {{$account->edited_surname}}</td>
                                                 <td>{{$account_date}}</td>
                                                 <td id="lawyer_remark_{{$account->id}}">
                                                     @if(!empty($account->lawyer_remark))
@@ -131,25 +136,9 @@
                                                         <span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi sıfırla</span>
                                                     @endif
                                                 </td>
-                                                <td>
-                                                    <center>
-                                                        <a title="Faylı endir" href="{{$account->account_doc}}"
-                                                           class="btn btn-success btn-xs" target="_blank"><i
-                                                                    class="fa fa-download"></i></a>
-                                                        <span id="update_document_span_{{$account->id}}">
-                                                            @if($account->send == 0)
-                                                                <span title="Faylı dəyişdir"
-                                                                      onclick="get_update_document(this, '{{$account->id}}', '{{$account->account_no}}');"
-                                                                      class="btn btn-warning btn-xs update-doc-modal"><i
-                                                                            class="fa fa-upload"></i></span>
-                                                            @else
-                                                                <span title="Düymə deaktivdir" disabled="ture" class="btn btn-warning btn-xs"><i class="fa fa-upload"></i></span>
-                                                            @endif
-                                                        </span>
-                                                    </center>
-                                                </td>
                                                 @if($account->send == 0)
                                                     <td id="btns_{{$account->id}}">
+                                                        <a href="/supply/accounts/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
                                                         <span title="Alımları göstər"
                                                               class="btn btn-success btn-xs show-purchases-modal"
                                                               onclick="show_purchases(this, '{{$account->id}}', '{{$account->company_id}}');"><i
@@ -169,6 +158,7 @@
                                                     </td>
                                                 @else
                                                     <td>
+                                                        <a href="/supply/accounts/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
                                                         <span title="Sifarişləri gör" onclick="show_purchases(this, '{{$account->id}}', 0, 1);"
                                                               class="btn btn-success btn-xs show-purchases-modal"><i
                                                                     class="fa fa-eye"></i></span>
@@ -370,21 +360,6 @@
     <script src="/js/jquery.validate.min.js"></script>
     <script src="/js/sweetalert2.min.js"></script>
 
-    {{--<script type="text/javascript">--}}
-        {{--//update-doc-modal--}}
-        {{--$(document).on('click', '.update-doc-modal', function () {--}}
-            {{--$('#update-doc-modal').modal('show');--}}
-        {{--});--}}
-    {{--</script>--}}
-
-    {{--<script type="text/javascript">--}}
-        {{--//show purchases modal--}}
-        {{--$(document).on('click', '.show-purchases-modal', function () {--}}
-            {{--$('#show-purchases-modal').modal('show');--}}
-        {{--});--}}
-    {{--</script>--}}
-
-
     <script>
         function show_remark(account_id) {
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
@@ -559,27 +534,21 @@
                             });
                         },
                         success: function (response) {
-                            swal(
-                                response.title,
-                                response.content,
-                                response.case
-                            );
+                            if (response.case === 'success') {
+                                location.reload();
+                            } else {
+                                swal(
+                                    response.title,
+                                    response.content,
+                                    response.case
+                                );
+                            }
                         }
                     });
                 } else {
                     return false;
                 }
             });
-        }
-
-        function get_update_document(e, id, no) {
-            var id_input = '<input type="hidden" name="id" value="' + id + '">';
-            var no_input = '<input type="hidden" name="account_no" value="' + no + '">';
-            var inputs = id_input + no_input;
-
-            $('#document-form-modal').html(inputs);
-
-            $('#update-doc-modal').modal('show');
         }
 
         //show new account form
@@ -679,7 +648,7 @@
         }
 
         @if(Auth::user()->chief() == 1)
-        function send_lawyer(e, account_id) {
+            function send_lawyer(e, account_id) {
             swal({
                 title: 'Hesabı içərisindəki sifarişlərlə birlikdə hüquq şöbəsinə göndərmək istədiyinizə əminsiniz?',
                 type: 'warning',
@@ -729,7 +698,6 @@
                 }
             });
         }
-
         @endif
 
         function add_purchase_to_selected_account(purchase_id, company_id) {
@@ -850,8 +818,6 @@
                     if (response.case === 'success') {
                         if (response.type === 'add_account') {
                             location.reload();
-                        } else if (response.type === 'update_doc') {
-                            $('#update-doc-modal').modal('hide');
                         }
                     }
                 }

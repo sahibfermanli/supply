@@ -21,6 +21,9 @@ class LawyerController extends HomeController
     //get pending orders
     public function get_pending_orders() {
         if (Accounts::where(['deleted'=>0])->count() == 0) {
+            Session::flash('message', 'Hesab tapılmadı!');
+            Session::flash('class', 'warning');
+            Session::flash('display', 'block');
             return redirect('/');
         }
 
@@ -29,7 +32,7 @@ class LawyerController extends HomeController
             $table_display = 'none';
             $message_display = 'block';
 
-            $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftjoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['accounts.deleted'=>0, 'Purchases.deleted'=>0])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'c.name as company', 'c.phone', 'c.address', 'u.Unit', 'accounts.account_no', 'accounts.account_doc', 'accounts.send_at as account_date', 'users.name', 'users.surname', 'd.Department', 'o.image', 'o.deffect_doc', 'o.id as order_id', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date')->get();
+            $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftjoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['accounts.deleted'=>0, 'Purchases.deleted'=>0])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'c.name as company', 'c.phone', 'c.address', 'u.Unit', 'accounts.account_no', 'accounts.send_at as account_date', 'users.name', 'users.surname', 'd.Department', 'o.image', 'o.deffect_doc', 'o.id as order_id', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date')->get();
         }
         else {
             $account_id = Input::get('account_id');
@@ -52,7 +55,7 @@ class LawyerController extends HomeController
             $table_display = 'block';
             $message_display = 'none';
 
-            $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftjoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Purchases.account_id'=>$account_id, 'accounts.deleted'=>0, 'Purchases.deleted'=>0])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'c.name as company', 'c.phone', 'c.address', 'u.Unit', 'accounts.account_no', 'accounts.account_doc', 'accounts.send_at as account_date', 'users.name', 'users.surname', 'd.Department', 'o.image', 'o.deffect_doc', 'o.id as order_id', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date')->get();
+            $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftjoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('lb_sellers as c', 'accounts.company_id', '=', 'c.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Purchases.account_id'=>$account_id, 'accounts.deleted'=>0, 'Purchases.deleted'=>0])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'Purchases.account_id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'c.seller_name as company', 'u.Unit', 'accounts.account_no', 'accounts.send_at as account_date', 'users.name', 'users.surname', 'd.Department', 'o.image', 'o.deffect_doc', 'o.id as order_id', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date')->get();
         }
 
         return view('backend.orders_for_lawyers')->with(['orders'=>$orders, 'table_display'=>$table_display, 'message_display'=>$message_display]);
@@ -379,7 +382,7 @@ class LawyerController extends HomeController
         }
         $order_id = $request->order_id;
 
-        $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$order_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->select('lb_Alternatives.id', 'lb_Alternatives.Brend', 'lb_Alternatives.Model', 'lb_Alternatives.PartSerialNo', 'lb_Alternatives.total_cost', 'lb_Alternatives.pcs', 'u.Unit', 'lb_Alternatives.date', 'c.country_name as country', 'lb_Alternatives.store_type', 'lb_Alternatives.id as alternative_id', 'cur.cur_name as currency', 'companies.name as company', 'lb_Alternatives.Remark', 'lb_Alternatives.image', 'lb_Alternatives.suggestion')->get();
+        $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$order_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->select('lb_Alternatives.id', 'lb_Alternatives.Brend', 'lb_Alternatives.Model', 'lb_Alternatives.PartSerialNo', 'lb_Alternatives.total_cost', 'lb_Alternatives.pcs', 'u.Unit', 'lb_Alternatives.date', 'c.country_name as country', 'lb_Alternatives.store_type', 'lb_Alternatives.id as alternative_id', 'cur.cur_name as currency', 'lb_sellers.seller_name as company', 'lb_Alternatives.Remark', 'lb_Alternatives.image', 'lb_Alternatives.suggestion')->get();
 
         return response(['case' => 'success', 'alternatives'=>$alternatives, 'order_id'=>$request->order_id]);
     }

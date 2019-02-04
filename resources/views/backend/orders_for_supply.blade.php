@@ -6,8 +6,6 @@
                 <div class="title_left" style="width: 100%; !important;">
                     <h3 style="display: inline-block;"> Sifarişlər</h3>
                     <span class="btn btn-success btn-mobile" style="display: none;">Kategoriyalar</span>
-                    <button type="button" onclick="show_add_form();" class="btn btn-success btn-add-new-order" style="float: right; display: none;"><i class="fa fa-plus"></i></button>
-                    <button type="button" onclick="remove_add_form();" class="btn btn-success btn-remove-new-order" style="float: right; display: none;"><i class="fa fa-minus"></i></button>
                 </div>
             </div>
 
@@ -23,51 +21,44 @@
                         <div class="cats-mobile">
                             <ul class="nav child_menu show-categories-for-alts-supply">
                                 @foreach($categories as $category)
-                                    <li class="cat-li"><a style="color: black;" class="cat-select" href="#" cat_id="{{$category->id}}">{{$category->process}}</a></li>
+                                    <li class="cat-li"><a style="color: black;" class="cat-select" href="#"
+                                                          cat_id="{{$category->id}}">{{$category->process}}</a></li>
                                 @endforeach
                             </ul>
                         </div>
                         <div class="x_content" id="table_display">
                             <div class="table-responsive">
-                                <form action="" method="post">
-                                    <input type="hidden" name="type" value="7">
-                                    <div id="add_to_form_category_id"></div>
-                                    {{csrf_field()}}
-                                    <table class="table table-bordered">
-                                        <thead>
-                                        <tr class="jsgrid-filter-row add-new-order-form" id="orders_input">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr class="headings">
+                                        <th class="column-title">#</th>
+                                        @if(Auth::user()->chief() == 1)
+                                            @php($product_input_length = 1)
+                                            <th class="column-title">Təchizatçı</th>
+                                        @else
+                                            @php($product_input_length = 1)
+                                        @endif
+                                        <th class="column-title">Emeliyyatlar</th>
+                                        <th class="column-title" id="Product_th">Malın adı</th>
+                                        <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
+                                        <th class="column-title" id="Part_th">Part No</th>
+                                        <th class="column-title" id="WEB_link_th">WEB link</th>
+                                        <th class="column-title" id="Pcs_th">Miqdar</th>
+                                        <th class="column-title" id="unit_th">Ölçü vahidi</th>
+                                        <th class="column-title" id="vehicle_th">Qaraj No</th>
+                                        <th class="column-title" id="position_th">Vəzifə</th>
+                                        <th class="column-title">Sifarişçi</th>
+                                        <th class="column-title" id="Status_th">Status</th>
+                                        <th class="column-title" id="Remark_th">Sifariş səbəbi</th>
+                                        <th class="column-title" id="Image_th">Şəkil</th>
+                                        <th class="column-title" id="Defect_th">Qüsur aktı</th>
+                                    </tr>
+                                    </thead>
 
-                                        </tr>
-                                        <tr class="headings">
-                                            <th class="column-title">#</th>
-                                            @if(Auth::user()->chief() == 1)
-                                                @php($product_input_length = 1)
-                                                <th class="column-title">Təchizatçı</th>
-                                            @else
-                                                @php($product_input_length = 1)
-                                            @endif
-                                            <th class="column-title">Emeliyyatlar</th>
-                                            <th class="column-title" id="Product_th">Malın adı</th>
-                                            <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
-                                            <th class="column-title" id="Part_th">Part No</th>
-                                            <th class="column-title" id="WEB_link_th">WEB link</th>
-                                            <th class="column-title" id="Pcs_th">Miqdar</th>
-                                            <th class="column-title" id="unit_th">Ölçü vahidi</th>
-                                            <th class="column-title" id="vehicle_th">Qaraj No</th>
-                                            <th class="column-title" id="position_th">Vəzifə</th>
-                                            <th class="column-title">Sifarişçi</th>
-                                            <th class="column-title" id="Status_th">Status</th>
-                                            <th class="column-title" id="Remark_th">Sifariş səbəbi</th>
-                                            <th class="column-title" id="Image_th">Şəkil</th>
-                                            <th class="column-title" id="Defect_th">Qüsur aktı</th>
-                                        </tr>
-                                        </thead>
+                                    <tbody id="orders_table">
 
-                                        <tbody id="orders_table">
-
-                                        </tbody>
-                                    </table>
-                                </form>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -126,16 +117,18 @@
                                                                                                             placeholder="Part NO *"
                                                                                                             required>
                                                     </td>
-                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="number"
-                                                                                                            class="form-control input-sm"
-                                                                                                            name="pcs"
-                                                                                                            id="pcs_cost_input"
-                                                                                                            onchange="total_cost()"
-                                                                                                            placeholder="Miqdar *"
-                                                                                                            required>
+                                                    <td id="orders-add-inputs" style="width: 150px;"><input
+                                                                type="number"
+                                                                class="form-control input-sm"
+                                                                name="pcs"
+                                                                id="pcs_cost_input"
+                                                                onchange="total_cost()"
+                                                                placeholder="Miqdar *"
+                                                                required>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="unit_id" required id="unit_input">
+                                                        <select class="form-control input-sm" name="unit_id" required
+                                                                id="unit_input">
                                                             @foreach($units as $unit)
                                                                 @if($unit->id == 10)
                                                                     <option selected
@@ -146,27 +139,31 @@
                                                             @endforeach
                                                         </select>
                                                     </td>
-                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="number"
-                                                                                                            class="form-control input-sm"
-                                                                                                            name="cost"
-                                                                                                            id="cost_input"
-                                                                                                            placeholder="Qiymət *"
-                                                                                                            onchange="total_cost()"
-                                                                                                            required>
+                                                    <td id="orders-add-inputs" style="width: 150px;"><input
+                                                                type="number"
+                                                                class="form-control input-sm"
+                                                                name="cost"
+                                                                id="cost_input"
+                                                                placeholder="Qiymət *"
+                                                                onchange="total_cost()"
+                                                                required>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="currency_id" id="currency_input"
+                                                        <select class="form-control input-sm" name="currency_id"
+                                                                id="currency_input"
                                                                 required>
                                                             @foreach($currencies as $currency)
                                                                 @if($currency->id == 1)
-                                                                    <option selected value="{{$currency->id}}">{{$currency->cur_name}}</option>
+                                                                    <option selected
+                                                                            value="{{$currency->id}}">{{$currency->cur_name}}</option>
                                                                 @else
                                                                     <option value="{{$currency->id}}">{{$currency->cur_name}}</option>
                                                                 @endif
                                                             @endforeach
                                                         </select>
                                                     </td>
-                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="date" id="date_input"
+                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="date"
+                                                                                                            id="date_input"
                                                                                                             class="form-control input-sm"
                                                                                                             name="date"
                                                                                                             placeholder="Qiymət tarixi  *"
@@ -179,7 +176,8 @@
                                                                                                             placeholder="Ümumi qiymət">
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="store_type" id="store_input"
+                                                        <select class="form-control input-sm" name="store_type"
+                                                                id="store_input"
                                                                 required>
                                                             <option value="Yerli">Yerli</option>
                                                             <option value="Xarici">Xarici</option>
@@ -187,7 +185,8 @@
                                                         </select>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="company_id" id="company_input"
+                                                        <select class="form-control input-sm" name="company_id"
+                                                                id="company_input"
                                                                 required>
                                                             <option selected value="">Seçin</option>
                                                             @foreach($companies as $company)
@@ -196,7 +195,8 @@
                                                         </select>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;">
-                                                        <select class="form-control input-sm" name="country_id" id="country_input"
+                                                        <select class="form-control input-sm" name="country_id"
+                                                                id="country_input"
                                                                 required>
                                                             @foreach($countries as $country)
                                                                 @if($country->id == 15)
@@ -300,13 +300,15 @@
                             <div id="category_id_for_select_supply"></div>
                             <div class="form-group">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="supply_id">Təchizatçı</label>
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                                           for="supply_id">Təchizatçı</label>
                                     <select class="form-control col-md-7 col-xs-12" name="supply_id" id="supply_id">
                                         @foreach($supplies as $supply)
                                             <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
                                         @endforeach
                                     </select>
-                                    <button style="margin-top: 10px;" type="submit" class="btn btn-success">Təsdiqlə</button>
+                                    <button style="margin-top: 10px;" type="submit" class="btn btn-success">Təsdiqlə
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -318,7 +320,8 @@
     <!-- /.end select supply for order-->
 
     {{--start alt image modal--}}
-    <div class="modal fade" id="alt-image" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="alt-image" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -549,8 +552,7 @@
                             var first_pcs = order['Pcs'];
                             if ((first_pcs - parseInt(first_pcs)) > 0) {
                                 var last_pcs = first_pcs;
-                            }
-                            else {
+                            } else {
                                 var last_pcs = parseInt(first_pcs);
                             }
                             var pcs = '<td>' + '<input id="pcs_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + last_pcs + '">' + '</td>';
@@ -560,12 +562,11 @@
                             var unit = '';
                             var j = 0;
                             unit = unit + '<td title="' + order['Unit'] + '" style="min-width: 110px;"><select id="unit_id_edit_' + id + '" class="form-control input-sm">';
-                            for(j=0; j<units.length; j++) {
+                            for (j = 0; j < units.length; j++) {
                                 if (units[j]['id'] == unit_id) {
-                                    unit = unit+ '<option selected value="' + units[j]['id'] + '">' + units[j]['Unit'] + '</option>';
-                                }
-                                else {
-                                    unit = unit+ '<option value="' + units[j]['id'] + '">' + units[j]['Unit'] + '</option>';
+                                    unit = unit + '<option selected value="' + units[j]['id'] + '">' + units[j]['Unit'] + '</option>';
+                                } else {
+                                    unit = unit + '<option value="' + units[j]['id'] + '">' + units[j]['Unit'] + '</option>';
                                 }
                             }
                             unit = unit + '</select></td>';
@@ -575,12 +576,11 @@
                             var vehicle = '';
                             var j = 0;
                             vehicle = vehicle + '<td title="' + order['vehicle'] + ' , ' + order['QN'] + ' , ' + order['Tipi'] + '" style="min-width: 170px;"><select id="vehicle_id_edit_' + id + '" class="form-control input-sm">';
-                            for(j=0; j<vehicles.length; j++) {
+                            for (j = 0; j < vehicles.length; j++) {
                                 if (vehicles[j]['id'] == vehicle_id) {
-                                    vehicle = vehicle+ '<option selected value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
-                                }
-                                else {
-                                    vehicle = vehicle+ '<option value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
+                                    vehicle = vehicle + '<option selected value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
+                                } else {
+                                    vehicle = vehicle + '<option value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
                                 }
                             }
                             vehicle = vehicle + '</select></td>';
@@ -589,39 +589,34 @@
                             if (order['WEB_link'] == null) {
                                 var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 100px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
                                 // var web_link = '<td title="Link yoxdur"><span disabled="true"><i class="fa fa-link"></i></span></td>';
-                            }
-                            else {
+                            } else {
                                 var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 100px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
                                 // var web_link = '<td title="' + order['WEB_Link'] + '"><a target="_blank" href="' + order['WEB_link'] + '"><i class="fa fa-link"></i></a></td>';
                             }
 
                             if (order['Remark'] == null) {
                                 var remark = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Qeydi göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
-                            }
-                            else {
+                            } else {
                                 var remark = '<td><center><span title="Qeydi göstər" onclick="get_data(' + id + ', 3);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
                             }
 
                             if (order['image'] == null) {
                                 var picture = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Şəkli göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
-                            }
-                            else {
+                            } else {
                                 var picture = '<td><center><span title="Şəkli göstər" onclick="get_data(' + id + ', 4);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
                             }
 
                             if (order['deffect_doc'] == null) {
                                 var defect = '<td><center><span style="background-color: yellowgreen; border-color: yellowgreen;" disabled="true" title="Xəta sənədini endir" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></center></td>';
-                            }
-                            else {
+                            } else {
                                 var defect = '<td><center><a title="Xəta sənədini endir" href="' + order['deffect_doc'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
                             }
 
                             var status = '<td><span id="status_' + id + '" class="btn btn-xs" style="color: ' + order['color'] + ';">' + order['status'] + '</span></td>';
 
-                            if(order['confirmed'] === 1 && order['SupplyID'] !== null) {
+                            if (order['confirmed'] === 1 && order['SupplyID'] !== null) {
                                 var send_director = '<span onclick="show_alternative(' + id + ',' + last_pcs + ',' + unit_id + ');" class="btn btn-success btn-xs show-alternative-modal"><i class="fa fa-eye"></i></span>';
-                            }
-                            else {
+                            } else {
                                 var send_director = '<span style="background-color: red; border-color: red;" disabled="true" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span>';
                             }
 
@@ -629,12 +624,10 @@
                             if (order['confirmed'] == 1) {
                                 if (order['SupplyID'] == null) {
                                     select_supply = '<td><span onclick="select_supply(' + id + ');" class="btn btn-success btn-xs select-supply-modal">Seç</span></td>';
-                                }
-                                else {
+                                } else {
                                     select_supply = '<td><span class="btn btn-warning btn-xs">' + order['supply_name'] + ' ' + order['supply_surname'] + '</span></td>';
                                 }
-                            }
-                            else {
+                            } else {
                                 select_supply = '<td><span disabled="true" style="background-color: red; border-color: red;" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs">Seç</span></td>';
                             }
 
@@ -643,8 +636,7 @@
                                 edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
                                 cancel = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
                                 check = '<i style="color: red;" class="fa fa-check"></i>';
-                            }
-                            else {
+                            } else {
                                 edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
                                 cancel = '<span id="cancel_btn_' + id + '" onclick="del(this, ' + id + ');" title="Geri çevir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span>';
                                 check = '<span id="check_' + id + '" class="btn btn-success btn-xs" onclick="confirm_order(' + id + ');"><i class="fa fa-check"></i></span>';
@@ -652,8 +644,7 @@
                             @else
                             if (order['status_id'] == 9 || order['confirmed'] == 1) {
                                 edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                            }
-                            else {
+                            } else {
                                 edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
                             }
                             @endif
@@ -689,12 +680,11 @@
                                     // var position = '';
                                     var k = 0;
                                     position = position + '<td><select id="position_id_edit_' + id + '" class="form-control input-sm">';
-                                    for(k=0; k<positions.length; k++) {
+                                    for (k = 0; k < positions.length; k++) {
                                         if (positions[k]['id'] == position_id) {
-                                            position = position+ '<option selected value="' + positions[k]['id'] + '">' + positions[k]['position'] + '</option>';
-                                        }
-                                        else {
-                                            position = position+ '<option value="' + positions[k]['id'] + '">' + positions[k]['position'] + '</option>';
+                                            position = position + '<option selected value="' + positions[k]['id'] + '">' + positions[k]['position'] + '</option>';
+                                        } else {
+                                            position = position + '<option value="' + positions[k]['id'] + '">' + positions[k]['position'] + '</option>';
                                         }
                                     }
                                     position = position + '</select></td>';
@@ -722,7 +712,7 @@
                             }
 
                             var color_style = 'style="background-color: #ECFBFB;"';
-                            for (var k = 0; k<purchases.length; k++) {
+                            for (var k = 0; k < purchases.length; k++) {
                                 if (id == purchases[k]['OrderID']) {
                                     color_style = '';
                                     send_director = '<span title="Düymə deaktivdir" class="btn btn-success btn-xs" style="background-color: red; border-color: red;"><i class="fa fa-eye"></i></span>';
@@ -735,7 +725,7 @@
                             }
 
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>'+ select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + status + remark + picture + defect;
+                            tr = tr + '<td>' + count + '</td>' + select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -746,367 +736,6 @@
                     }
                 }
             });
-
-            //add-form
-            var category_id = cat_id;
-
-            if (category_id === '') {
-                $('#inputs').css('display', 'none');
-                alert('Kateqoriya seçin...');
-                return false;
-            }
-
-            var Product = '';
-            var Translation_Brand = '';
-            var Part = '';
-            var WEB_link = '';
-            var Pcs = '';
-            var unit_id = '';
-            var position_id = '';
-            var vehicle_id = '';
-            var Remark = '';
-            var image = '';
-            var deffect_doc = '';
-
-                <?php
-                if (Auth::user()->chief() == 1) {
-                    $save_btn_colspan = 3;
-                }
-                else {
-                    $save_btn_colspan = 2;
-                }
-                ?>
-
-            var inputs = '<td colspan="{{$save_btn_colspan}}" id="add-btn-td"><center><button type="submit" id="add-btn" class="btn btn-success btn-xs"><i class="fa fa-save"></i></button></center></td>';
-
-            switch (category_id) {
-                case '1': {
-                    //xususi texnika
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Malın adı"></td>';
-                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Tərcümə/Təyinat"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Part No"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    vehicle_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    vehicle_id = vehicle_id + '<select class="form-control input-sm" name="vehicle_id">';
-                    @foreach($vehicles as $vehicle)
-                        vehicle_id = vehicle_id + '<option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>';
-                    @endforeach
-                        vehicle_id = vehicle_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '2': {
-                    //xidmeti
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Malın adı"></td>';
-                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Tərcümə/Təyinat"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Part No"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    vehicle_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    vehicle_id = vehicle_id + '<select class="form-control input-sm" name="vehicle_id">';
-                    @foreach($vehicles as $vehicle)
-                        vehicle_id = vehicle_id + '<option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>';
-                    @endforeach
-                        vehicle_id = vehicle_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '3': {
-                    //servis
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Görülən işin adı"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    vehicle_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    vehicle_id = vehicle_id + '<select class="form-control input-sm" name="vehicle_id">';
-                    @foreach($vehicles as $vehicle)
-                        vehicle_id = vehicle_id + '<option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>';
-                    @endforeach
-                        vehicle_id = vehicle_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '4': {
-                    //mesref
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Malın adı"></td>';
-                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Əlavə məlumat"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Markası"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-
-                }
-                    break;
-
-                case '5': {
-                    //inventar
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Malın adı"></td>';
-                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Əlavə məlumat"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Markası"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '6': {
-                    //akkumlyator
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Malın adı"></td>';
-                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Əlavə məlumat"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Model"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    vehicle_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    vehicle_id = vehicle_id + '<select class="form-control input-sm" name="vehicle_id">';
-                    @foreach($vehicles as $vehicle)
-                        vehicle_id = vehicle_id + '<option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>';
-                    @endforeach
-                        vehicle_id = vehicle_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '7': {
-                    //forma
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Malın adı"></td>';
-                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Razmer"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Tip/Marka"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    position_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    position_id = position_id + '<select class="form-control input-sm" name="position_id">';
-                    @foreach($positions as $position)
-                        position_id = position_id + '<option value="{{$position->id}}">{{$position->position}}</option>';
-                    @endforeach
-                        position_id = position_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + position_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '8': {
-                    //defterxana
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Adı"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Tipi"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '9': {
-                    //blank
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Adı"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Tipi"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                case '10': {
-                    //teker
-                    Product = '<td colspan="{{$product_input_length}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Təkərin ölçüsü"></td>';
-                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Əlavə məlumat"></td>';
-                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Markası"></td>';
-                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
-                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
-
-                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
-                    @foreach($units as $unit)
-                            @if($unit->id == 10)
-                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @else
-                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
-                    @endif
-                            @endforeach
-                        unit_id = unit_id + '</select></td>';
-
-                    vehicle_id = '<td id="orders-add-inputs" style="width: 150px;">';
-                    vehicle_id = vehicle_id + '<select class="form-control input-sm" name="vehicle_id">';
-                    @foreach($vehicles as $vehicle)
-                        vehicle_id = vehicle_id + '<option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>';
-                    @endforeach
-                        vehicle_id = vehicle_id + '</select></td>';
-
-                    Remark = '<td id="orders-add-inputs" colspan="3" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
-                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
-                    deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
-
-                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
-                }
-                    break;
-
-                ////////////////////////////////
-                default: {
-                    alert('Kateqoriya tapılmadı!');
-                }
-            }
-
-            $('#orders_input').html(inputs);
-        };
-    </script>
-
-    <script>
-        //add new order form
-        function show_add_form() {
-            $('.add-new-order-form').css('display', 'table-row');
-            $('.btn-add-new-order').css('display', 'none');
-            $('.btn-remove-new-order').css('display', 'block');
-        }
-
-        //remove new order form
-        function remove_add_form() {
-            $('.add-new-order-form').css('display', 'none');
-            $('.btn-add-new-order').css('display', 'block');
-            $('.btn-remove-new-order').css('display', 'none');
         }
     </script>
 
@@ -1141,13 +770,12 @@
                 success: function (response) {
                     swal.close();
 
-                    if(type === 3) {
+                    if (type === 3) {
                         $('.image-form-modal').html('');
                         var remark = '';
                         remark = '<textarea class="form-control" id="Remark_edit_' + id + '" name="Remark">' + response.data + '</textarea>'
                         $('.remark-modal').html(remark);
-                    }
-                    else {
+                    } else {
                         $('.remark-modal').html('');
                         var image = '';
                         image = image + response.data;
@@ -1238,7 +866,7 @@
                             var now = new Date();
                             var day = ("0" + now.getDate()).slice(-2);
                             var month = ("0" + (now.getMonth() + 1)).slice(-2);
-                            var today = now.getFullYear()+"-"+(month)+"-"+(day);
+                            var today = now.getFullYear() + "-" + (month) + "-" + (day);
                             $('#date_input').val(today);
 
                             $('#brend_input').val('');
@@ -1255,7 +883,7 @@
                             //
 
                             add_order_id(response.order_id);
-                            var  i = 0;
+                            var i = 0;
                             var request = response.alts;
                             var count = '<span style="color: green;">New</span>';
 
@@ -1277,10 +905,9 @@
                             var director_remark = '<td>' + 'null' + '</td>';
 
                             var image = '';
-                            if(request['image'] !== null) {
+                            if (request['image'] !== null) {
                                 image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alt_id + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
-                            }
-                            else {
+                            } else {
                                 image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
                             }
 
@@ -1288,18 +915,17 @@
 
                             if (request['confirm_chief'] === 0) {
                                 del_btn = '<td id="del_alt_btn_' + alt_id + '"><span onclick="del_alt(' + alt_id + ');" title="Sil" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span></td>';
-                            }
-                            else {
+                            } else {
                                 del_btn = '<td><span disabled="true" title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span></td>';
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + count + '</td><td></td>' +del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            tr = tr + '<td>' + count + '</td><td></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);
 
-                            $('#status_'+response.order_id).html('Alternativ yaradılıb').css('color', 'green');
+                            $('#status_' + response.order_id).html('Alternativ yaradılıb').css('color', 'green');
                         }
 
                         //add order
@@ -1308,7 +934,7 @@
                         }
 
                         //update order image
-                        if(response.type === 'update_order_image') {
+                        if (response.type === 'update_order_image') {
                             $('#add-modal').modal('hide');
                         }
                     }
@@ -1343,7 +969,7 @@
             var now = new Date();
             var day = ("0" + now.getDate()).slice(-2);
             var month = ("0" + (now.getMonth() + 1)).slice(-2);
-            var today = now.getFullYear()+"-"+(month)+"-"+(day);
+            var today = now.getFullYear() + "-" + (month) + "-" + (day);
             $('#date_input').val(today);
             $('#pcs_cost_input').val(pcs);
             $('#unit_input').val(unit);
@@ -1395,19 +1021,19 @@
 
                         var order_details = '';
                         var order = response.order;
-                        
-                        if (order['Product'] !== null)  {
+
+                        if (order['Product'] !== null) {
                             order_details += order['Product'] + ' , ';
                         }
-                        if (order['Translation_Brand'] !== null)  {
+                        if (order['Translation_Brand'] !== null) {
                             order_details += order['Translation_Brand'] + ' , ';
                         }
-                        if (order['Part'] !== null)  {
+                        if (order['Part'] !== null) {
                             order_details += order['Part'] + ' , ';
                         }
 
-                        order_details = order_details.substr(0, order_details.length-3);
-                        
+                        order_details = order_details.substr(0, order_details.length - 3);
+
                         $('#order_details').html(order_details);
 
                         var alternatives = response.alternatives;
@@ -1423,20 +1049,18 @@
 
                             // var remark = alternative['Remark'];
                             @if(Auth::user()->chief() == 1)
-                                if (alternative['confirm_chief'] == 0) {
-                                    confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
-                                }
-                                else {
-                                    confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
-                                }
+                            if (alternative['confirm_chief'] == 0) {
+                                confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
+                            } else {
+                                confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
+                            }
 
-                                if (alternative['suggestion'] == 1) {
-                                    suggestion_btn = '<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>';
-                                }
-                                else {
-                                    suggestion_btn = '<span onclick="suggestion_alternative(' + alternative['id'] + ');" title="Tövsiyyə et" class="btn btn-primary btn-xs"><i class="fa fa-check-circle"></i></span>';
-                                }
-                            @endif
+                            if (alternative['suggestion'] == 1) {
+                                suggestion_btn = '<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>';
+                            } else {
+                                suggestion_btn = '<span onclick="suggestion_alternative(' + alternative['id'] + ');" title="Tövsiyyə et" class="btn btn-primary btn-xs"><i class="fa fa-check-circle"></i></span>';
+                            }
+                                    @endif
 
                             var alt_id = alternative['id'];
                             var brend = '<td>' + alternative['Brend'] + '</td>';
@@ -1455,18 +1079,16 @@
                             var director_remark = '<td>' + alternative['DirectorRemark'] + '</td>';
                             var image = '';
 
-                            if(alternative['image'] !== null) {
+                            if (alternative['image'] !== null) {
                                 image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alt_id + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
-                            }
-                            else {
+                            } else {
                                 image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
                             }
 
                             var del_btn = '';
                             if (alternative['confirm_chief'] === 0) {
                                 del_btn = '<td id="del_alt_btn_' + alt_id + '"><span onclick="del_alt(' + alt_id + ');" title="Sil" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span></td>';
-                            }
-                            else {
+                            } else {
                                 del_btn = '<td><span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-trash"></i></span></td>';
                             }
 
@@ -1541,8 +1163,8 @@
                     success: function (response) {
                         swal.close();
 
-                        $('#confirm_alternative_tr_'+alt_id).html('<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>');
-                        $('#del_alt_btn_'+alt_id).html('<span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-trash"></i></span>');
+                        $('#confirm_alternative_tr_' + alt_id).html('<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>');
+                        $('#del_alt_btn_' + alt_id).html('<span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-trash"></i></span>');
                     }
                 });
             }
@@ -1615,13 +1237,13 @@
             }).then(function (result) {
                 if (result.value) {
                     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                    var product = $('#product_edit_'+id).val();
-                    var translation_brand = $('#translation_brand_edit_'+id).val();
-                    var part = $('#part_edit_'+id).val();
-                    var pcs = $('#pcs_edit_'+id).val();
-                    var unit_id = $('#unit_id_edit_'+id).val();
-                    var WEB_link = $('#WEB_link_edit_'+id).val();
-                    var Remark = $('#Remark_edit_'+id).val();
+                    var product = $('#product_edit_' + id).val();
+                    var translation_brand = $('#translation_brand_edit_' + id).val();
+                    var part = $('#part_edit_' + id).val();
+                    var pcs = $('#pcs_edit_' + id).val();
+                    var unit_id = $('#unit_id_edit_' + id).val();
+                    var WEB_link = $('#WEB_link_edit_' + id).val();
+                    var Remark = $('#Remark_edit_' + id).val();
                     // var picture = $('#picture_edit_'+id).val();
 
                     $.ajax({
@@ -1692,7 +1314,7 @@
                         response.case
                     );
                     if (response.case === 'success') {
-                        $('#suggestion_alternative_tr_'+response.id).html('<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>');
+                        $('#suggestion_alternative_tr_' + response.id).html('<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>');
                     }
                 }
             });
@@ -1736,9 +1358,9 @@
                                 response.case
                             );
                             if (response.case === 'success') {
-                                $('#status_'+response.id).html('İstifadəçiyə geri göndərildi');
-                                $('#status_'+response.id).css('color', 'red');
-                                $('#cancel_btn_'+response.id).remove();
+                                $('#status_' + response.id).html('İstifadəçiyə geri göndərildi');
+                                $('#status_' + response.id).css('color', 'red');
+                                $('#cancel_btn_' + response.id).remove();
                             }
                         }
                     });
@@ -1750,16 +1372,16 @@
     </script>
 
     {{--<script type="text/javascript">--}}
-        {{--//add modal--}}
-        {{--$(document).on('click', '.add-modal', function () {--}}
-            {{--$('#add-modal').modal('show');--}}
-        {{--});--}}
+    {{--//add modal--}}
+    {{--$(document).on('click', '.add-modal', function () {--}}
+    {{--$('#add-modal').modal('show');--}}
+    {{--});--}}
     {{--</script>--}}
 
     {{--<script type="text/javascript">--}}
-        {{--//show-alternative-modal--}}
-        {{--$(document).on('click', '.show-alternative-modal', function () {--}}
-            {{--$('#show-alternative-modal').modal('show');--}}
-        {{--});--}}
+    {{--//show-alternative-modal--}}
+    {{--$(document).on('click', '.show-alternative-modal', function () {--}}
+    {{--$('#show-alternative-modal').modal('show');--}}
+    {{--});--}}
     {{--</script>--}}
 @endsection

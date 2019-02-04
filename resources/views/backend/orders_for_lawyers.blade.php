@@ -38,9 +38,8 @@
                                                 class="btn btn-success">Sifarişləri təsdiqlə
                                         </button>
                                     </div>
-                                    <a style="display: inline-block; float: right;" class="btn btn-success"
-                                       title="{{$orders[0]->account_date}}" target="_blank"
-                                       href="{{$orders[0]->account_doc}}">Hesab: <i
+                                    <a style="display: inline-block; float: right;" class="btn btn-success" target="_blank"
+                                       href="/law/accounts/print?a={{$orders[0]->account_id}}">Hesab: <i
                                                 class="fa fa-download"></i> {{$orders[0]->account_no}}</a>
                                     <table class="table table-bordered">
                                         <thead>
@@ -56,7 +55,6 @@
                                             <th class="column-title">Qiymət</th>
                                             <th class="column-title">Ümumi qiymət</th>
                                             <th class="column-title">Şirkət</th>
-                                            {{--<th class="column-title">Hesab </th>--}}
                                             <th class="column-title">Qaimə</th>
                                             <th class="column-title">Fayllar</th>
                                             <th class="column-title">Təchizatçılardan çıxış tarixi</th>

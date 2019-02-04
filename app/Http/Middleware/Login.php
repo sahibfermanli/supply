@@ -45,11 +45,11 @@ class Login
                 $purchases = Purchase::where(['deleted'=>0, 'completed'=>0])->select('account_id')->get();
                 if (Auth::user()->chief() == 0) {
                     //employee
-                    $accounts = Accounts::leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0])->whereNull('accounts.lawyer_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.name as company')->get();
+                    $accounts = Accounts::leftJoin('lb_sellers as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0])->whereNull('accounts.lawyer_confirm')->orderBy('c.seller_name')->select('accounts.id', 'accounts.account_no', 'c.seller_name as company')->get();
                 }
                 else {
                     //chief
-                    $accounts = Accounts::leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.lawyer_confirm'=>1])->whereNull('accounts.lawyer_chief_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.name as company')->get();
+                    $accounts = Accounts::leftJoin('lb_sellers as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.lawyer_confirm'=>1])->whereNull('accounts.lawyer_chief_confirm')->orderBy('c.seller_name')->select('accounts.id', 'accounts.account_no', 'c.seller_name as company')->get();
                 }
 
                 View::share(['categories'=>$categories, 'accounts'=>$accounts]);
@@ -59,7 +59,7 @@ class Login
                 // director lawyer
                 if (Auth::user()->auditor() == 8) {
                     $purchases = Purchase::where(['deleted'=>0, 'completed'=>0])->select('account_id')->get();
-                    $accounts = Accounts::leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.lawyer_chief_confirm'=>1])->whereNull('accounts.director_lawyer_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.name as company')->get();
+                    $accounts = Accounts::leftJoin('lb_sellers as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.lawyer_chief_confirm'=>1])->whereNull('accounts.director_lawyer_confirm')->orderBy('c.seller_name')->select('accounts.id', 'accounts.account_no', 'c.seller_name as company')->get();
 
                     View::share(['accounts'=>$accounts]);
                 }
@@ -69,13 +69,13 @@ class Login
                 $purchases = Purchase::where(['deleted'=>0, 'completed'=>0])->select('account_id')->get();
                 if (Auth::user()->chief() == 0) {
                     // employees
-                    $accounts = Accounts::leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.director_lawyer_confirm'=>1])->whereNull('accounts.finance_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.name as company')->get();
+                    $accounts = Accounts::leftJoin('lb_sellers as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.director_lawyer_confirm'=>1])->whereNull('accounts.finance_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.seller_name as company')->get();
 
                     View::share(['accounts'=>$accounts]);
                 }
                 else {
                     // chief
-                    $accounts = Accounts::leftJoin('companies as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.finance_confirm'=>1])->whereNull('accounts.finance_chief_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.name as company')->get();
+                    $accounts = Accounts::leftJoin('lb_sellers as c', 'accounts.company_id', '=', 'c.id')->whereIn('accounts.id', $purchases)->where(['accounts.send'=>1, 'accounts.deleted'=>0, 'accounts.finance_confirm'=>1])->whereNull('accounts.finance_chief_confirm')->orderBy('c.name')->select('accounts.id', 'accounts.account_no', 'c.seller_name as company')->get();
 
                     View::share(['accounts'=>$accounts]);
                 }

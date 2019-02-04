@@ -197,6 +197,8 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::group(['prefix'=>'/purchases'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
         });
+
+        Route::get('/accounts/print', 'AccountController@print_orders_in_account_for_supply');
     });
 
     //lawyer chief

@@ -9,6 +9,7 @@ use App\Countries;
 use App\Currencies;
 use App\Orders;
 use App\Positions;
+use App\Sellers;
 use App\Settings;
 use App\Units;
 use App\User;
@@ -118,7 +119,7 @@ class OrderController extends HomeController
         $positions = Positions::where(['deleted' => 0])->orderBy('position')->select('id', 'position')->get();
         $countries = Countries::where('deleted', 0)->select(['id', 'country_code', 'country_name'])->get();
         $currencies = Currencies::where('deleted', 0)->select(['id', 'cur_name', 'cur_value', 'cur_rate'])->get();
-        $companies = Company::where('deleted', 0)->select(['id', 'name'])->orderBy('name')->get();
+        $companies = Sellers::where(['deleted'=>0])->select('id', 'seller_name as name')->orderBy('seller_name')->get();
         $supplies = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.deleted'=>0])->select('users.id', 'users.name', 'users.surname')->get();
 
         return view('backend.orders_for_supply')->with(['units' => $units, 'companies'=>$companies, 'vehicles' => $vehicles, 'positions' => $positions, 'countries'=>$countries, 'currencies'=>$currencies, 'supplies'=>$supplies]);
@@ -386,7 +387,7 @@ class OrderController extends HomeController
 
     //show alternative
     private function show_alternative(Request $request) {
-        $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->order_id, 'lb_Alternatives.deleted'=>0])->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company', 'suggestion')->get();
+        $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->order_id, 'lb_Alternatives.deleted'=>0])->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'lb_sellers.seller_name as company', 'suggestion')->get();
         $order = Orders::where(['id'=>$request->order_id])->select('Product', 'Translation_Brand', 'Part')->first();
 
         return response(['case'=>'success', 'alternatives'=>$alternatives, 'order'=>$order]);
@@ -476,7 +477,7 @@ class OrderController extends HomeController
 
             $create_alternative = Alternatives::create($request->all());
             Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
-            $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('companies', 'lb_Alternatives.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'companies.name as company')->first();
+            $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'lb_sellers.seller_name as company')->first();
 
             Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
 

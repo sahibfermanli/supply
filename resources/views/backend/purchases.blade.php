@@ -32,8 +32,7 @@
                                         <th class="column-title">Qiymət </th>
                                         <th class="column-title">Ümumi qiymət </th>
                                         <th class="column-title">Yaradılma tarixi </th>
-                                        <th class="column-title">Şirkət </th>
-                                        {{--<th class="column-title">Ödəniş tarixi </th>--}}
+                                        <th class="column-title">Satıcı </th>
                                         <th class="column-title">Hesab </th>
                                         <th class="column-title">Qaime </th>
                                     </tr>
@@ -70,13 +69,18 @@
                                             <td>{{$purchase->cost}}</td>
                                             <td>{{$purchase->total_cost}}</td>
                                             <td>{{$date}}</td>
-                                            <td title="{{$purchase->phone}} , {{$purchase->address}}">{{$purchase->company}}</td>
-                                            {{--<td></td>--}}
+                                            <td>{{$purchase->seller_name}}</td>
                                             <td>
                                                 @if(isset($purchase->account_id))
-                                                    <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="{{$purchase->account_doc}}"><i class="fa fa-download"></i> {{$purchase->account_no}}</a>
+                                                    @if(Auth::user()->authority() == 6)
+                                                        <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="/law/accounts/print?a={{$purchase->account_id}}"><i class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}</a>
+                                                    @elseif(Auth::user()->authority() == 7)
+                                                        <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="/finance/accounts/print?a={{$purchase->account_id}}"><i class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}</a>
+                                                    @elseif(Auth::user()->authority() == 5)
+                                                        <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="/director/accounts/print?a={{$purchase->account_id}}"><i class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}</a>
+                                                    @endif
                                                 @else
-                                                    <span title="Heç bir hesaba əlavə edilməyib" disabled="true" class="btn btn-success btn-xs" style="background-color: #b6a338; border-color: #b6a338;"><i class="fa fa-download"></i></span>
+                                                    <span title="Heç bir hesaba əlavə edilməyib" disabled="true" class="btn btn-success btn-xs" style="background-color: #b6a338; border-color: #b6a338;"><i class="fa fa-file-pdf-o"></i></span>
                                                 @endif
                                             </td>
                                             <td style="min-width: 150px;">

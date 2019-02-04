@@ -16,7 +16,7 @@ class Lawyer
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::user()->authority() == 6 && Auth::user()->chief() == 0) {
+        if (Auth::user()->authority() == 6) {
             return $next($request);
         }
         return redirect('/');
