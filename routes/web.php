@@ -26,6 +26,12 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/', 'OrderController@post_delete_order');
     });
 
+    //vehicles for users
+    Route::group(['prefix'=>'vehicles', 'middleware'=>'User'], function () {
+        Route::get('/', 'VehicleController@get_vehicles');
+        Route::post('/', 'VehicleController@post_vehicles');
+    });
+
     //orders for chiefs
     Route::group(['prefix'=>'chief/orders'], function () {
         Route::get('/', 'OrderController@get_orders_for_chief');
@@ -167,6 +173,18 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/add', 'DepartmentController@post_add_department');
         Route::get('/update/{id}', 'DepartmentController@get_update_department');
         Route::post('/update/{id}', 'DepartmentController@post_update_department');
+    });
+
+    //companies for admin
+    Route::group(['prefix'=>'companies', 'middleware'=>'Admin'], function () {
+        Route::get('/', 'CompanyController@get_companies');
+        Route::post('/', 'CompanyController@post_companies');
+    });
+
+    //vehicles for admins
+    Route::group(['prefix'=>'admin/vehicles', 'middleware'=>'Admin'], function () {
+        Route::get('/', 'VehicleController@get_vehicles');
+        Route::post('/', 'VehicleController@post_vehicles');
     });
 
     //users for chiefs

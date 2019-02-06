@@ -79,10 +79,10 @@
                                 <li><a href="/supply-users"><i class="fa fa-user-times"></i> Təchizatçılar</a></li>
                                 <li><a href="/departments"><i class="fa fa-building"></i> Departmentlər</a></li>
                                 <li><a href="/companies"><i class="fa fa-building-o"></i> Şirkətlər</a></li>
+                                <li><a href="/admin/vehicles"><i class="fa fa-car"></i> Texnikalar </a></li>
                                 <li><a href="/situations"><i class="fa fa-bars"></i> Statuslar</a></li>
                                 <li><a href="/authorities"><i class="fa fa-lock"></i> Səlahiyyətlər</a></li>
-                                <li><a href="/deadlines"><i class="fa fa-user-times"></i> Bitmə vaxtı (deadline)</a>
-                                </li>
+                                <li><a href="/deadlines"><i class="fa fa-user-times"></i> Bitmə vaxtı (deadline)</a></li>
 
                             @elseif(Auth::user()->authority() == 3  && Auth::user()->chief() == 1)
                                 {{--Chief--}}
@@ -102,6 +102,11 @@
 
                             @elseif(Auth::user()->authority() == 3)
                                 {{--User--}}
+
+                                @if(Auth::user()->DepartmentID() == 2)
+                                    <li><a href="/vehicles"><i class="fa fa-car"></i> Texnikalar </a></li>
+                                @endif
+
                                 <li><a href="/orders"><i class="fa fa-folder-open"></i> Sifarişlər </a></li>
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
