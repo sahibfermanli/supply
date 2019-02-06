@@ -759,16 +759,22 @@ class OrderController extends HomeController
                 Units::where('id', $unit_id)->increment('use_count');
 
                 if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
-                    $user = User::where(['DepartmentID'=>Auth::user()->DepartmentID(), 'chief'=>1, 'deleted'=>0])->select('name', 'surname', 'email')->first();
+                    $chiefs = User::where(['DepartmentID'=>Auth::user()->DepartmentID(), 'chief'=>1, 'deleted'=>0])->select('name', 'surname', 'email')->get();
                     $category = Categories::where(['id'=>$cat_id])->select('process')->first();
 
-                    $email = $user['email'];
-                    $to = $user['name'] . ' ' . $user['surname'];
-                    $message = $user['name'] . " " . $user['surname'] . ",
-                    yeni sifariş var. </br>
-                    Sifarişi verən: ". Auth::user()->name." ".Auth::user()->surname .".</br>
-                    Sifariş: ". $product .".</br>
-                    Sifarşin kateqoriyası: ". $category->process .".
+                    $email = array();
+                    $to = array();
+                    foreach ($chiefs as $chief) {
+                        array_push($email, $chief->email);
+                        array_push($to, $chief->name . ' ' . $chief->surname);
+                    }
+
+//                    $email = $user['email'];
+//                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = "Yeni sifariş var. </br>
+                                Sifarişi verən: ". Auth::user()->name." ".Auth::user()->surname .".</br>
+                                Sifariş: ". $product .".</br>
+                                Sifarşin kateqoriyası: ". $category->process .".
                     ";
                     $title = 'Yeni sifariş';
 

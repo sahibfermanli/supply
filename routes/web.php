@@ -89,6 +89,8 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::get('/', 'LawyerController@get_pending_orders');
             Route::post('/', 'LawyerController@post_pending_orders');
         });
+
+        Route::get('/accounts/print', 'AccountController@print_orders_in_account_for_supply');
     });
 
     //chiefs for admins
