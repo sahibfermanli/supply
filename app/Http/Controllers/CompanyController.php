@@ -65,8 +65,8 @@ class CompanyController extends Controller
             'bank_code' => 'required|string|max:30',
             'bank_m_n' => 'required|string|max:100',
             'bank_swift' => 'required|string|max:50',
-            'contract_no' => 'required|string|max:50',
-            'contract_date' => 'required|date',
+//            'contract_no' => 'required|string|max:50',
+//            'contract_date' => 'required|date',
         ]);
         if ($validator->fails()) {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Lazımlı xanaları doldurun!']);
