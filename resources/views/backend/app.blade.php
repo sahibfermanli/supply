@@ -82,21 +82,27 @@
                                 <li><a href="/admin/vehicles"><i class="fa fa-car"></i> Texnikalar </a></li>
                                 <li><a href="/situations"><i class="fa fa-bars"></i> Statuslar</a></li>
                                 <li><a href="/authorities"><i class="fa fa-lock"></i> Səlahiyyətlər</a></li>
-                                <li><a href="/deadlines"><i class="fa fa-user-times"></i> Bitmə vaxtı (deadline)</a></li>
+                                <li><a href="/deadlines"><i class="fa fa-user-times"></i> Bitmə vaxtı (deadline)</a>
+                                </li>
 
                             @elseif(Auth::user()->authority() == 3  && Auth::user()->chief() == 1)
                                 {{--Chief--}}
-                                <li><a href="/users"><i class="fa fa-user"></i> İstifadəçilər</a></li>
-                                <li><a href="/chief/orders"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
+                                @php($orders_for_chief_total_count = 0)
+                                @php($li_for_orders_chief = '')
+                                @foreach($categories_for_chief as $category)
+                                    @if($category->orders_count > 0)
+                                        @php($li_for_orders_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->orders_count.')<span></a></li>')
+                                        @php($orders_for_chief_total_count += $category->orders_count)
+                                    @else
+                                        @php($li_for_orders_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
+                                    @endif
+                                @endforeach
+                                <li><a href="/chief/orders"><i class="fa fa-folder-open"></i> Sifarişlər <span
+                                                style="color: #4CF632; font-weight: bold;">({{$orders_for_chief_total_count}})<span></a>
+                                </li>
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
-                                    <!-- @php($cat_count = 0) -->
-                                    @foreach($categories as $category)
-                                        <!-- @php($cat_count++) -->
-                                            <li class="cat-li"><a class="cat-select" href="#"
-                                                                  cat_id="{{$category->id}}">{{$category->process}}</a>
-                                            </li>
-                                        @endforeach
+                                        {!! $li_for_orders_chief !!}
                                     </ul>
                                 </li>
 
@@ -110,9 +116,7 @@
                                 <li><a href="/orders"><i class="fa fa-folder-open"></i> Sifarişlər </a></li>
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
-                                    <!-- @php($cat_count = 0) -->
-                                    @foreach($categories as $category)
-                                        <!-- @php($cat_count++) -->
+                                        @foreach($categories as $category)
                                             <li class="cat-li"><a class="cat-select" href="#"
                                                                   cat_id="{{$category->id}}">{{$category->process}}</a>
                                             </li>
@@ -190,9 +194,7 @@
                                 <li><a href="/director/orders/"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
                                 <li class="active">
                                     <ul class="nav child_menu show-categories">
-                                    <!-- @php($cat_count = 0) -->
-                                    @foreach($categories as $category)
-                                        <!-- @php($cat_count++) -->
+                                        @foreach($categories as $category)
                                             @if($category->orders_count > 0)
                                                 <li class="cat-li"><a class="cat-select" href="#"
                                                                       cat_id="{{$category->id}}">{{$category->process}}
@@ -234,15 +236,23 @@
                                     <li><a href="/law/users"><i class="fa fa-user"></i> İşçilər</a></li>
                                     <li><a href="/law/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a>
                                     </li>
-                                    <li><a href="/law/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər</a>
+
+                                    @php($orders_for_chief_total_count = 0)
+                                    @php($li_for_orders_chief = '')
+                                    @foreach($categories_for_chief as $category)
+                                        @if($category->orders_count > 0)
+                                            @php($li_for_orders_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->orders_count.')<span></a></li>')
+                                            @php($orders_for_chief_total_count += $category->orders_count)
+                                        @else
+                                            @php($li_for_orders_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
+                                        @endif
+                                    @endforeach
+                                    <li><a href="/law/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər <span
+                                                    style="color: #4CF632; font-weight: bold;">({{$orders_for_chief_total_count}})<span></a>
                                     </li>
                                     <li class="active">
                                         <ul class="nav child_menu show-categories">
-                                            @foreach($categories as $category)
-                                                <li class="cat-li"><a class="cat-select" href="#"
-                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
-                                                </li>
-                                            @endforeach
+                                            {!! $li_for_orders_chief !!}
                                         </ul>
                                     </li>
                                 @else
@@ -315,32 +325,38 @@
                                     <li><a href="/finance/users"><i class="fa fa-user"></i> İşçilər</a></li>
                                     <li><a href="/finance/chief/purchases"><i class="fa fa-shopping-bag"></i>
                                             Alımlar</a></li>
-                                    <li><a href="/finance/chief/orders/"><i class="fa fa-folder-open"></i> Daxili
-                                            sifarişlər</a></li>
+                                    @php($orders_for_chief_total_count = 0)
+                                    @php($li_for_orders_chief = '')
+                                    @foreach($categories_for_chief as $category)
+                                        @if($category->orders_count > 0)
+                                            @php($li_for_orders_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->orders_count.')<span></a></li>')
+                                            @php($orders_for_chief_total_count += $category->orders_count)
+                                        @else
+                                            @php($li_for_orders_chief .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
+                                        @endif
+                                    @endforeach
+                                    <li><a href="/finance/chief/orders/"><i class="fa fa-folder-open"></i> Daxili sifarişlər <span
+                                                    style="color: #4CF632; font-weight: bold;">({{$orders_for_chief_total_count}})<span></a>
+                                    </li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories">
+                                            {!! $li_for_orders_chief !!}
+                                        </ul>
+                                    </li>
                                 @else
                                     <li><a href="/finance/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/finance/orders/"><i class="fa fa-folder-open"></i> Daxili
                                             sifarişlər</a></li>
-                                @endif
-
-                                <li class="active">
-                                    <ul class="nav child_menu show-categories">
-                                    <!-- @php($cat_count = 0) -->
-                                    @foreach($categories as $category)
-                                        <!-- @php($cat_count++) -->
-                                            @if($category->orders_count > 0)
-                                                <li class="cat-li"><a class="cat-select" href="#"
-                                                                      cat_id="{{$category->id}}">{{$category->process}}
-                                                        <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a>
-                                                </li>
-                                            @else
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories">
+                                            @foreach($categories as $category)
                                                 <li class="cat-li"><a class="cat-select" href="#"
                                                                       cat_id="{{$category->id}}">{{$category->process}}</a>
                                                 </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endif
 
                                 @if(count($accounts) > 0)
                                     @php($accounts_menu_color = 'green')
