@@ -301,6 +301,7 @@
                             $('#Translation_Brand_th').html('Əlavə məlumat');
                             $('#Part_th').html('Markası');
                             $('#vehicle_th').css('display', 'none');
+                            $('#Defect_th').css('display', 'table-cell');
                         }
                             break;
 
@@ -469,8 +470,6 @@
                             case '4': {
                                 //mesref
                                 marka = '';
-                                defect = '';
-
                             }
                                 break;
 
@@ -683,6 +682,7 @@
 
                 Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
                 image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
+                deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
 
                 inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
 
