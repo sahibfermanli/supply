@@ -259,8 +259,7 @@ class OrderController extends HomeController
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadı!']);
         }
 
-        $orders = Orders::leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.DepartmentID' => Auth::user()->DepartmentID()])->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.confirmed', 'Orders.confirmed_at' , 'Orders.ReportDocument', 'Orders.ReportNo', 'Orders.confirmed_at', 'users.name as user_name', 'users.surname as user_surname')->orderBy('Orders.id', 'DESC')->get();
-
+        $orders = Orders::leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.DepartmentID' => Auth::user()->DepartmentID()])->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.confirmed', 'Orders.confirmed_at' , 'Orders.ReportDocument', 'Orders.ReportNo', 'Orders.confirmed_at', 'users.name as user_name', 'users.surname as user_surname', 'chief.name as chief_name', 'chief.surname as chief_surname')->orderBy('Orders.id', 'DESC')->get();
         $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
 
         return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'units'=>$units]);
@@ -276,7 +275,8 @@ class OrderController extends HomeController
         }
         try {
             $id = $request->id;
-            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+            $date = Carbon::now();
+            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9, 'confirmed_at'=>$date]); //istifadeciye geri gonderildi
 
             if ($cancel_order) {
                 if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {

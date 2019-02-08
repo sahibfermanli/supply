@@ -381,7 +381,12 @@
                         if (order['status_id'] == 9 || order['confirmed'] == 1) {
                           var edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
                           var cancel = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                          check = '<td><i style="color: red;" class="fa fa-check"></i></td>';
+                          if (order['status_id'] === 9) {
+                              check = '<td title="' + order['confirmed_at'] + '"><center><i style="color: red;" class="fa fa-times"></i></center></td>';
+                          }
+                          else {
+                              check = '<td title="' + order['confirmed_at'] + '"><span>' + order['chief_name'].substr(0,1) + '.' + order['chief_surname'] + '</span></td>';
+                          }
                         }
                         else {
                           var edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
@@ -914,7 +919,10 @@
 
                         $('#actions_'+response.order_id).html('<center>' + new_edit + new_cancel + '</center>');
 
-                        $('#check_'+response.order_id).html('<i style="color: green;" class="fa fa-check"></i>');
+                        var chief_name = '{{Auth::user()->name}}';
+                        var chief_surname = '{{Auth::user()->surname}}';
+                        var new_check = chief_name.substr(0,1) + '.' + chief_surname;
+                        $('#check_'+response.order_id).html(new_check);
                     }
                 }
             });
