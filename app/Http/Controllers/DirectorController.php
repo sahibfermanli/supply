@@ -209,6 +209,7 @@ class DirectorController extends HomeController
 
             $order = Orders::where(['id' => $request->id])->select('image')->first();
             $image = '<img src="' . $order->image . '"  width="200" height="200">';
+            $image .= '<br><br><a class="btn btn-primary" href="' . $order->image . '" target="_blank">Şəkilə tam ölçüdə baxmaq</a>';
 
             return response(['case' => 'success', 'data' => $image]);
         } else if ($request->type == 5) {
@@ -379,6 +380,7 @@ class DirectorController extends HomeController
 
         $alt = Alternatives::where(['id' => $request->id])->select('image')->first();
         $image = '<img src="' . $alt->image . '"  width="200" height="200">';
+        $image .= '<br><br><a class="btn btn-primary" href="' . $alt->image . '" target="_blank">Şəkilə tam ölçüdə baxmaq</a>';
 
         return response(['case' => 'success', 'data' => $image]);
     }

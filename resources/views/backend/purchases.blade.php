@@ -35,6 +35,8 @@
                                         <th class="column-title">Satıcı </th>
                                         <th class="column-title">Hesab </th>
                                         <th class="column-title">Qaime </th>
+                                        <th class="column-title">Qiymətləndirən </th>
+                                        <th class="column-title">Qiyməti təsdiq edən </th>
                                     </tr>
                                     </thead>
 
@@ -90,6 +92,8 @@
                                                     <span title="Qaiməni yoxdur" disabled="true" class="btn btn-success btn-xs" style="background-color: #b6a338; border-color: #b6a338;"><i class="fa fa-download"></i></span>
                                                 @endif
                                             </td>
+                                            <td title="{{$purchase->supply_date}}">{{$purchase->supply_name}} {{$purchase->supply_surname}}</td>
+                                            <td title="{{$purchase->lawyer_date}}">{{$purchase->lawyer_name}} {{$purchase->lawyer_surname}}</td>
                                         </tr>
                                         @php
                                             $row++;

@@ -385,9 +385,9 @@
                           var edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
                           var cancel = '<span id="cancel_btn_' + id + '" onclick="del(this, ' + id + ');" title="Sil" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span>';
                         }
-                        var product = '<td>' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Product'] + '">' + '</td>';
-                        var translation_brand = '<td>' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Translation_Brand'] + '">' + '</td>';
-                        var part = '<td>' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Part'] + '">' + '</td>';
+                        var product = '<td>' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" title="' + order['Product'] + '" value="' + order['Product'] + '">' + '</td>';
+                        var translation_brand = '<td>' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" title="' + order['Translation_Brand'] + '" value="' + order['Translation_Brand'] + '">' + '</td>';
+                        var part = '<td>' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" title="' + order['Part'] + '" value="' + order['Part'] + '">' + '</td>';
                         var first_pcs = order['Pcs'];
                         if ((first_pcs - parseInt(first_pcs)) > 0) {
                           var last_pcs = first_pcs;
@@ -528,6 +528,15 @@
                     }
 
                     $('#orders_table').html(table);
+
+                    $( "input" ).keypress(function() {
+                        if (this.value.length < 20) {
+                            this.style.width = 20 + "ch";
+                        }
+                        else {
+                            this.style.width = this.value.length + "ch";
+                        }
+                    });
 
                     $('#table_display').css('display', 'block');
                 }

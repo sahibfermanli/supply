@@ -78,3 +78,11 @@
 td, th {
     white-space: nowrap !important;
 }
+
+input {
+    min-width: 10ch !important;
+}
+
+select {
+    min-width: 10ch !important;
+}

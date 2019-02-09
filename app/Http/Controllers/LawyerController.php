@@ -91,6 +91,7 @@ class LawyerController extends HomeController
 
         $order = Orders::where(['id' => $request->id])->select('image')->first();
         $image = '<img src="' . $order->image . '"  width="200" height="200">';
+        $image .= '<br><br><a class="btn btn-primary" href="' . $order->image . '" target="_blank">Şəkilə tam ölçüdə baxmaq</a>';
 
         return response(['case' => 'success', 'data' => $image]);
     }
@@ -382,7 +383,7 @@ class LawyerController extends HomeController
         }
         $order_id = $request->order_id;
 
-        $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$order_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->select('lb_Alternatives.id', 'lb_Alternatives.Brend', 'lb_Alternatives.Model', 'lb_Alternatives.PartSerialNo', 'lb_Alternatives.total_cost', 'lb_Alternatives.pcs', 'u.Unit', 'lb_Alternatives.date', 'c.country_name as country', 'lb_Alternatives.store_type', 'lb_Alternatives.id as alternative_id', 'cur.cur_name as currency', 'lb_sellers.seller_name as company', 'lb_Alternatives.Remark', 'lb_Alternatives.image', 'lb_Alternatives.suggestion')->get();
+        $alternatives = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$order_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->select('lb_Alternatives.id', 'lb_Alternatives.Brend', 'lb_Alternatives.Model', 'lb_Alternatives.PartSerialNo', 'lb_Alternatives.cost', 'lb_Alternatives.total_cost', 'lb_Alternatives.pcs', 'u.Unit', 'lb_Alternatives.date', 'c.country_name as country', 'lb_Alternatives.store_type', 'lb_Alternatives.id as alternative_id', 'cur.cur_name as currency', 'lb_sellers.seller_name as company', 'lb_Alternatives.Remark', 'lb_Alternatives.image', 'lb_Alternatives.suggestion')->get();
 
         return response(['case' => 'success', 'alternatives'=>$alternatives, 'order_id'=>$request->order_id]);
     }
@@ -402,7 +403,7 @@ class LawyerController extends HomeController
 
             unset($request['OrderID']);
 
-            $request->merge(['deleted'=>0]);
+            $request->merge(['deleted'=>0, 'LawyerID'=>Auth::id()]);
 
             Purchase::create($request->all());
 
@@ -447,7 +448,7 @@ class LawyerController extends HomeController
                 app('App\Http\Controllers\MailController')->get_send($email3, $to3, $title3, $message3);
             }
 
-            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ seçildi!']);
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ seçildi!', 'type'=>'create_purchase']);
         } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Alternativ seçilərkən səhv baş verdi!']);
         }
@@ -517,7 +518,7 @@ class LawyerController extends HomeController
                 app('App\Http\Controllers\MailController')->get_send($email3, $to3, $title3, $message3);
             }
 
-            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Uğurlu!']);
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Uğurlu!', 'type'=>'create_purchase']);
         } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
@@ -534,6 +535,7 @@ class LawyerController extends HomeController
 
         $alt = Alternatives::where(['id' => $request->id])->select('image')->first();
         $image = '<img src="' . $alt->image . '"  width="200" height="200">';
+        $image .= '<br><br><a class="btn btn-primary" href="' . $alt->image . '" target="_blank">Şəkilə tam ölçüdə baxmaq</a>';
 
         return response(['case' => 'success', 'data' => $image]);
     }

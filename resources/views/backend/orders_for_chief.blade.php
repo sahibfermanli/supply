@@ -394,9 +394,9 @@
                           var cancel = '<span id="cancel_btn_' + id + '" onclick="del(this, ' + id + ');" title="Geri çevir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span>';
                           check = '<td id="check_' + id + '"><span class="btn btn-success btn-xs" onclick="confirm_order(' + id + ');"><i class="fa fa-check"></i></span></td>';
                         }
-                        var product = '<td>' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Product'] + '">' + '</td>';
-                        var translation_brand = '<td>' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Translation_Brand'] + '">' + '</td>';
-                        var part = '<td>' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Part'] + '">' + '</td>';
+                        var product = '<td>' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" title="' + order['Product'] + '" value="' + order['Product'] + '">' + '</td>';
+                        var translation_brand = '<td>' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" title="' + order['Translation_Brand'] + '" value="' + order['Translation_Brand'] + '">' + '</td>';
+                        var part = '<td>' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" title="' + order['Part'] + '" value="' + order['Part'] + '">' + '</td>';
                         var first_pcs = order['Pcs'];
                         if ((first_pcs - parseInt(first_pcs)) > 0) {
                           var last_pcs = first_pcs;
@@ -422,7 +422,7 @@
                         }
                         unit = unit + '</select></td>';
 
-                        var marka = '<td>' + order['Marka'] + '</td>';
+                        var marka = '<td>' + order['Marka'] + ' - ' + order['QN'] + ' - ' + order['Tipi'] + '</td>';
 
                         if(order['WEB_link'] == null) {
                             var web_link ='<td><span disabled="true"><i class="fa fa-link"></i></span></td>';

@@ -110,6 +110,7 @@
                                                     <th class="column-title">Part No</th>
                                                     <th class="column-title">Miqdar</th>
                                                     <th class="column-title">Ölçü vahidi</th>
+                                                    <th class="column-title">Qiymət</th>
                                                     <th class="column-title">Ümumi qiymət</th>
                                                     <th class="column-title">Valyuta</th>
                                                     <th class="column-title">Qiymət vaxtı</th>
@@ -209,6 +210,8 @@
 
     {{--form submit--}}
     <script>
+        var category_id = 0;
+
         $(document).ready(function () {
             $('form').validate();
             $('form').ajaxForm({
@@ -227,8 +230,18 @@
                         response.case
                     );
                     if (response.case === 'success') {
-                        // location.replace('/orders');
-                        location.reload();
+                        if (response.type === 'create_purchase') {
+                            if (category_id === 0) {
+                                location.reload();
+                            } else {
+                                change_category(category_id);
+                                $('#add-modal-alternatives').modal('hide');
+                                $('#cancel-alternatives-form').modal('hide');
+                            }
+                        } else {
+                            // location.replace('/orders');
+                            location.reload();
+                        }
                     }
                 }
             });
@@ -307,6 +320,15 @@
 
             var cat_id = $(this).attr('cat_id');
 
+            category_id = cat_id;
+
+            change_category(cat_id);
+        });
+
+        //change category function
+        function change_category(elem) {
+            var cat_id = elem;
+
             $('#add_to_form_category_id').html('<input type="hidden" name="category_id" value="' + cat_id + '">');
 
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
@@ -382,6 +404,7 @@
                                 $('#Translation_Brand_th').html('Əlavə məlumat');
                                 $('#Part_th').html('Markası');
                                 $('#vehicle_th').css('display', 'none');
+                                $('#Defect_th').css('display', 'table-cell');
                             }
                                 break;
 
@@ -487,7 +510,7 @@
                             }
 
                             if (order['deffect_doc'] == null) {
-                                var defect = '<td><center><span disabled="true" title="Xəta sənədini endir" class="btn btn-success btn-xs"><i class="fa fa-download"></i></span></center></td>';
+                                var defect = '<td><center><span disabled="true" title="Xəta sənədini endir" class="btn btn-warning btn-xs"><i class="fa fa-download"></i></span></center></td>';
                             }
                             else{
                                 var defect = '<td><center><a title="Xəta sənədini endir" href="' + order['deffect_doc'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
@@ -508,7 +531,6 @@
                                 case '4': {
                                     //mesref
                                     marka = '';
-                                    defect = '';
 
                                 }
                                     break;
@@ -558,7 +580,7 @@
                     }
                 }
             });
-        });
+        }
     </script>
 
     {{--get alternatives--}}
@@ -601,6 +623,7 @@
                             var part = '<td>' + alternative['PartSerialNo'] + '</td>';
                             var pcs = '<td>' + alternative['pcs'] + '</td>';
                             var unit = '<td>' + alternative['Unit'] + '</td>';
+                            var cost = '<td>' + alternative['cost'] + '</td>';
                             var total_cost = '<td>' + alternative['total_cost'] + '</td>';
                             var currency = '<td>' + alternative['currency'] + '</td>';
                             var date = '<td>' + alternative['date'] + '</td>';
@@ -625,7 +648,7 @@
 
                             var radio = '<input type="radio" value="' + alternative['alternative_id'] + '" name="AlternativeID">';
                             var tr = '<tr class="even pointer" ' + tr_style + '>';
-                            tr = tr + '<td>' + radio + '</td><td>' + count + brend + model + part + pcs + unit + total_cost + currency + date + country + company + store_type + remark + image;
+                            tr = tr + '<td>' + radio + '</td><td>' + count + brend + model + part + pcs + unit + cost + total_cost + currency + date + country + company + store_type + remark + image;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
