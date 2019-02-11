@@ -84,10 +84,10 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
         });
 
-        //orders
-        Route::group(['prefix'=>'/orders'], function () {
-            Route::get('/', 'DirectorController@get_orders');
-            Route::post('/', 'DirectorController@post_order');
+        //alternatuves
+        Route::group(['prefix'=>'/alternatives'], function () {
+            Route::get('/', 'LawyerController@get_orders_for_alts');
+            Route::post('/', 'LawyerController@post_order_for_alts');
         });
 
         //pending orders
@@ -199,12 +199,6 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::group(['prefix'=>'/orders'], function () {
             Route::get('/', 'OrderController@get_orders');
             Route::post('/', 'OrderController@post_delete_order');
-        });
-
-        //alternatuves
-        Route::group(['prefix'=>'/alternatives'], function () {
-            Route::get('/', 'LawyerController@get_orders_for_alts');
-            Route::post('/', 'LawyerController@post_order_for_alts');
         });
 
         //pending orders

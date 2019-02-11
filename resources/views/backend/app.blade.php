@@ -191,21 +191,23 @@
                             @elseif(Auth::user()->authority() == 5)
                                 {{--Director--}}
                                 <li><a href="/director/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
-                                <li><a href="/director/orders/"><i class="fa fa-folder-open"></i> Sifarişlər</a></li>
+
+                                @php($alts_for_law_total_count = 0)
+                                @php($lis = '')
+                                @foreach($categories as $category)
+                                    @if($category->orders_count > 0)
+                                        @php($lis .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->orders_count.')<span></a></li>')
+                                        @php($alts_for_law_total_count += $category->orders_count)
+                                    @else
+                                        @php($lis .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
+                                    @endif
+                                @endforeach
+                                <li><a href="/director/alternatives/"><i class="fa fa-list-alt"></i> Alternativlər <span
+                                                style="color: #4CF632; font-weight: bold;">({{$alts_for_law_total_count}})<span></a>
+                                </li>
                                 <li class="active">
-                                    <ul class="nav child_menu show-categories">
-                                        @foreach($categories as $category)
-                                            @if($category->orders_count > 0)
-                                                <li class="cat-li"><a class="cat-select" href="#"
-                                                                      cat_id="{{$category->id}}">{{$category->process}}
-                                                        <span style="color: #4CF632; font-weight: bold;">({{$category->orders_count}})<span></a>
-                                                </li>
-                                            @else
-                                                <li class="cat-li"><a class="cat-select" href="#"
-                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
-                                                </li>
-                                            @endif
-                                        @endforeach
+                                    <ul class="nav child_menu show-categories-for-alts">
+                                        {!! $lis !!}
                                     </ul>
                                 </li>
 
@@ -265,25 +267,6 @@
                                                                       cat_id="{{$category->id}}">{{$category->process}}</a>
                                                 </li>
                                             @endforeach
-                                        </ul>
-                                    </li>
-
-                                    @php($alts_for_law_total_count = 0)
-                                    @php($lis = '')
-                                    @foreach($categories as $category)
-                                        @if($category->orders_count > 0)
-                                            @php($lis .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'  <span style="color: #4CF632; font-weight: bold;">('.$category->orders_count.')<span></a></li>')
-                                            @php($alts_for_law_total_count += $category->orders_count)
-                                        @else
-                                            @php($lis .= '<li class="cat-li"><a class="cat-select" href="#" cat_id="'.$category->id.'">'.$category->process.'</a></li>')
-                                        @endif
-                                    @endforeach
-                                    <li><a href="/law/alternatives/"><i class="fa fa-list-alt"></i> Alternativlər <span
-                                                    style="color: #4CF632; font-weight: bold;">({{$alts_for_law_total_count}})<span></a>
-                                    </li>
-                                    <li class="active">
-                                        <ul class="nav child_menu show-categories-for-alts">
-                                            {!! $lis !!}
                                         </ul>
                                     </li>
                                 @endif
