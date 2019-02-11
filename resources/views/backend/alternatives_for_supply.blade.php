@@ -639,14 +639,21 @@
                                 image = '<td><span style="background-color: #ffac27; border-color: #ffac27;" title="Şəkil yoxdur" disabled="true" class="btn btn-success btn-xs"><i class="fa fa-image"></i></span></td>';
                             }
 
+                            var checked = '';
+
                             var tr_style = '';
                             if (alternative['suggestion'] === 1) {
                                 tr_style = 'style="background-color: #a3fff7;"';
+                                checked = 'checked';
                             } else {
                                 tr_style = '';
                             }
 
-                            var radio = '<input type="radio" value="' + alternative['alternative_id'] + '" name="AlternativeID">';
+                            if (alternatives.length === 1) {
+                                checked = 'checked';
+                            }
+
+                            var radio = '<input type="radio" ' + checked + ' value="' + alternative['alternative_id'] + '" name="AlternativeID">';
                             var tr = '<tr class="even pointer" ' + tr_style + '>';
                             tr = tr + '<td>' + radio + '</td><td>' + alternative['id'] + brend + model + part + pcs + unit + cost + total_cost + currency + date + country + company + store_type + remark + image;
                             tr = tr + '</tr>';
