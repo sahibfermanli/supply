@@ -47,6 +47,7 @@
                                             <th class="column-title">#</th>
                                             <th class="column-title">Sil</th>
                                             <th class="column-title">Sifarişçi</th>
+                                            <th class="column-title">Sifariş vaxtı</th>
                                             <th class="column-title">Malın adı</th>
                                             <th class="column-title">Marka</th>
                                             <th class="column-title">Model</th>
@@ -67,17 +68,18 @@
                                         @foreach($orders as $order)
                                             <?php
                                             $date = date('d.m.Y', strtotime($order->account_date));
+                                            $created_date = date('d.m.Y', strtotime($order->created_at));
                                             ?>
                                             <tr class="even pointer" id="row_{{$row}}">
                                                 <td>{{$order->id}}</td>
                                                 <td id="cancel_{{$row}}">
-                                                    {{--<span title="Sifarişi geri çevir" class="btn btn-danger btn-xs" onclick="cancel_order(this, '{{$order->order_id}}', '{{$order->id}}', '{{$row}}');"><i class="fa fa-times"></i></span>--}}
                                                     <span title="Sifarişi geri çevir" class="btn btn-danger btn-xs"
                                                           onclick="cancel_order_modal('{{$order->order_id}}', '{{$order->id}}', '{{$row}}');"><i
                                                                 class="fa fa-times"></i></span>
                                                 </td>
                                                 <td style="min-width: 200px;">{{$order->name}} {{$order->surname}}
                                                     , {{$order->Department}}</td>
+                                                <td>{{$created_date}}</td>
                                                 <td>{{$order->Product}}</td>
                                                 <td>{{$order->Brend}}</td>
                                                 <td>{{$order->Model}}</td>
@@ -86,9 +88,6 @@
                                                 <td>{{$order->cost}}</td>
                                                 <td>{{$order->total_cost}}</td>
                                                 <td title="{{$order->phone}} , {{$order->address}}">{{$order->company}}</td>
-                                                {{--<td title="{{$order->account_date}}">--}}
-                                                {{--<a class="btn btn-success btn-xs" title="{{$order->account_date}}" target="_blank" href="{{$order->account_doc}}"><i class="fa fa-download"></i> {{$order->account_no}}</a>--}}
-                                                {{--</td>--}}
                                                 <td>
                                                     @if(!empty($order->qaime_doc))
                                                         <a class="btn btn-success btn-xs" title="{{$order->qaime_date}}"

@@ -39,6 +39,7 @@
                                             @php($product_input_length = 1)
                                         @endif
                                         <th class="column-title">Emeliyyatlar</th>
+                                        <th class="column-title">Sifariş vaxtı</th>
                                         <th class="column-title" id="Product_th">Malın adı</th>
                                         <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
                                         <th class="column-title" id="Part_th">Part No</th>
@@ -214,7 +215,7 @@
                                                                                                             class="form-control input-sm"
                                                                                                             name="picture">
                                                     </td>
-                                                    <td colspan="2" id="orders-add-inputs" style="width: 150px;"><input
+                                                    <td colspan="3" id="orders-add-inputs" style="width: 150px;"><input
                                                                 id="remark_input"
                                                                 type="text" class="form-control input-sm" name="Remark"
                                                                 placeholder="Qeyd *" required></td>
@@ -238,6 +239,7 @@
                                                     <th class="column-title">Şəkil</th>
                                                     <th class="column-title">Qeyd</th>
                                                     <th class="column-title">Direktorun qeydi</th>
+                                                    <th class="column-title">Yaradılma vaxtı</th>
                                                 </tr>
                                                 </thead>
 
@@ -726,8 +728,10 @@
                                 color_style = 'style="background-color: #F5A6A1;"';
                             }
 
+                            var date = '<td>' + order['created_at'].substr(0, 10) + '</td>';
+
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + id + '</td>' + select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + status + remark + picture + defect;
+                            tr = tr + '<td>' + id + '</td>' + select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + date + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -904,7 +908,8 @@
                             var company = '<td>' + request['company'] + '</td>';
                             var country = '<td>' + request['country'] + '</td>';
                             var remark = '<td>' + request['Remark'] + '</td>';
-                            var director_remark = '<td>' + 'null' + '</td>';
+                            var director_remark = '<td>' + '---' + '</td>';
+                            var created_date = '<td>' + request['created_at'].substr(0, 10) + '</td>';
 
                             var image = '';
                             if (request['image'] !== null) {
@@ -922,7 +927,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + alt_id + '</td><td></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            tr = tr + '<td>' + alt_id + '</td><td></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark + created_date;
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);
@@ -1086,6 +1091,7 @@
                             var remark = '<td>' + alternative['Remark'] + '</td>';
                             var director_remark = '<td>' + alternative['DirectorRemark'] + '</td>';
                             var image = '';
+                            var created_date = '<td>' + alternative['created_at'].substr(0, 10) + '</td>';
 
                             if (alternative['image'] !== null) {
                                 image = '<td><span title="Şəkli göstər" onclick="get_alt_image(' + alt_id + ');" class="btn btn-success btn-xs alt-image-modal"><i class="fa fa-image"></i></span></td>';
@@ -1101,7 +1107,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + alt_id + '</td><td style="min-width: 80px;"><span id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</span><span id="suggestion_alternative_tr_' + alternative['id'] + '">' + suggestion_btn + '</span></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            tr = tr + '<td>' + alt_id + '</td><td style="min-width: 80px;"><span id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</span><span id="suggestion_alternative_tr_' + alternative['id'] + '">' + suggestion_btn + '</span></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark + created_date;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -1378,18 +1384,4 @@
             });
         }
     </script>
-
-    {{--<script type="text/javascript">--}}
-    {{--//add modal--}}
-    {{--$(document).on('click', '.add-modal', function () {--}}
-    {{--$('#add-modal').modal('show');--}}
-    {{--});--}}
-    {{--</script>--}}
-
-    {{--<script type="text/javascript">--}}
-    {{--//show-alternative-modal--}}
-    {{--$(document).on('click', '.show-alternative-modal', function () {--}}
-    {{--$('#show-alternative-modal').modal('show');--}}
-    {{--});--}}
-    {{--</script>--}}
 @endsection

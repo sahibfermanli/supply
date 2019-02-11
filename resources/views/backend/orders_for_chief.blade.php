@@ -43,6 +43,7 @@
                                             <th class="column-title">Təsdiq</th>
                                             <th class="column-title" style="min-width: 80px;">Düzəliş</th>
                                             <th class="column-title">Sifarişçi</th>
+                                            <th class="column-title">Tarix</th>
                                             <th class="column-title" id="Product_th">Malın adı</th>
                                             <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
                                             <th class="column-title" id="Part_th">Part No</th>
@@ -503,8 +504,10 @@
                                 break;
                         }
 
+                        var date = '<td>' + order['created_at'].substr(0, 10) + '</td>';
+
                         var tr = '<tr class="even pointer" id="row_' + order['id'] + '">';
-                        tr = tr + '<td>' + id + '</td>' + check + '<td id="actions_' + id + '"><center>' + edit + cancel + '</center></td>' + user + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
+                        tr = tr + '<td>' + id + '</td>' + check + '<td id="actions_' + id + '"><center>' + edit + cancel + '</center></td>' + user + date + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
                         tr = tr + '</tr>';
                         table = table + tr;
                     }
@@ -547,7 +550,7 @@
         var image = '';
         var deffect_doc = '';
 
-        @php($product_colspan = 2)
+        @php($product_colspan = 3)
 
         var inputs = '<td colspan="3" id="add-btn-td"><center><button type="submit" id="add-btn" class="btn btn-success btn-xs"><i class="fa fa-save"></i></button></center></td>';
 

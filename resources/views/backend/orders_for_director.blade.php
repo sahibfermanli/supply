@@ -33,6 +33,7 @@
                                         <th class="column-title">#</th>
                                         <th class="column-title">Alternativ</th>
                                         <th class="column-title">Sifarişçi</th>
+                                        <th class="column-title">Tarix</th>
                                         <th class="column-title" id="Product_th">Malın adı</th>
                                         <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
                                         <th class="column-title" id="Part_th">Part No</th>
@@ -116,6 +117,7 @@
                                                     <th class="column-title">Ölkə</th>
                                                     <th class="column-title">Firma</th>
                                                     <th class="column-title">Mağaza tipi</th>
+                                                    <th class="column-title">Yaradılma tarixi</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody id="alternatives_table">
@@ -524,8 +526,10 @@
                                     break;
                             }
 
+                            var date = '<td>' + order['created_at'].substr(0, 10) + '</td>';
+
                             var tr = '<tr class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + id + '</td>' + show_alt + user_detail + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
+                            tr = tr + '<td>' + id + '</td>' + show_alt + user_detail + date + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -593,8 +597,11 @@
                             }
 
                             var radio = '<input type="radio" value="' + alternative['alternative_id'] + '" name="AlternativeID">';
+
+                            var created_date = '<td>' + alternative['created_at'].substr(0, 10) + '</td>';
+
                             var tr = '<tr class="even pointer">';
-                            tr = tr + '<td>' + radio + '</td><td>' + alternative['id'] + brend + model + part + pcs + unit + total_cost + currency + date + country + company + store_type + remark + image;
+                            tr = tr + '<td>' + radio + '</td><td>' + alternative['id'] + brend + model + part + pcs + unit + total_cost + currency + date + country + company + store_type + remark + image + created_date;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
