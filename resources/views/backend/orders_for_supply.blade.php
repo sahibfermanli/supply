@@ -727,7 +727,7 @@
                             }
 
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>' + select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + status + remark + picture + defect;
+                            tr = tr + '<td>' + id + '</td>' + select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -922,7 +922,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + count + '</td><td></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            tr = tr + '<td>' + alt_id + '</td><td></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);
@@ -1101,7 +1101,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + count + '</td><td style="min-width: 80px;"><span id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</span><span id="suggestion_alternative_tr_' + alternative['id'] + '">' + suggestion_btn + '</span></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
+                            tr = tr + '<td>' + alt_id + '</td><td style="min-width: 80px;"><span id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</span><span id="suggestion_alternative_tr_' + alternative['id'] + '">' + suggestion_btn + '</span></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }

@@ -60,7 +60,7 @@
                                             }
                                         ?>
                                         <tr class="even pointer" id="row_{{$row}}">
-                                            <td style="background-color: {{$color}};">{{$row}}</td>
+                                            <td style="background-color: {{$color}};">{{$purchase->id}}</td>
                                             <td>{{$purchase->name}} {{$purchase->surname}} , {{$purchase->Department}}</td>
                                             <td style="color: {{$purchase->color}};">{{$purchase->status}}</td>
                                             <td>{{$purchase->Product}}</td>

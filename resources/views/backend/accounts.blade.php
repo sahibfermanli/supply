@@ -107,7 +107,7 @@
                                                 }
                                             ?>
                                             <tr class="even pointer" id="row_{{$row}}">
-                                                <td>{{$row}}</td>
+                                                <td>{{$account->id}}</td>
                                                 <td><input style="border: none;" type="text" {{$disabled}}
                                                            class="form-control input-sm"
                                                            id="account_no_edit_{{$account->id}}"
@@ -239,7 +239,7 @@
                                                 $date = date('d.m.Y', strtotime($purchase->created_at));
                                                 ?>
                                                 <tr class="even pointer" id="move_{{$purchase->id}}">
-                                                    <td>{{$row}}</td>
+                                                    <td>{{$purchase->id}}</td>
                                                     <td>
                                                         <span id="add_purchase_to_account_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_account('{{$purchase->id}}', '{{$purchase->company_id}}');"
                                                               class="add_purchase_to_account_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span>
@@ -623,7 +623,7 @@
                             var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                             var tr = '<tr class="even pointer" id="remove_' + purchase['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
+                            tr = tr + '<td>' + purchase['id'] + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }

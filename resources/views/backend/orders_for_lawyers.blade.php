@@ -69,7 +69,7 @@
                                             $date = date('d.m.Y', strtotime($order->account_date));
                                             ?>
                                             <tr class="even pointer" id="row_{{$row}}">
-                                                <td>{{$row}}</td>
+                                                <td>{{$order->id}}</td>
                                                 <td id="cancel_{{$row}}">
                                                     {{--<span title="Sifarişi geri çevir" class="btn btn-danger btn-xs" onclick="cancel_order(this, '{{$order->order_id}}', '{{$order->id}}', '{{$row}}');"><i class="fa fa-times"></i></span>--}}
                                                     <span title="Sifarişi geri çevir" class="btn btn-danger btn-xs"

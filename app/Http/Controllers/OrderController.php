@@ -687,9 +687,10 @@ class OrderController extends HomeController
             'Pcs' => 'required',
             'unit_id' => 'required',
             'category_id' => 'required',
+            'Remark' => 'required'
         ]);
         if ($validator->fails()) {
-            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Lazımlı xanaları doldurun!']);
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Lazımlı xanaları doldurun (ad, miqdar, səbəb)!']);
         }
 
         $product = $request->Product;

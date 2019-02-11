@@ -504,7 +504,7 @@
                         }
 
                         var tr = '<tr class="even pointer" id="row_' + order['id'] + '">';
-                        tr = tr + '<td>' + count + '</td>' + check + '<td id="actions_' + id + '"><center>' + edit + cancel + '</center></td>' + user + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
+                        tr = tr + '<td>' + id + '</td>' + check + '<td id="actions_' + id + '"><center>' + edit + cancel + '</center></td>' + user + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
                         tr = tr + '</tr>';
                         table = table + tr;
                     }

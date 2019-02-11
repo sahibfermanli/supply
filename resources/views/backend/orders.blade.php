@@ -522,7 +522,7 @@
                         }
 
                         var tr = '<tr class="even pointer" id="row_' + order['id'] + '">';
-                        tr = tr + '<td>' + count + '</td>' + '<td><center>' + edit + cancel + '</center></td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
+                        tr = tr + '<td>' + id + '</td>' + '<td><center>' + edit + cancel + '</center></td>' + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
                         tr = tr + '</tr>';
                         table = table + tr;
                     }

@@ -569,7 +569,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + count + '</td>' + show_alt + user_detail + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
+                            tr = tr + '<td>' + id + '</td>' + show_alt + user_detail + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -648,7 +648,7 @@
 
                             var radio = '<input type="radio" value="' + alternative['alternative_id'] + '" name="AlternativeID">';
                             var tr = '<tr class="even pointer" ' + tr_style + '>';
-                            tr = tr + '<td>' + radio + '</td><td>' + count + brend + model + part + pcs + unit + cost + total_cost + currency + date + country + company + store_type + remark + image;
+                            tr = tr + '<td>' + radio + '</td><td>' + alternative['id'] + brend + model + part + pcs + unit + cost + total_cost + currency + date + country + company + store_type + remark + image;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
