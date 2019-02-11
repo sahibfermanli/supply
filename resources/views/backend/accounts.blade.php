@@ -241,7 +241,7 @@
                                                 <tr class="even pointer" id="move_{{$purchase->id}}">
                                                     <td>{{$purchase->id}}</td>
                                                     <td>
-                                                        <span id="add_purchase_to_account_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_account('{{$purchase->id}}', '{{$purchase->company_id}}');"
+                                                        <span id="add_purchase_to_account_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_account('{{$purchase->id}}', '{{$purchase->company_id}}', '{{$purchase->OrderID}}');"
                                                               class="add_purchase_to_account_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span>
                                                     </td>
                                                     <td>{{$purchase->Product}}</td>
@@ -605,7 +605,7 @@
                             var purchase = purchases[i];
 
                             if(disabled === 0) {
-                                remove = '<td><span onclick="remove_purchase_from_selected_account(' + purchase['id'] + ');" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
+                                remove = '<td><span onclick="remove_purchase_from_selected_account(' + purchase['id'] + ',' + purchase['OrderID'] + ');" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
                             }
                             else {
                                 remove = '<td><span disabled="true" title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
@@ -700,7 +700,7 @@
         }
         @endif
 
-        function add_purchase_to_selected_account(purchase_id, company_id) {
+        function add_purchase_to_selected_account(purchase_id, company_id, order_id) {
             var account_id = $('#account_id').val();
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
@@ -710,6 +710,7 @@
                     'account_id': account_id,
                     'purchase_id': purchase_id,
                     'company_id': company_id,
+                    'order_id': order_id,
                     '_token': CSRF_TOKEN,
                     'type': 'add_purchase_to_selected_account'
                 },
@@ -719,7 +720,7 @@
                         var table = '';
                         var purchase = response.purchase;
 
-                        var remove = '<td><span onclick="remove_purchase_from_selected_account(' + purchase['id'] + ');" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
+                        var remove = '<td><span onclick="remove_purchase_from_selected_account(' + purchase['id'] + ',' + purchase['OrderID'] + ');" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
                         var product = '<td>' + purchase['Product'] + '</td>';
                         var brend = '<td>' + purchase['Brend'] + '</td>';
                         var model = '<td>' + purchase['Model'] + '</td>';
@@ -753,13 +754,14 @@
             });
         }
 
-        function remove_purchase_from_selected_account(purchase_id) {
+        function remove_purchase_from_selected_account(purchase_id, order_id) {
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "Post",
                 url: '',
                 data: {
                     'purchase_id': purchase_id,
+                    'order_id': order_id,
                     '_token': CSRF_TOKEN,
                     'type': 'remove_purchase_from_selected_account'
                 },
@@ -774,7 +776,7 @@
                         var table = '';
                         var purchase = response.purchase;
 
-                        var move_btn = '<td><span id="add_purchase_to_account_span_' + purchase['company_id'] + '" onclick="add_purchase_to_selected_account(' + purchase['id'] + ',' + purchase['company_id'] + ');" class="add_purchase_to_account_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span></td>';
+                        var move_btn = '<td><span id="add_purchase_to_account_span_' + purchase['company_id'] + '" onclick="add_purchase_to_selected_account(' + purchase['id'] + ',' + purchase['company_id'] + ',' + purchase['OrderID'] + ');" class="add_purchase_to_account_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span></td>';
                         var product = '<td>' + purchase['Product'] + '</td>';
                         var brend = '<td>' + purchase['Brend'] + '</td>';
                         var model = '<td>' + purchase['Model'] + '</td>';
