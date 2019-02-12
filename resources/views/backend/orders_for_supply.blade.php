@@ -4,7 +4,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left" style="width: 100%; !important;">
-                    <h3 style="display: inline-block;"> Sifarişlər</h3>
+                    <h3 style="display: inline-block;"> Alternativlər</h3>
                     <span class="btn btn-success btn-mobile" style="display: none;">Kategoriyalar</span>
                 </div>
             </div>
@@ -218,7 +218,7 @@
                                                     <td colspan="3" id="orders-add-inputs" style="width: 150px;"><input
                                                                 id="remark_input"
                                                                 type="text" class="form-control input-sm" name="Remark"
-                                                                placeholder="Qeyd *" required></td>
+                                                                placeholder="Qeyd"></td>
                                                 </tr>
                                                 <tr class="headings">
                                                     <th class="column-title">#</th>
