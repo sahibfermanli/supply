@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Accounts;
 use App\Categories;
+use App\Settings;
 use Illuminate\Support\Facades\View;
 
 class HomeController extends Controller
@@ -19,7 +20,10 @@ class HomeController extends Controller
 
         $categories = Categories::where(['deleted'=>0])->orderBy('process')->select('id', 'process')->get();
 
-        View::share(['categories'=>$categories, 'accounts'=>array()]);
+        //settings
+        $settings = Settings::where(['id'=>1])->select('message', 'message_color')->first();
+
+        View::share(['categories'=>$categories, 'accounts'=>array(), 'settings'=>$settings]);
     }
 
     /**

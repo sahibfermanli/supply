@@ -145,6 +145,12 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/', 'SupplyController@post_delete_supply_user');
     });
 
+    //Settings for admins
+    Route::group(['prefix'=>'settings', 'middleware'=>'Admin'], function () {
+        Route::get('/', 'SettingsController@get_settings');
+        Route::post('/', 'SettingsController@update_settings');
+    });
+
     //situations for admins
     Route::group(['prefix'=>'situations', 'middleware'=>'Admin'], function () {
         Route::get('/', 'SituationController@get_situations');

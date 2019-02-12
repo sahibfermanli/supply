@@ -69,10 +69,11 @@
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                     <div class="menu_section">
                         <ul class="nav side-menu">
-                            <li><a href="/"><i class="fa fa-home"></i> Əsas səhifə</a></li>
+                            <li><a style="color: {{$settings->message_color}};" href="/"><i class="fa fa-home"></i> Bildirişlər</a></li>
 
                             @if(Auth::user()->authority() == 1)
                                 {{--admin--}}
+                                <li><a href="/settings"><i class="fa fa-cogs"></i> Ayarlar</a></li>
                                 <li><a href="/admins"><i class="fa fa-user-secret"></i> Adminlər</a></li>
                                 <li><a href="/chiefs"><i class="fa fa-user"></i> Rəhbərlər</a></li>
                                 <li><a href="/directors"><i class="fa fa-user-plus"></i> Direktorlar</a></li>
