@@ -115,6 +115,8 @@
 
     {{--form submit--}}
     <script>
+        var remark_value = '';
+
         $(document).ready(function () {
             $('form').validate();
             $('form').ajaxForm({
@@ -437,15 +439,10 @@
                             var web_link ='<td><a target="_blank" href="' + order['WEB_link'] + '"><i class="fa fa-link"></i></a></td>';
                         }
 
-                        if (order['Remark'] == null) {
-                            var remark = '<td><center><span disabled="true" title="Sifariş səbəbii göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
-                        }
-                        else{
-                            var remark = '<td><center><span title="Sifariş səbəbii göstər" onclick="get_data(' + id + ', 3);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
-                        }
+                        var remark = '<td><center><span title="Sifariş səbəbii göstər" onclick="get_data(' + id + ', 3);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
 
                         if (order['image'] == null) {
-                            var picture = '<td><center><span disabled="true" title="Şəkli göstər" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span></center></td>';
+                            var picture = '<td><center><span disabled="true" title="Şəkli göstər" class="btn btn-warning btn-xs"><i class="fa fa-eye"></i></span></center></td>';
                         }
                         else{
                             var picture = '<td><center><span title="Şəkli göstər" onclick="get_data(' + id + ', 4);" class="btn btn-success btn-xs add-modal"><i class="fa fa-eye"></i></span></center></td>';
@@ -998,26 +995,62 @@
                 success: function (response) {
                     swal.close();
 
+                    remark_value = response.remark;
+
                     $('.get-data').html(response.data);
 
                     $('#add-modal').modal('show');
                 }
             });
         }
+
+        function edit_remark(id) {
+            var input = '';
+            var button = '';
+
+            input = '<textarea style="resize: vertical;" class="form-control" id="remark-input">' + remark_value + '</textarea>';
+
+            button = '<button class="btn btn-success" onclick="update_remark(' + id + ');">Təsdiq et</button>';
+
+            $('#remark-span').html(input);
+            $('#remark-btn').html(button);
+        }
+
+        function update_remark(id) {
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            var remark = $('#remark-input').val();
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'id': id,
+                    'remark': remark,
+                    '_token': CSRF_TOKEN,
+                    'type': 'update_remark'
+                },
+                beforeSubmit: function () {
+                    //loading
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
+                        text: 'Loading, please wait..',
+                        showConfirmButton: false
+                    });
+                },
+                success: function (response) {
+                    if (response.case === 'success') {
+                        swal.close();
+                        $('#add-modal').modal('hide');
+                        change_category(category_id);
+                    } else {
+                        swal(
+                            response.title,
+                            response.content,
+                            response.case
+                        );
+                    }
+                }
+            });
+        }
     </script>
-
-    {{--<script type="text/javascript">--}}
-        {{--//add modal--}}
-        {{--$(document).on('click', '.add-modal', function() {--}}
-            {{--$('#add-modal').modal('show');--}}
-        {{--});--}}
-    {{--</script>--}}
-
-    {{--<script type="text/javascript">--}}
-        {{--//modal add order--}}
-        {{--$(document).on('click', '.order-add-form-modal', function() {--}}
-            {{--$('#order-add-form-modal').modal('show');--}}
-        {{--});--}}
-    {{--</script>--}}
 
 @endsection

@@ -61,6 +61,10 @@ class OrderController extends HomeController
             //update order
             return $this->update_order($request);
         }
+        else if ($request->type == 'update_remark') {
+            //update remark
+            return $this->update_remark($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Xəta baş verdi!']);
         }
@@ -104,6 +108,10 @@ class OrderController extends HomeController
         else if ($request->type == 7) {
             //confirm order
             return $this->confirm_order($request);
+        }
+        else if ($request->type == 'update_remark') {
+            //update remark
+            return $this->update_remark($request);
         }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
@@ -512,9 +520,51 @@ class OrderController extends HomeController
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'İd tapılmadı!']);
         }
 
-        $order = Orders::where(['id' => $request->id])->select('Remark')->first();
+        $id = $request->id;
+        $data = '';
 
-        return response(['case' => 'success', 'data' => $order['Remark']]);
+        $order = Orders::where(['id' => $id])->select('Remark', 'situation_id', 'confirmed')->first();
+
+        $remark = '<span id="remark-span">' . $order['Remark'] . '</span>';
+
+        if ($order['status_id'] == 9 || $order['confirmed'] == 1) {
+            $btn = '<span id="remark-btn"><button title="Düymə deaktivdir" class="btn btn-warning">Dəyişdirmək</button></span>';
+        }
+        else {
+            $btn = '<span id="remark-btn"><button class="btn btn-primary" onclick="edit_remark(' . $id . ');">Dəyişdirmək</button></span>';
+        }
+
+        $data = $remark . '<br><br>' . $btn;
+
+        return response(['case' => 'success', 'data' => $data, 'remark'=>$order['Remark']]);
+    }
+
+    //update remark
+    private function update_remark(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'remark' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'İd tapılmadı!']);
+        }
+
+        try {
+            $id = $request->id;
+            $remark = $request->remark;
+
+            $order = Orders::where(['id' => $id])->select('situation_id', 'confirmed')->first();
+
+            if ($order['status_id'] == 9 || $order['confirmed'] == 1) {
+                return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Bunun üçün icazəniz yoxdur!']);
+            }
+
+            Orders::where(['id'=>$id])->update(['remark'=>$remark]);
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Uğurlu!']);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
+        }
     }
 
     //cancel order for supply
