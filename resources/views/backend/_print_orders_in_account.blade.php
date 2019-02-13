@@ -43,7 +43,7 @@
                     <span class="details"><strong>Ödəniş və ödəmə sənədi №:</strong> </span>
                     <span class="details"><strong>Ünvan:</strong> </span>
                     <span class="details"><strong>VÖEN:</strong> 9900067141</span>
-                    <span class="details"><strong>Valyuta:</strong> Azərbaycan manatı</span>
+                    <span class="details"><strong>Valyuta:</strong> {{$orders[0]->currency}}</span>
                 </div>
             </div>
             <div class="col-sm">

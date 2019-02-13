@@ -29,14 +29,14 @@
                                         <td id="add-btn-td"><center><button type="submit" id="add-btn" class="btn btn-success btn-xs"><i class="fa fa-save"></i></button></center></td>
                                         <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_name" placeholder="Satıcı adı *"></td>
                                         <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_director" placeholder="Satıcı direktor *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_voen" placeholder="Satıcı VÖEN *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_account_no" placeholder="Satıcı hesab № *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_name" placeholder="Bank adı *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_voen" placeholder="Bank VÖEN *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_code" placeholder="Bank kodu *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_m_n" placeholder="Bank M/Hesab № *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_swift" placeholder="Bank SWIFT *"></td>
-                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="contract_no" placeholder="Müqavilə № *"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_voen" placeholder="Satıcı VÖEN"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="seller_account_no" placeholder="Satıcı hesab №"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_name" placeholder="Bank adı"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_voen" placeholder="Bank VÖEN"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_code" placeholder="Bank kodu"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_m_n" placeholder="Bank M/Hesab №"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="bank_swift" placeholder="Bank SWIFT"></td>
+                                        <td id="orders-add-inputs" ><input type="text" class="form-control input-sm" name="contract_no" placeholder="Müqavilə №"></td>
                                         <td id="orders-add-inputs" ><input type="date" class="form-control input-sm" name="contract_date"></td>
                                     </tr>
                                     <tr class="headings">
