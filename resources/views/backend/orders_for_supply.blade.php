@@ -779,7 +779,7 @@
                     if (type === 3) {
                         $('.image-form-modal').html('');
                         var remark = '';
-                        remark = '<textarea class="form-control" id="Remark_edit_' + id + '" name="Remark">' + response.data + '</textarea>'
+                        remark = '<textarea class="form-control" id="Remark_edit_' + id + '" name="Remark">' + response.remark + '</textarea>'
                         $('.remark-modal').html(remark);
                     } else {
                         $('.remark-modal').html('');

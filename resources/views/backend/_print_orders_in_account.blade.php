@@ -38,6 +38,8 @@
             <div class="col-sm">
                 <div>
                     <h4><strong>Hesab faktura № {{$account->account_no}}</strong></h4>
+                    <h5 class="details"><strong>Tarix:</strong> {{$current_date}}</h5>
+                    <br>
                     <span class="details"><strong>Alıcı:</strong> SW_GHC</span>
                     <span class="details"><strong>Mal qəbul edən:</strong> SW_GHC</span>
                     <span class="details"><strong>Ödəniş və ödəmə sənədi №:</strong> </span>
@@ -65,6 +67,7 @@
         <table class="table table-bordered">
             <thead>
             <tr>
+                <th class="column-title">№</th>
                 <th class="column-title">Malın adı</th>
                 <th class="column-title">Marka</th>
                 <th class="column-title">Model</th>
@@ -83,11 +86,15 @@
                     <td><center><small>5</small></center></td>
                     <td><center><small>6</small></center></td>
                     <td><center><small>7</small></center></td>
+                    <td><center><small>8</small></center></td>
                 </tr>
                 @php($total = 0)
+                @php($row = 0)
                 @foreach($orders as $order)
+                    @php($row++)
                     @php($total += $order->total_cost)
                     <tr>
+                        <td>{{$row}}</td>
                         <td>{{$order->Product}}</td>
                         <td>{{$order->Brend}}</td>
                         <td>{{$order->Model}}</td>
@@ -106,6 +113,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td>{{$total}}</td>
                 </tr>
                 <tr>
@@ -115,10 +123,11 @@
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td>{{$edv}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Cəmi, {{$orders[0]->currency}}</strong></td>
+                    <td colspan="2"><strong>Cəmi, {{$orders[0]->currency}}</strong></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -132,7 +141,7 @@
         <br>
         <div>
             <span class="director">Direktor,  __________________ {{$account->seller_director}}</span>
-            <span class="date">Tarix: {{$current_date}}</span>
+            {{--<span class="date">Tarix: {{$current_date}}</span>--}}
         </div>
     </div>
 </body>

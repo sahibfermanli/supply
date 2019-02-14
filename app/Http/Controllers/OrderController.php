@@ -627,6 +627,11 @@ class OrderController extends HomeController
             $id = $request->id;
             $date = Carbon::now();
 
+            $purchases = Purchase::where(['deleted'=>0])->select('AlternativeID')->distinct()->get();
+//            $alternatives = Alternatives::whereIn('id', $purchases)->where(['deleted'=>0])->select('OrderID')->get();
+
+            if ($orders = Alternatives::whereIn('id', $purchases)->whereNotNull('DirectorRemark')->count() > 0)
+
             if (Alternatives::where(['id'=>$id, 'confirm_chief'=>0])->count() == 0) {
                 return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Bu alternativi silmək üçün icazəniz yoxdur!']);
             }

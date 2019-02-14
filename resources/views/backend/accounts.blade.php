@@ -14,6 +14,10 @@
                             <span>Hesabı çap et</span>
                         </li>
                         <li>
+                            <span disabled="true" style="background-color: #99c2ff; border-color: #99c2ff;" class="btn btn-primary btn-xs"><i class="fa fa-money"></i></span>
+                            <span>Tələbnamə</span>
+                        </li>
+                        <li>
                             <span disabled="true" title="Alımları göstər"
                                   class="btn btn-success btn-xs"><i
                                         class="fa fa-eye"></i>
@@ -139,6 +143,7 @@
                                                 @if($account->send == 0)
                                                     <td id="btns_{{$account->id}}">
                                                         <a href="/supply/accounts/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
+                                                        <a style="background-color: #99c2ff; border-color: #99c2ff;" href="/supply/accounts/finance/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-money"></i></a>
                                                         <span title="Alımları göstər"
                                                               class="btn btn-success btn-xs show-purchases-modal"
                                                               onclick="show_purchases(this, '{{$account->id}}', '{{$account->company_id}}');"><i
@@ -159,6 +164,7 @@
                                                 @else
                                                     <td>
                                                         <a href="/supply/accounts/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
+                                                        <a style="background-color: #99c2ff; border-color: #99c2ff;" href="/supply/accounts/finance/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-money"></i></a>
                                                         <span title="Sifarişləri gör" onclick="show_purchases(this, '{{$account->id}}', 0, 1);"
                                                               class="btn btn-success btn-xs show-purchases-modal"><i
                                                                     class="fa fa-eye"></i></span>
