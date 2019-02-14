@@ -153,13 +153,13 @@
                                                                   title="Hüquqa göndər" class="btn btn-success btn-xs"
                                                                   onclick="send_lawyer(this, '{{$account->id}}');"><i
                                                                         class="fa fa-share-square"></i></span>
+                                                            <span title="Düzəliş et" class="btn btn-warning btn-xs"
+                                                                  onclick="update(this, '{{$account->id}}');"><i
+                                                                        class="fa fa-edit"></i></span>
+                                                            <span title="Sil" class="btn btn-danger btn-xs"
+                                                                  onclick="del(this, '{{$account->id}}', '{{$row}}');"><i
+                                                                        class="fa fa-trash-o"></i></span>
                                                         @endif
-                                                        <span title="Düzəliş et" class="btn btn-warning btn-xs"
-                                                              onclick="update(this, '{{$account->id}}');"><i
-                                                                    class="fa fa-edit"></i></span>
-                                                        <span title="Sil" class="btn btn-danger btn-xs"
-                                                              onclick="del(this, '{{$account->id}}', '{{$row}}');"><i
-                                                                    class="fa fa-trash-o"></i></span>
                                                     </td>
                                                 @else
                                                     <td>
@@ -173,12 +173,12 @@
                                                                   title="Düymə deaktivdir"
                                                                   class="btn btn-success btn-xs"><i
                                                                         class="fa fa-share-square"></i></span>
+                                                            <span disabled="true" title="Düymə deaktivdir"
+                                                                  class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></span>
+                                                            <span disabled="true" title="Düymə deaktivdir"
+                                                                  class="btn btn-danger btn-xs"><i
+                                                                        class="fa fa-trash-o"></i></span>
                                                         @endif
-                                                        <span disabled="true" title="Düymə deaktivdir"
-                                                              class="btn btn-warning btn-xs"><i class="fa fa-edit"></i></span>
-                                                        <span disabled="true" title="Düymə deaktivdir"
-                                                              class="btn btn-danger btn-xs"><i
-                                                                    class="fa fa-trash-o"></i></span>
                                                     </td>
                                                 @endif
                                             </tr>
@@ -457,106 +457,6 @@
             });
         }
 
-        function del(e, id, row_id) {
-            swal({
-                title: 'Silmək istədiyinizdən əminsiniz?',
-                text: 'Bu əməliyyatın geri dönüşü yoxdur...',
-                type: 'warning',
-                showCancelButton: true,
-                cancelButtonText: 'Geri',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sil!'
-            }).then(function (result) {
-                if (result.value) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        type: "Post",
-                        url: '',
-                        data: {
-                            'id': id,
-                            '_token': CSRF_TOKEN,
-                            'row_id': row_id,
-                            'type': 'delete'
-                        },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                                text: 'Gözləyin, əməliyyat aparılır..',
-                                showConfirmButton: false
-                            });
-                        },
-                        success: function (response) {
-                            swal(
-                                response.title,
-                                response.content,
-                                response.case
-                            );
-                            if (response.case === 'success') {
-                                var elem = document.getElementById('row_' + response.row_id);
-                                elem.parentNode.removeChild(elem);
-                            }
-                        }
-                    });
-                } else {
-                    return false;
-                }
-            });
-        }
-
-        function update(e, id) {
-            swal({
-                title: 'Dəyişiklik etmək istədiyinizdən əminsiniz?',
-                type: 'warning',
-                showCancelButton: true,
-                cancelButtonText: 'Geri',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Dəyişdir!'
-            }).then(function (result) {
-                if (result.value) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-
-                    var account_no = $('#account_no_edit_' + id).val();
-                    var company_id = $('#company_edit_' + id).val();
-
-                    $.ajax({
-                        type: "Post",
-                        url: '',
-                        data: {
-                            'id': id,
-                            'account_no': account_no,
-                            'company_id': company_id,
-                            '_token': CSRF_TOKEN,
-                            'type': 'update'
-                        },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Zəhmət olmasa gözləyin...</span>',
-                                text: 'Loading, please wait..',
-                                showConfirmButton: false
-                            });
-                        },
-                        success: function (response) {
-                            if (response.case === 'success') {
-                                location.reload();
-                            } else {
-                                swal(
-                                    response.title,
-                                    response.content,
-                                    response.case
-                                );
-                            }
-                        }
-                    });
-                } else {
-                    return false;
-                }
-            });
-        }
-
         //show new account form
         function show_account_add_form() {
             $('#account-add-form').css('display', 'table-row');
@@ -696,6 +596,106 @@
                                 $('#update_document_span_'+account_id).html('<span title="Düymə deaktivdir" disabled="ture" class="btn btn-warning btn-xs"><i class="fa fa-upload"></i></span>');
 
                                 $('#btns_' + account_id).html(btns);
+                            }
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        }
+
+            function del(e, id, row_id) {
+                swal({
+                    title: 'Silmək istədiyinizdən əminsiniz?',
+                    text: 'Bu əməliyyatın geri dönüşü yoxdur...',
+                    type: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'Geri',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sil!'
+                }).then(function (result) {
+                    if (result.value) {
+                        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                        $.ajax({
+                            type: "Post",
+                            url: '',
+                            data: {
+                                'id': id,
+                                '_token': CSRF_TOKEN,
+                                'row_id': row_id,
+                                'type': 'delete'
+                            },
+                            beforeSubmit: function () {
+                                //loading
+                                swal({
+                                    title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                    text: 'Gözləyin, əməliyyat aparılır..',
+                                    showConfirmButton: false
+                                });
+                            },
+                            success: function (response) {
+                                swal(
+                                    response.title,
+                                    response.content,
+                                    response.case
+                                );
+                                if (response.case === 'success') {
+                                    var elem = document.getElementById('row_' + response.row_id);
+                                    elem.parentNode.removeChild(elem);
+                                }
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            }
+
+            function update(e, id) {
+            swal({
+                title: 'Dəyişiklik etmək istədiyinizdən əminsiniz?',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Geri',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Dəyişdir!'
+            }).then(function (result) {
+                if (result.value) {
+                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+                    var account_no = $('#account_no_edit_' + id).val();
+                    var company_id = $('#company_edit_' + id).val();
+
+                    $.ajax({
+                        type: "Post",
+                        url: '',
+                        data: {
+                            'id': id,
+                            'account_no': account_no,
+                            'company_id': company_id,
+                            '_token': CSRF_TOKEN,
+                            'type': 'update'
+                        },
+                        beforeSubmit: function () {
+                            //loading
+                            swal({
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Zəhmət olmasa gözləyin...</span>',
+                                text: 'Loading, please wait..',
+                                showConfirmButton: false
+                            });
+                        },
+                        success: function (response) {
+                            if (response.case === 'success') {
+                                location.reload();
+                            } else {
+                                swal(
+                                    response.title,
+                                    response.content,
+                                    response.case
+                                );
                             }
                         }
                     });

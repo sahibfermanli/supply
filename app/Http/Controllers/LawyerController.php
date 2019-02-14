@@ -9,6 +9,7 @@ use App\Positions;
 use App\Purchase;
 use App\Settings;
 use App\Units;
+use App\User;
 use App\Vehicles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
