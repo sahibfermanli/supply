@@ -60,20 +60,27 @@
                 <th class="column-title">Sifariş səbəbi</th>
                 <th class="column-title">Sifarişçi</th>
                 <th class="column-title">Təsdiq etdi</th>
+                <th class="column-title">Rəhbərlik</th>
             </tr>
             </thead>
             <tbody>
                 @php($row = 0)
                 @foreach($orders as $order)
                     @php($row++)
+                    @if(!empty($order->Marka))
+                        @php($vehicle = ', ' . $order->Marka . ' - ' . $order->QN . ' - ' . $order->Tipi)
+                    @else
+                        @php($vehicle = '')
+                    @endif
                     <tr>
                         <td>{{$row}}</td>
                         <td>{{$order->Product}}</td>
                         <td>{{$order->Brend}}, {{$order->Model}}</td>
                         <td>{{$order->pcs}} {{$order->Unit}}</td>
                         <td>{{$order->order_remark}}</td>
-                        <td>{{$order->user_name}} {{$order->user_surname}}, {{$order->department}}</td>
+                        <td>{{$order->user_name}} {{$order->user_surname}}, {{$order->department}}{{$vehicle}}</td>
                         <td>{{$order->chief_name}} {{$order->chief_surname}}</td>
+                        <td>Vüqar Zeynalov</td>
                     </tr>
                 @endforeach
             </tbody>
