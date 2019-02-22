@@ -681,7 +681,7 @@
                                     //forma
                                     var position_id = order['position_id'];
                                     var positions = response.positions;
-                                    // var position = '';
+                                    position = '';
                                     var k = 0;
                                     position = position + '<td><select id="position_id_edit_' + id + '" class="form-control input-sm">';
                                     for (k = 0; k < positions.length; k++) {
