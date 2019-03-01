@@ -81,7 +81,7 @@
 
                                             <td>
                                                 <span title="Düzəliş et" class="btn btn-warning btn-xs" onclick="update(this, '{{$company->id}}');"><i class="fa fa-edit"></i></span>
-                                                <span title="Sil" class="btn btn-danger btn-xs" onclick="del(this, '{{$company->id}}', '{{$row}}');"><i class="fa fa-trash-o"></i></span>
+                                                {{--<span title="Sil" class="btn btn-danger btn-xs" onclick="del(this, '{{$company->id}}', '{{$row}}');"><i class="fa fa-trash-o"></i></span>--}}
                                             </td>
                                         </tr>
                                         @php

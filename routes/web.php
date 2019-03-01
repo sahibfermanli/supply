@@ -11,6 +11,9 @@
 |
 */
 
+//Route::get('/temir', 'HomeController@temir');
+//Route::get('/status', 'HomeController@create_status');///delete
+
 Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     //home page
     Route::get('/', 'HomeController@get_index');
@@ -83,6 +86,7 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         //purchase
         Route::group(['prefix'=>'/purchases'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
+            Route::post('/', 'PurchaseController@post_purchases');
         });
 
         //alternatuves
@@ -217,6 +221,7 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         //purchase
         Route::group(['prefix'=>'/purchases'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
+            Route::post('/', 'PurchaseController@post_purchases');
         });
 
         Route::get('/accounts/print', 'AccountController@print_orders_in_account_for_supply');
@@ -245,6 +250,7 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         //purchase
         Route::group(['prefix'=>'/chief/purchases'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
+            Route::post('/', 'PurchaseController@post_purchases');
         });
     });
 
@@ -265,6 +271,7 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         //purchase
         Route::group(['prefix'=>'/purchases'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
+            Route::post('/', 'PurchaseController@post_purchases');
         });
     });
 
@@ -291,6 +298,7 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         //purchase
         Route::group(['prefix'=>'/chief/purchases'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
+            Route::post('/', 'PurchaseController@post_purchases');
         });
     });
 });

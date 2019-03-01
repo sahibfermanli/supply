@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Accounts;
 use App\Company;
 use App\Orders;
+use App\OrderStatus;
 use App\Purchase;
 use App\Sellers;
 use Carbon\Carbon;
@@ -40,23 +41,23 @@ class AccountController extends HomeController
             if (Auth::user()->authority() == 4)  {
                 //supply
                 if (Auth::user()->chief() == 1) {
-                    $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
+                    $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
                 }
                 else {
-                    $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
+                    $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
                 }
             }
             else if (Auth::user()->authority() == 6) {
                 //law
-                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
             }
             else if (Auth::user()->authority() == 7) {
                 //finance
-                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
             }
             else if (Auth::user()->authority() == 5) {
                 //director
-                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'companies.name as company', 'cur.cur_name as currency')->get();
             }
             else {
                 Session::flash('message', 'Bu səhifəyə giriş icazəniz yoxdur!');
@@ -115,10 +116,18 @@ class AccountController extends HomeController
         $companies = Sellers::where(['deleted'=>0])->select('id', 'seller_name')->orderBy('seller_name')->get();
         $accounts = Accounts::leftJoin('users as u', 'accounts.edited_by', '=', 'u.id')->where(['accounts.deleted'=>0])->select('accounts.*', 'u.name as edited_name', 'u.surname as edited_surname')->paginate(30);
         if (Auth::user()->chief() == 1) {
-            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID')->get();
+            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID', 'o.id as order_id')->get();
         }
         else {
-            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'o.SupplyID'=>Auth::id()])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID')->get();
+            $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'o.SupplyID'=>Auth::id()])->whereNull('account_id')->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID', 'o.id as order_id')->get();
+        }
+
+        //get last status
+        foreach ($free_purchases as $purchase) {
+            $order_id = $purchase->order_id;
+
+            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+            $purchase['last_status'] = $statuses;
         }
 
         return view('backend.accounts')->with(['accounts'=>$accounts, 'free_purchases'=>$free_purchases, 'companies'=>$companies]);
@@ -288,10 +297,18 @@ class AccountController extends HomeController
         }
         try {
             if (Auth::user()->chief() == 1) {
-                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'o.id as OrderID')->get();
+                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID')->get();
             }
             else {
-                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'o.id as OrderID')->get();
+                $selected_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$request->account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id', 'DESC ')->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID')->get();
+            }
+
+            //get last status
+            foreach ($selected_purchases as $purchase) {
+                $order_id = $purchase->OrderID;
+
+                $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+                $purchase['last_status'] = $statuses;
             }
 
             return response(['case' => 'success', 'selected_purchases'=>$selected_purchases]);
@@ -320,9 +337,17 @@ class AccountController extends HomeController
                 $update = Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>$request->account_id]);
 
                 if ($update) {
-                    Orders::where(['id'=>$request->order_id])->update(['situation_id'=>20]); //hesaba elave edildi
+//                    Orders::where(['id'=>$request->order_id])->update(['situation_id'=>20]); //hesaba elave edildi
+                    $status_arr['order_id'] = $request->order_id;
+                    $status_arr['status_id'] = 20; //hesaba elave edildi
+                    OrderStatus::create($status_arr);
 
-                    $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'o.id as OrderID')->first();
+                    $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID')->first();
+
+                    //get last status
+                    $order_id = $purchase->OrderID;
+                    $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+                    $purchase['last_status'] = $statuses;
                 }
             }
             else {
@@ -348,9 +373,17 @@ class AccountController extends HomeController
             $update = Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>null]);
 
             if ($update) {
-                Orders::where(['id'=>$request->order_id])->update(['situation_id'=>5]); //alimlara elave edildi (hesabdan cixarilanda)
+//                Orders::where(['id'=>$request->order_id])->update(['situation_id'=>5]); //alimlara elave edildi (hesabdan cixarilanda)
+                $status_arr['order_id'] = $request->order_id;
+                $status_arr['status_id'] = 5; //alimlara elave edildi (hesabdan cixarilanda)
+                OrderStatus::create($status_arr);
 
-                $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('companies', 'a.company_id', '=', 'companies.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 's.status', 's.color', 'a.company_id', 'companies.name as company', 'o.id as OrderID')->first();
+                $purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->where(['Purchases.id'=>$request->purchase_id])->select('Purchases.id as id', 'o.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID')->first();
+
+                //get last status
+                $order_id = $purchase->OrderID;
+                $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+                $purchase['last_status'] = $statuses;
             }
 
             return response(['case' => 'success', 'purchase'=>$purchase]);
@@ -375,7 +408,12 @@ class AccountController extends HomeController
             if ($update) {
                 $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.account_id'=>$id])->select('a.OrderID')->get();
 
-                Orders::whereIn('id', $orders)->update(['situation_id'=>11]);
+//                Orders::whereIn('id', $orders)->update(['situation_id'=>11]);
+                $status_arr['status_id'] = 11;
+                foreach ($orders as $order) {
+                    $status_arr['order_id'] = $order->OrderID;
+                    OrderStatus::create($status_arr);
+                }
             }
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Hüquqa göndərildi!']);

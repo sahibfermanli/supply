@@ -8,6 +8,7 @@ use App\Company;
 use App\Countries;
 use App\Currencies;
 use App\Orders;
+use App\OrderStatus;
 use App\Positions;
 use App\Sellers;
 use App\Settings;
@@ -65,6 +66,9 @@ class OrderController extends HomeController
             //update remark
             return $this->update_remark($request);
         }
+        else if ($request->type == 'show_status') {
+            return $this->show_status($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Xəta baş verdi!']);
         }
@@ -112,6 +116,9 @@ class OrderController extends HomeController
         else if ($request->type == 'update_remark') {
             //update remark
             return $this->update_remark($request);
+        }
+        else if ($request->type == 'show_status') {
+            return $this->show_status($request);
         }
         else {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
@@ -199,6 +206,9 @@ class OrderController extends HomeController
             //suggestion alternative
             return $this->suggestion_alternative($request);
         }
+        else if ($request->type == 'show_status') {
+            return $this->show_status($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
         }
@@ -206,6 +216,25 @@ class OrderController extends HomeController
 
 
     //private functions
+
+    //show status (send order_id)
+    private function show_status(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'order_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Sifariş tapılmadı!']);
+        }
+        try {
+            $order_id = $request->order_id;
+
+            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id')->get();
+
+            return response(['case' => 'success', 'statuses'=>$statuses]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
 
     //show order for users
     private function show_orders_for_users(Request $request) {
@@ -216,7 +245,15 @@ class OrderController extends HomeController
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Category not found!']);
         }
 
-        $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.MainPerson' => Auth::id()])->select('Orders.id', 'Orders.position_id', 'Orders.vehicle_id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.ReportDocument', 'Orders.confirmed', 'Orders.confirmed_at', 'Orders.ReportNo')->orderBy('Orders.id', 'DESC')->get();
+        $orders = Orders::leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.MainPerson' => Auth::id()])->select('Orders.id', 'Orders.position_id', 'Orders.vehicle_id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.ReportDocument', 'Orders.confirmed', 'Orders.confirmed_at', 'Orders.ReportNo')->orderBy('Orders.id', 'DESC')->get();
+
+        //get last status
+        foreach ($orders as $order) {
+            $order_id = $order->id;
+
+            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+            $order['last_status'] = $statuses;
+        }
 
         $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
         $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
@@ -267,8 +304,16 @@ class OrderController extends HomeController
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadı!']);
         }
 
-        $orders = Orders::leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.DepartmentID' => Auth::user()->DepartmentID()])->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'v.QN', 'v.Tipi',  'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.situation_id as status_id', 'Orders.confirmed', 'Orders.confirmed_at' , 'Orders.ReportDocument', 'Orders.ReportNo', 'Orders.confirmed_at', 'users.name as user_name', 'users.surname as user_surname', 'chief.name as chief_name', 'chief.surname as chief_surname')->orderBy('Orders.id', 'DESC')->get();
+        $orders = Orders::leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id, 'Orders.DepartmentID' => Auth::user()->DepartmentID()])->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.unit_id', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka', 'v.QN', 'v.Tipi',  'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.confirmed', 'Orders.confirmed_at' , 'Orders.ReportDocument', 'Orders.ReportNo', 'Orders.confirmed_at', 'users.name as user_name', 'users.surname as user_surname', 'chief.name as chief_name', 'chief.surname as chief_surname')->orderBy('Orders.id', 'DESC')->get();
         $units = Units::where(['deleted' => 0])->orderBy('use_count', 'DESC')->select('id', 'Unit')->get();
+
+        //get last status
+        foreach ($orders as $order) {
+            $order_id = $order->id;
+
+            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+            $order['last_status'] = $statuses;
+        }
 
         return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id, 'units'=>$units]);
     }
@@ -284,7 +329,11 @@ class OrderController extends HomeController
         try {
             $id = $request->id;
             $date = Carbon::now();
-            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9, 'confirmed_at'=>$date]); //istifadeciye geri gonderildi
+//            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9, 'confirmed_at'=>$date]); //istifadeciye geri gonderildi
+            $status_arr['order_id'] = $id; //istifadeciye geri gonderildi
+            $status_arr['status_id'] = 9;
+            $cancel_order = OrderStatus::create($status_arr);
+            Orders::where(['id'=>$id])->update(['deleted'=>1, 'deleted_at'=>$date]);
 
             if ($cancel_order) {
                 if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
@@ -320,8 +369,12 @@ class OrderController extends HomeController
             $order = Alternatives::where(['id'=>$id])->select('OrderID')->first();
             $order_id = $order['OrderID'];
 
-            if (Orders::where(['id'=>$order_id, 'situation_id'=>10, 'deleted'=>0])->count() == 0) {
-                Orders::where(['id'=>$order_id])->update(['situation_id'=>10]); //direktora gonderilib
+//            if (Orders::where(['id'=>$order_id, 'situation_id'=>10, 'deleted'=>0])->count() == 0) {
+            if (OrderStatus::where(['order_id'=>$order_id, 'status_id'=>10, 'deleted'=>0])->count() == 0) {
+//                Orders::where(['id'=>$order_id])->update(['situation_id'=>10]); //direktora gonderilib
+                $status_arr['order_id'] = $order_id;
+                $status_arr['status_id'] = 10; //direktora gonderilib
+                OrderStatus::create($status_arr);
 
                 if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
                     //send mail to user
@@ -411,10 +464,18 @@ class OrderController extends HomeController
         }
 
         if (Auth::user()->chief() == 1) {
-            $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka as vehicle', 'v.QN', 'v.Tipi', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at')->get();
+            $orders = Orders::leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka as vehicle', 'v.QN', 'v.Tipi', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at')->get();
         }
         else {
-            $orders = Orders::leftJoin('lb_status as s', 'Orders.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.SupplyID', '=', Auth::id())->orWhere('Orders.MainPerson', '=', Auth::id());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 's.status', 's.color', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'Orders.situation_id as status_id', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at')->get();
+            $orders = Orders::leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.SupplyID', '=', Auth::id())->orWhere('Orders.MainPerson', '=', Auth::id());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at')->get();
+        }
+
+        //get last status
+        foreach ($orders as $order) {
+            $order_id = $order->id;
+
+            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+            $order['last_status'] = $statuses;
         }
 
         $purchases = Purchase::leftjoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.deleted'=>0])->select('a.OrderID')->get();
@@ -486,7 +547,11 @@ class OrderController extends HomeController
             Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
             $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'lb_sellers.seller_name as company')->first();
 
-            Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
+//            Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
+
+            $status_arr['order_id'] = $order_id;
+            $status_arr['status_id'] = 8; //Alternativ yaradilib
+            OrderStatus::create($status_arr);
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ əlavə edildi!', 'order_id' => $order_id, 'type' => 'add_alternative', 'alts'=>$alts]);
         } catch (\Exception $e) {
@@ -522,11 +587,12 @@ class OrderController extends HomeController
         $id = $request->id;
         $data = '';
 
-        $order = Orders::where(['id' => $id])->select('Remark', 'situation_id', 'confirmed')->first();
+        $order = Orders::where(['id' => $id])->select('Remark', 'confirmed')->first();
+        $status = OrderStatus::where(['order_id'=>$id, 'deleted'=>0])->orderBy('id', 'DESC')->select('status_id')->first();
 
         $remark = '<span id="remark-span">' . $order['Remark'] . '</span>';
 
-        if ($order['status_id'] == 9 || $order['confirmed'] == 1) {
+        if ($status['status_id'] == 9 || $order['confirmed'] == 1) {
             $btn = '<span id="remark-btn"><button title="Düymə deaktivdir" class="btn btn-warning">Dəyişdirmək</button></span>';
         }
         else {
@@ -552,9 +618,10 @@ class OrderController extends HomeController
             $id = $request->id;
             $remark = $request->remark;
 
-            $order = Orders::where(['id' => $id])->select('situation_id', 'confirmed')->first();
+            $order = Orders::where(['id' => $id])->select('confirmed')->first();
+            $status = OrderStatus::where(['order_id'=>$id, 'deleted'=>0])->orderBy('id', 'DESC')->select('status_id')->first();
 
-            if ($order['status_id'] == 9 || $order['confirmed'] == 1) {
+            if ($status['status_id'] == 9 || $order['confirmed'] == 1) {
                 return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Bunun üçün icazəniz yoxdur!']);
             }
 
@@ -576,7 +643,10 @@ class OrderController extends HomeController
         }
         try {
             $id = $request->id;
-            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+//            $cancel_order = Orders::where(['id' => $id])->update(['situation_id'=>9]); //istifadeciye geri gonderildi
+            $status_arr['order_id'] = $id;
+            $status_arr['status_id'] = 9; //istifadeciye geri gonderildi
+            $cancel_order = OrderStatus::create($status_arr);
 
             if ($cancel_order) {
                 if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
@@ -689,9 +759,11 @@ class OrderController extends HomeController
             $arr['ChiefID'] = Auth::id();
             $arr['confirmed_at'] = Carbon::now();
             $arr['confirmed'] = 1;
-            $arr['situation_id'] = 2; //tesdiqlendi
+            $status_arr['status_id'] = 2; //tesdiqlendi
+            $status_arr['order_id'] = $order_id;
 
             $confirm_order = Orders::where(['id'=>$order_id, 'deleted'=>0])->update($arr);
+            OrderStatus::create($status_arr);
 
             if ($confirm_order) {
                 if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
@@ -799,9 +871,7 @@ class OrderController extends HomeController
 
             $unit_id = $request['unit_id'];
 
-            $situation_id = 1; //pending
-
-            $request->merge(['deleted' => 0, 'MainPerson' => Auth::id(), 'DepartmentID' => Auth::user()->DepartmentID(), 'situation_id' => $situation_id]);
+            $request->merge(['deleted' => 0, 'MainPerson' => Auth::id(), 'DepartmentID' => Auth::user()->DepartmentID()]);
 
             unset($request['picture']);
             $request = Input::except('picture');
@@ -817,6 +887,10 @@ class OrderController extends HomeController
             $add_order = Orders::create($request);
 
             if ($add_order) {
+                $status_arr['order_id'] = $add_order->id;
+                $status_arr['status_id'] = 1; //gozlemede
+                OrderStatus::create($status_arr);
+
                 Units::where('id', $unit_id)->increment('use_count');
 
                 if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {

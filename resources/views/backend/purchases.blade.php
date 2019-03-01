@@ -22,21 +22,21 @@
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
-                                        <th class="column-title" style="min-width: 200px;">Sifarişçi </th>
-                                        <th class="column-title">Status </th>
-                                        <th class="column-title" style="min-width: 100px;">Malın adı </th>
-                                        <th class="column-title" style="min-width: 150px;">Marka </th>
-                                        <th class="column-title" style="min-width: 100px;">Model </th>
-                                        <th class="column-title">Miqdar </th>
-                                        <th class="column-title">Ölçü vahidi </th>
-                                        <th class="column-title">Qiymət </th>
-                                        <th class="column-title">Ümumi qiymət </th>
-                                        <th class="column-title">Yaradılma tarixi </th>
-                                        <th class="column-title">Satıcı </th>
-                                        <th class="column-title">Hesab </th>
-                                        <th class="column-title">Qaime </th>
-                                        <th class="column-title">Qiymətləndirən </th>
-                                        <th class="column-title">Qiyməti təsdiq edən </th>
+                                        <th class="column-title" style="min-width: 200px;">Sifarişçi</th>
+                                        <th class="column-title">Status</th>
+                                        <th class="column-title" style="min-width: 100px;">Malın adı</th>
+                                        <th class="column-title" style="min-width: 150px;">Marka</th>
+                                        <th class="column-title" style="min-width: 100px;">Model</th>
+                                        <th class="column-title">Miqdar</th>
+                                        <th class="column-title">Ölçü vahidi</th>
+                                        <th class="column-title">Qiymət</th>
+                                        <th class="column-title">Ümumi qiymət</th>
+                                        <th class="column-title">Yaradılma tarixi</th>
+                                        <th class="column-title">Satıcı</th>
+                                        <th class="column-title">Hesab</th>
+                                        <th class="column-title">Qaime</th>
+                                        <th class="column-title">Qiymətləndirən</th>
+                                        <th class="column-title">Qiyməti təsdiq edən</th>
                                     </tr>
                                     </thead>
 
@@ -49,7 +49,7 @@
                                         $date = date('d.m.Y', strtotime($purchase->created_at));
                                         //deadline
                                         $dead_line = $purchase->deadline;
-                                        $difference = intval(abs(strtotime($current_date)-strtotime($dead_line))/86400);
+                                        $difference = intval(abs(strtotime($current_date) - strtotime($dead_line)) / 86400);
                                         $color = 'white';
 
                                         foreach ($deadlines as $deadline) {
@@ -60,9 +60,10 @@
                                         }
                                         ?>
                                         <tr class="even pointer" id="row_{{$row}}">
-                                            <td style="background-color: {{$color}};">{{$purchase->id}}</td>
-                                            <td>{{$purchase->name}} {{$purchase->surname}} , {{$purchase->Department}}</td>
-                                            <td style="color: {{$purchase->color}};">{{$purchase->status}}</td>
+                                            <td style="background-color: {{$color}};">{{$purchase->order_id}}</td>
+                                            <td>{{$purchase->name}} {{$purchase->surname}}
+                                                , {{$purchase->Department}}</td>
+                                            <td title="{{$purchase->last_status['status_date']}}"><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->last_status['status_color']}}; border-color: {{$purchase->last_status['status_color']}};" class="btn btn-primary btn-xs">{{$purchase->last_status['status']}}</span></td>
                                             <td>{{$purchase->Product}}</td>
                                             <td>{{$purchase->Brend}}</td>
                                             <td>{{$purchase->Model}}</td>
@@ -75,21 +76,45 @@
                                             <td>
                                                 @if(isset($purchase->account_id))
                                                     @if(Auth::user()->authority() == 6)
-                                                        <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="/law/accounts/print?a={{$purchase->account_id}}"><i class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}</a>
+                                                        <a title="{{$purchase->account_date}}"
+                                                           class="btn btn-success btn-xs"
+                                                           title="{{$purchase->account_date}}" target="_blank"
+                                                           href="/law/accounts/print?a={{$purchase->account_id}}"><i
+                                                                    class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}
+                                                        </a>
                                                     @elseif(Auth::user()->authority() == 7)
-                                                        <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="/finance/accounts/print?a={{$purchase->account_id}}"><i class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}</a>
+                                                        <a title="{{$purchase->account_date}}"
+                                                           class="btn btn-success btn-xs"
+                                                           title="{{$purchase->account_date}}" target="_blank"
+                                                           href="/finance/accounts/print?a={{$purchase->account_id}}"><i
+                                                                    class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}
+                                                        </a>
                                                     @elseif(Auth::user()->authority() == 5)
-                                                        <a title="{{$purchase->account_date}}" class="btn btn-success btn-xs" title="{{$purchase->account_date}}" target="_blank" href="/director/accounts/print?a={{$purchase->account_id}}"><i class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}</a>
+                                                        <a title="{{$purchase->account_date}}"
+                                                           class="btn btn-success btn-xs"
+                                                           title="{{$purchase->account_date}}" target="_blank"
+                                                           href="/director/accounts/print?a={{$purchase->account_id}}"><i
+                                                                    class="fa fa-file-pdf-o"></i> {{$purchase->account_no}}
+                                                        </a>
                                                     @endif
                                                 @else
-                                                    <span title="Heç bir hesaba əlavə edilməyib" disabled="true" class="btn btn-success btn-xs" style="background-color: #b6a338; border-color: #b6a338;"><i class="fa fa-file-pdf-o"></i></span>
+                                                    <span title="Heç bir hesaba əlavə edilməyib" disabled="true"
+                                                          class="btn btn-success btn-xs"
+                                                          style="background-color: #b6a338; border-color: #b6a338;"><i
+                                                                class="fa fa-file-pdf-o"></i></span>
                                                 @endif
                                             </td>
                                             <td style="min-width: 150px;">
                                                 @if(isset($purchase->qaime_doc))
-                                                    <a href="{{$purchase->qaime_doc}}" title="{{$purchase->qaime_date}}" class="btn btn-success btn-xs" style="background-color: #1b6d85; border-color: #1b6d85;"><i class="fa fa-download"></i> {{$purchase->qaime_no}}</a>
+                                                    <a href="{{$purchase->qaime_doc}}" title="{{$purchase->qaime_date}}"
+                                                       class="btn btn-success btn-xs"
+                                                       style="background-color: #1b6d85; border-color: #1b6d85;"><i
+                                                                class="fa fa-download"></i> {{$purchase->qaime_no}}</a>
                                                 @else
-                                                    <span title="Qaiməni yoxdur" disabled="true" class="btn btn-success btn-xs" style="background-color: #b6a338; border-color: #b6a338;"><i class="fa fa-download"></i></span>
+                                                    <span title="Qaiməni yoxdur" disabled="true"
+                                                          class="btn btn-success btn-xs"
+                                                          style="background-color: #b6a338; border-color: #b6a338;"><i
+                                                                class="fa fa-download"></i></span>
                                                 @endif
                                             </td>
                                             <td title="{{$purchase->supply_date}}">{{$purchase->supply_name}} {{$purchase->supply_surname}}</td>
@@ -111,12 +136,99 @@
             </div>
         </div>
     </div>
+
+    {{--status modal--}}
+    <div class="modal fade" id="status-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="status_title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr class="headings">
+                            <th class="column-title">#</th>
+                            <th class="column-title">Status</th>
+                            <th class="column-title">Tarix</th>
+                        </tr>
+                        </thead>
+                        <tbody id="status_table">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('css')
-
+    <link rel="stylesheet" href="/css/sweetalert2.min.css">
 @endsection
 
 @section('js')
+    <script src="/js/jquery.form.min.js"></script>
+    <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/sweetalert2.min.js"></script>
 
+    <script>
+        //show status
+        function show_status(order_id, order) {
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
+                text: 'Əməliyyat aparılır, xaiş olunur gözləyin...',
+                showConfirmButton: false
+            });
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'order_id': order_id,
+                    '_token': CSRF_TOKEN,
+                    'type': 'show_status'
+                },
+                success: function (response) {
+                    if (response.case === 'success') {
+                        swal.close();
+
+                        var statuses = response.statuses;
+                        var i = 0;
+                        var status_arr = '';
+                        var no = 0;
+                        var status = '';
+                        var color = '';
+                        var date = '';
+                        var tr = '';
+                        var table = '';
+                        for (i = 0; i < statuses.length; i++) {
+                            status_arr = statuses[i];
+
+                            no = i + 1;
+                            status = status_arr['status'];
+                            color = status_arr['status_color'];
+                            date = status_arr['status_date'];
+
+                            tr = '<tr><td>' + no + '</td><td style="color: ' + color + ';">' + status + '</td><td>' + date + '</td></tr>';
+                            table = table + tr;
+                        }
+
+                        $('#status_title').html(order);
+                        $('#status_table').html(table);
+                        $('#status-modal').modal('show');
+                    } else {
+                        swal(
+                            response.title,
+                            response.content,
+                            response.case
+                        );
+                    }
+                }
+            });
+        }
+    </script>
 @endsection

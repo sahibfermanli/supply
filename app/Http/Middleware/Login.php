@@ -24,13 +24,16 @@ class Login
     {
         //is login
         if (Auth::check() && Auth::user()->deleted_value()==0 && Auth::user()->confirmed() == 1) {
+//            return redirect('/temir');
+
             //chiefs
             if (Auth::user()->chief() == 1) {
                 $categories = Categories::where(['deleted'=>0])->orderBy('process')->select('id', 'process')->get();
 
                 $i = 0;
                 foreach ($categories as $category) {
-                    $orders = Orders::where(['DepartmentID'=>Auth::user()->DepartmentID(), 'category_id'=>$category->id, 'confirmed'=>0, 'deleted'=>0])->where('situation_id', '<>', 9)->select('id')->get();
+                    $orders = Orders::where(['DepartmentID'=>Auth::user()->DepartmentID(), 'category_id'=>$category->id, 'confirmed'=>0, 'deleted'=>0])->select('id')->get();
+
                     $count = count($orders);
 
                     $categories[$i]['orders_count'] = $count;

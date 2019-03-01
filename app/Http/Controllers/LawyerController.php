@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Accounts;
 use App\Alternatives;
 use App\Orders;
+use App\OrderStatus;
 use App\Positions;
 use App\Purchase;
 use App\Settings;
@@ -155,7 +156,10 @@ class LawyerController extends HomeController
 
             Purchase::where(['id'=>$request->purchase_id])->update(['account_id'=>null]);
 
-            Orders::where(['id'=>$request->order_id])->update(['situation_id'=>$status_id]);
+//            Orders::where(['id'=>$request->order_id])->update(['situation_id'=>$status_id]);
+            $status_arr['order_id'] = $request->order_id;
+            $status_arr['status_id'] = $status_id;
+            OrderStatus::create($status_arr);
 
             if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
                 //send email to user
@@ -232,7 +236,12 @@ class LawyerController extends HomeController
             if ($update) {
                 $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.account_id'=>$account_id, 'Purchases.deleted'=>0])->select('a.OrderID')->get();
 
-                Orders::whereIn('id', $orders)->update(['situation_id'=>$status_id]);
+//                Orders::whereIn('id', $orders)->update(['situation_id'=>$status_id]);
+                $status_arr['status_id'] = $status_id;
+                foreach ($orders as $order) {
+                    $status_arr['order_id'] = $order->OrderID;
+                    OrderStatus::create($status_arr);
+                }
             }
 
 
@@ -289,7 +298,29 @@ class LawyerController extends HomeController
             //get alternative image
             return $this->get_alternative_image($request);
         }
+        else if ($request->type == 'show_status') {
+            return $this->show_status($request);
+        }
         else {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
+
+    //show status (send order_id)
+    private function show_status(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'order_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Sifariş tapılmadı!']);
+        }
+        try {
+            $order_id = $request->order_id;
+
+            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id')->get();
+
+            return response(['case' => 'success', 'statuses'=>$statuses]);
+        } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
     }
@@ -340,7 +371,15 @@ class LawyerController extends HomeController
         $purchases = Purchase::where(['deleted'=>0])->select('AlternativeID')->distinct()->get();
         $alternatives = Alternatives::whereIn('id', $purchases)->where(['deleted'=>0])->select('OrderID')->get();
 
-        $orders = Alternatives::leftJoin('Orders as o', 'lb_Alternatives.OrderID', '=', 'o.id')->leftJoin('lb_status as s', 'o.situation_id', '=', 's.id')->leftJoin('lb_units_list as u', 'o.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'o.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'o.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'o.position_id', '=', 'p.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->whereNotIn('o.id', $alternatives)->whereNull('lb_Alternatives.DirectorRemark')->where(['o.deleted' => 0, 'o.category_id' => $request->cat_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->orderBy('o.id', 'DESC')->select('o.id', 'o.Product', 'o.Translation_Brand', 'o.Part', 'o.WEB_link', 'o.image', 'u.Unit', 'o.Pcs', 's.status', 's.color', 'o.Remark', 'c.process', 'v.Marka', 'p.position', 'o.category_id', 'o.deffect_doc', 'o.created_at', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department')->distinct()->get();
+        $orders = Alternatives::leftJoin('Orders as o', 'lb_Alternatives.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'o.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'o.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'o.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'o.position_id', '=', 'p.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->whereNotIn('o.id', $alternatives)->whereNull('lb_Alternatives.DirectorRemark')->where(['o.deleted' => 0, 'o.category_id' => $request->cat_id, 'lb_Alternatives.deleted'=>0, 'lb_Alternatives.confirm_chief'=>1])->orderBy('o.id', 'DESC')->select('o.id', 'o.Product', 'o.Translation_Brand', 'o.Part', 'o.WEB_link', 'o.image', 'u.Unit', 'o.Pcs', 'o.Remark', 'c.process', 'v.Marka', 'p.position', 'o.category_id', 'o.deffect_doc', 'o.created_at', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department')->distinct()->get();
+
+        //get last status
+        foreach ($orders as $order) {
+            $order_id = $order->id;
+
+            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
+            $order['last_status'] = $statuses;
+        }
 
         return response(['case' => 'success', 'orders' => $orders, 'category_id' => $request->cat_id]);
     }
@@ -410,7 +449,10 @@ class LawyerController extends HomeController
 
             $deadline = Carbon::now();
 
-            Orders::where(['id'=>$order_id])->update(['situation_id'=>5, 'deadline'=>$deadline]); //Alımlara əlavə olundu
+            Orders::where(['id'=>$order_id])->update(['deadline'=>$deadline]);
+            $status_arr['order_id'] = $order_id;
+            $status_arr['status_id'] = 5; //Alımlara əlavə olundu
+            OrderStatus::create($status_arr);
 
             if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
                 //send email to user
@@ -479,7 +521,10 @@ class LawyerController extends HomeController
             $status_id = 7; //techizatciya geri gonderildi
 
             Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>$remark]);
-            Orders::where(['id'=>$order_id])->update(['situation_id'=>$status_id]);
+//            Orders::where(['id'=>$order_id])->update(['situation_id'=>$status_id]);
+            $status_arr['order_id'] = $order_id;
+            $status_arr['status_id'] = $status_id;
+            OrderStatus::create($status_arr);
 
             if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
                 //send email to user

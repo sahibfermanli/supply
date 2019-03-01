@@ -134,10 +134,10 @@
                                                 <td id="lawyer_remark_{{$account->id}}">
                                                     @if(!empty($account->lawyer_remark))
                                                         <span class="btn btn-success btn-xs" onclick="show_remark({{$account->id}});">Qeydi göstər</span>
-                                                        <span class="btn btn-danger btn-xs" onclick="clear_remark({{$account->id}});">Qeydi sıfırla</span>
+                                                        {{--<span class="btn btn-danger btn-xs" onclick="clear_remark({{$account->id}});">Qeydi sıfırla</span>--}}
                                                     @else
                                                         <span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi göstər</span>
-                                                        <span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi sıfırla</span>
+                                                        {{--<span title="Qeyd yoxdur" disabled="true" class="btn btn-warning btn-xs">Qeydi sıfırla</span>--}}
                                                     @endif
                                                 </td>
                                                 @if($account->send == 0)
@@ -245,7 +245,7 @@
                                                 $date = date('d.m.Y', strtotime($purchase->created_at));
                                                 ?>
                                                 <tr class="even pointer" id="move_{{$purchase->id}}">
-                                                    <td>{{$purchase->id}}</td>
+                                                    <td>{{$purchase->order_id}}</td>
                                                     <td>
                                                         <span id="add_purchase_to_account_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_account('{{$purchase->id}}', '{{$purchase->company_id}}', '{{$purchase->OrderID}}');"
                                                               class="add_purchase_to_account_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span>
@@ -258,7 +258,7 @@
                                                     <td>{{$purchase->cost}}</td>
                                                     <td>{{$purchase->total_cost}}</td>
                                                     <td>{{$purchase->company}}</td>
-                                                    <td><span style="color: {{$purchase->color}}">{{$purchase->status}}</span></td>
+                                                    <td title="{{$purchase->last_status['status_date']}}" style="color: {{$purchase->last_status['status_color']}};">{{$purchase->last_status['status']}}</td>
                                                     <td>{{$date}}</td>
                                                 </tr>
                                                 @php
@@ -525,11 +525,11 @@
                             var cost = '<td>' + purchase['cost'] + '</td>';
                             var total_cost = '<td>' + purchase['total_cost'] + '</td>';
                             var company = '<td>' + purchase['company'] + '</td>';
-                            var status = '<td><span style="color: ' + purchase['color'] + '">' + purchase['status'] + '</span></td>';
+                            var status = '<td><span title="' + purchase['last_status']['status_date'] + '" style="color: ' + purchase['last_status']['status_color'] + '">' + purchase['last_status']['status'] + '</span></td>';
                             var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                             var tr = '<tr class="even pointer" id="remove_' + purchase['id'] + '">';
-                            tr = tr + '<td>' + purchase['id'] + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
+                            tr = tr + '<td>' + purchase['OrderID'] + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -735,11 +735,11 @@
                         var cost = '<td>' + purchase['cost'] + '</td>';
                         var total_cost = '<td>' + purchase['total_cost'] + '</td>';
                         var company = '<td>' + purchase['company'] + '</td>';
-                        var status = '<td><span style="color: ' + purchase['color'] + '">' + purchase['status'] + '</span></td>';
+                        var status = '<td><span title="' + purchase['last_status']['status_date'] + '" style="color: ' + purchase['last_status']['status_color'] + '">' + purchase['last_status']['status'] + '</span></td>';
                         var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                         var tr = '<tr class="even pointer" id="remove_' + purchase['id'] + '">';
-                        tr = tr + '<td>' + '<span style="color: green;">new</span>' + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
+                        tr = tr + '<td>' + '<span style="color: green;">' + purchase['OrderID'] + '</span>' + '</td>' + remove + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
                         tr = tr + '</tr>';
                         table = table + tr;
 
@@ -791,11 +791,11 @@
                         var cost = '<td>' + purchase['cost'] + '</td>';
                         var total_cost = '<td>' + purchase['total_cost'] + '</td>';
                         var company = '<td>' + purchase['company'] + '</td>';
-                        var status = '<td><span style="color: ' + purchase['color'] + '">' + purchase['status'] + '</span></td>';
+                        var status = '<td><span title="' + purchase['last_status']['status_date'] + '" style="color: ' + purchase['last_status']['status_color'] + '">' + purchase['last_status']['status'] + '</span></td>';
                         var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                         var tr = '<tr class="even pointer" id="move_' + purchase['id'] + '">';
-                        tr = tr + '<td>' + '<span style="color: green;">new</span>' + '</td>' + move_btn + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
+                        tr = tr + '<td>' + '<span style="color: green;">' + purchase['OrderID'] + '</span>' + '</td>' + move_btn + product + brend + model + pcs + unit + cost + total_cost + company + status + date;
                         tr = tr + '</tr>';
                         table = table + tr;
 

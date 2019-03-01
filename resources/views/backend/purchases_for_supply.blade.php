@@ -60,9 +60,9 @@
                                             }
                                         ?>
                                         <tr class="even pointer" id="row_{{$row}}">
-                                            <td style="background-color: {{$color}};">{{$purchase->id}}</td>
+                                            <td style="background-color: {{$color}}; color: white;">{{$purchase->order_id}}</td>
                                             <td>{{$purchase->name}} {{$purchase->surname}} , {{$purchase->Department}}</td>
-                                            <td style="color: {{$purchase->color}};">{{$purchase->status}}</td>
+                                            <td title="{{$purchase->last_status['status_date']}}"><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->last_status['status_color']}}; border-color: {{$purchase->last_status['status_color']}};" class="btn btn-primary btn-xs">{{$purchase->last_status['status']}}</span></td>
                                             <td>{{$purchase->Product}}</td>
                                             <td>{{$purchase->Brend}}</td>
                                             <td>{{$purchase->Model}}</td>
@@ -136,6 +136,34 @@
         </div>
     </div>
     {{--finish add qaime modal--}}
+
+    {{--status modal--}}
+    <div class="modal fade" id="status-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="status_title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr class="headings">
+                            <th class="column-title">#</th>
+                            <th class="column-title">Status</th>
+                            <th class="column-title">Tarix</th>
+                        </tr>
+                        </thead>
+                        <tbody id="status_table">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('css')
@@ -179,9 +207,60 @@
             $('#add-qaime').modal('show');
         }
 
-        //add modal
-        // $(document).on('click', '.add-qaime', function() {
-        //     $('#add-qaime').modal('show');
-        // });
+        //show status
+        function show_status(order_id, order) {
+            swal ({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
+                text: 'Əməliyyat aparılır, xaiş olunur gözləyin...',
+                showConfirmButton: false
+            });
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'order_id': order_id,
+                    '_token': CSRF_TOKEN,
+                    'type': 'show_status'
+                },
+                success: function (response) {
+                    if (response.case === 'success') {
+                        swal.close();
+
+                        var statuses = response.statuses;
+                        var i = 0;
+                        var status_arr = '';
+                        var no = 0;
+                        var status = '';
+                        var color = '';
+                        var date = '';
+                        var tr = '';
+                        var table = '';
+                        for (i=0; i<statuses.length; i++) {
+                            status_arr = statuses[i];
+
+                            no = i + 1;
+                            status = status_arr['status'];
+                            color = status_arr['status_color'];
+                            date = status_arr['status_date'];
+
+                            tr = '<tr><td>' + no + '</td><td style="color: ' + color + ';">' + status + '</td><td>' + date + '</td></tr>';
+                            table = table + tr;
+                        }
+
+                        $('#status_title').html(order);
+                        $('#status_table').html(table);
+                        $('#status-modal').modal('show');
+                    }
+                    else {
+                        swal(
+                            response.title,
+                            response.content,
+                            response.case
+                        );
+                    }
+                }
+            });
+        }
     </script>
 @endsection

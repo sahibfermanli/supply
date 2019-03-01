@@ -94,6 +94,34 @@
         </div>
     </div>
     <!-- /.end add modal-->
+
+    {{--status modal--}}
+    <div class="modal fade" id="status-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="status_title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr class="headings">
+                            <th class="column-title">#</th>
+                            <th class="column-title">Status</th>
+                            <th class="column-title">Tarix</th>
+                        </tr>
+                        </thead>
+                        <tbody id="status_table">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('css')
@@ -114,6 +142,61 @@
     {{--form submit--}}
     <script>
         var remark_value = '';
+
+        //show status
+        function show_status(order_id) {
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
+                text: 'Əməliyyat aparılır, xaiş olunur gözləyin...',
+                showConfirmButton: false
+            });
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: "Post",
+                url: '',
+                data: {
+                    'order_id': order_id,
+                    '_token': CSRF_TOKEN,
+                    'type': 'show_status'
+                },
+                success: function (response) {
+                    if (response.case === 'success') {
+                        swal.close();
+
+                        var statuses = response.statuses;
+                        var i = 0;
+                        var status_arr = '';
+                        var no = 0;
+                        var status = '';
+                        var color = '';
+                        var date = '';
+                        var tr = '';
+                        var table = '';
+                        for (i = 0; i < statuses.length; i++) {
+                            status_arr = statuses[i];
+
+                            no = i + 1;
+                            status = status_arr['status'];
+                            color = status_arr['status_color'];
+                            date = status_arr['status_date'];
+
+                            tr = '<tr><td>' + no + '</td><td style="color: ' + color + ';">' + status + '</td><td>' + date + '</td></tr>';
+                            table = table + tr;
+                        }
+
+                        $('#status_title').html('Statuslar');
+                        $('#status_table').html(table);
+                        $('#status-modal').modal('show');
+                    } else {
+                        swal(
+                            response.title,
+                            response.content,
+                            response.case
+                        );
+                    }
+                }
+            });
+        }
 
         $(document).ready(function () {
             $('form').validate();
@@ -382,10 +465,10 @@
                         var id = order['id'];
 
                         var user = '<td style="text-transform: capitalize;">' + order['user_name'] + ' ' + order['user_surname'] + '</td>';
-                        if (order['status_id'] == 9 || order['confirmed'] == 1) {
+                        if (order['last_status']['status_id'] == 9 || order['confirmed'] == 1) {
                           var edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
                           var cancel = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                          if (order['status_id'] === 9) {
+                          if (order['last_status']['status_id'] === 9) {
                               check = '<td title="' + order['confirmed_at'] + '"><center><i style="color: red;" class="fa fa-times"></i></center></td>';
                           }
                           else {
@@ -450,7 +533,7 @@
                             var defect = '<td><center><a title="Xəta sənədini endir" href="' + order['deffect_doc'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
                         }
 
-                        var status = '<td><span id="status_' + id + '" class="btn btn-xs" style="color: ' + order['color'] + ';">' + order['status'] + '</span></td>';
+                        var status = '<td title="' + order['last_status']['status_date'] + '"><span onclick="show_status(' + order['id'] + ')" id="status_' + id + '" class="btn btn-xs" style="color: ' + order['last_status']['status_color'] + '; border-color: ' + order['last_status']['status_color'] + ';">' + order['last_status']['status'] + '</span></td>';
 
                         switch (category_id) {
                             case '3': {

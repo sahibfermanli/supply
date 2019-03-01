@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Accounts;
 use App\Categories;
+use App\Orders;
+use App\OrderStatus;
 use App\Settings;
 use Illuminate\Support\Facades\View;
 
@@ -35,6 +37,25 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    ///delete
+//    public function create_status() {
+//        $orders = Orders::select('id', 'situation_id', 'updated_at')->get();
+//
+//        foreach ($orders as $order) {
+//            $arr['order_id'] = $order->id;
+//            $arr['status_id'] = $order->situation_id;
+//            $arr['date'] = $order->updated_at;
+//
+//            OrderStatus::create($arr);
+//        }
+//
+//        return 'Finish!';
+//    }
+//
+//    public function temir() {
+//        return "Sistem təmir işləri ilə əlaqədar olaraq müvəqqəti olaraq işləmir. Biraz sonra yenidən cəhd edin.";
+//    }
 
     public function get_index() {
 //        $email = ['sfermanli@swgh.az', 'sahibfermanli230@gmail.com'];
