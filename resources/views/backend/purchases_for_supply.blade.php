@@ -22,6 +22,7 @@
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
+                                        <th class="column-title">Təslim alan</th>
                                         <th class="column-title" style="min-width: 200px;">Sifarişçi </th>
                                         <th class="column-title">Status </th>
                                         <th class="column-title" style="min-width: 100px;">Malın adı </th>
@@ -61,6 +62,14 @@
                                         ?>
                                         <tr class="even pointer" id="row_{{$row}}">
                                             <td style="background-color: {{$color}}; color: white;">{{$purchase->order_id}}</td>
+                                            <td>
+                                                <select class="form-control input-sm" onchange="select_delivered_person(this);" order_id="{{$purchase->order_id}}">
+                                                    <option value="">Boş</option>
+                                                    @foreach($delivered_persons as $delivered_person)
+                                                        <option value="{{$delivered_person->id}}">{{$delivered_person->name}} {{$delivered_person->surname}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
                                             <td>{{$purchase->name}} {{$purchase->surname}} , {{$purchase->Department}}</td>
                                             <td title="{{$purchase->last_status['status_date']}}"><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->last_status['status_color']}}; border-color: {{$purchase->last_status['status_color']}};" class="btn btn-primary btn-xs">{{$purchase->last_status['status']}}</span></td>
                                             <td>{{$purchase->Product}}</td>
@@ -164,6 +173,32 @@
             </div>
         </div>
     </div>
+
+    {{--delivered form--}}
+    <div class="modal fade" id="delivered-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Təhvil verilmənin təsdiqi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">
+                        {{csrf_field()}}
+                        <input type="hidden" name="type" value="order_delivered">
+                        <div id="delivered_order_id"></div>
+                        <div id="delivered_user_id"></div>
+                        <label>Miqdar:</label>
+                        <div id="delivered_count"></div>
+                        <br>
+                        <button type="submit" class="btn btn-success">Təsdiqlə</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('css')
@@ -176,6 +211,60 @@
     <script src="/js/sweetalert2.min.js"></script>
 
     <script type="text/javascript">
+        function select_delivered_person(elem) {
+            var delivered_person_id = $(elem).val();
+
+            if (delivered_person_id === 0 || delivered_person_id === '') {
+                swal(
+                    'Xəta',
+                    'Təhvil alacaq şəxsi seçin',
+                    'error'
+                );
+            }
+            else {
+                var order_id = $(elem).attr('order_id');
+
+                swal ({
+                    title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
+                    text: 'Əməliyyat aparılır, xaiş olunur gözləyin...',
+                    showConfirmButton: false
+                });
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    type: "Post",
+                    url: '',
+                    data: {
+                        'order_id': order_id,
+                        '_token': CSRF_TOKEN,
+                        'type': 'get_order_for_delivery'
+                    },
+                    success: function (response) {
+                        if (response.case === 'success') {
+                            swal.close();
+
+                            var order_count = response.order['count'];
+                            var count_input = '<input style="max-width: 50%;" name="count" class="form-control" type="number" value="' + order_count + '">';
+                            var order_id = '<input type="hidden" name="order_id" value="' + response.order['id'] + '">';
+                            var user_id = '<input type="hidden" name="user_id" value="' + delivered_person_id +'">';
+
+                            $('#delivered_count').html(count_input);
+                            $('#delivered_order_id').html(order_id);
+                            $('#delivered_user_id').html(user_id);
+
+                            $("#delivered-modal").modal('show');
+                        }
+                        else {
+                            swal(
+                                response.title,
+                                response.content,
+                                response.case
+                            );
+                        }
+                    }
+                });
+            }
+        }
+
         $(document).ready(function () {
             $('form').validate();
             $('form').ajaxForm({
