@@ -5,10 +5,53 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends HomeController
 {
+    //reset password
+    public function get_reset_password() {
+        if (User::where(['id'=>Auth::id(), 'password_reset'=>1])->count() > 0) {
+            return redirect('/');
+        }
+
+        return view('backend.reset_password');
+    }
+
+    public function post_reset_password(Request $request) {
+        if (User::where(['id'=>Auth::id(), 'password_reset'=>1])->count() > 0) {
+            return redirect('/');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string',
+            'confirm_password' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Bütün məlumatları daxil edin!']);
+        }
+        try {
+            if ($request->password != $request->confirm_password) {
+                Session::flash('message', 'Daxil edilən şifrələr eyni deyil!');
+                Session::flash('class', 'warning');
+                Session::flash('display', 'block');
+                return redirect('/reset-password');
+            }
+
+            $password = bcrypt($request->password);
+
+            User::where(['id'=>Auth::id()])->update(['password'=>$password, 'password_reset'=>1]);
+
+            return redirect('/logout');
+        } catch (\Exception $e) {
+            Session::flash('message', 'Səhv baş verdi!');
+            Session::flash('class', 'danger');
+            Session::flash('display', 'block');
+            return redirect('/reset-password');
+        }
+    }
+
     //show
     public function get_users() {
         $users = User::where(['deleted'=>0, 'chief'=>0, 'DepartmentID'=>Auth::user()->DepartmentID()])->orderBy('confirmed')->orderBy('name')->select('id', 'name', 'surname', 'email', 'confirmed', 'created_at', 'updated_at')->paginate(30);

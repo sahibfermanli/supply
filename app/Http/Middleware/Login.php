@@ -6,6 +6,7 @@ use App\Accounts;
 use App\Alternatives;
 use App\Categories;
 use App\Orders;
+use App\User;
 use App\Purchase;
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,10 @@ class Login
         //is login
         if (Auth::check() && Auth::user()->deleted_value()==0 && Auth::user()->confirmed() == 1) {
 //            return redirect('/temir');
+            //reset password
+            if (User::where(['id'=>Auth::id(), 'password_reset'=>0])->count() > 0) {
+                return redirect('/reset-password');
+            }
 
             //chiefs
             if (Auth::user()->chief() == 1) {

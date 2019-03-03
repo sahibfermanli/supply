@@ -13,6 +13,8 @@
 
 //Route::get('/temir', 'HomeController@temir');
 //Route::get('/status', 'HomeController@create_status');///delete
+Route::get('/reset-password', 'UserController@get_reset_password');///delete
+Route::post('/reset-password', 'UserController@post_reset_password');///delete
 
 Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     //home page
