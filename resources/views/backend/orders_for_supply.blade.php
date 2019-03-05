@@ -632,8 +632,8 @@
                             count++;
                             var order = orders[i];
                             var id = order['id'];
-                            var user_detail = '<td style="min-width: 150px;">' + order['user_name'] + ' ' + order['user_surname'] + ' , ' + order['user_department'] + '</td>';
-                            var chief_detail = '<td title="' + order['confirmed_at'] + '" style="min-width: 150px;">' + order['chief_name'] + ' ' + order['chief_surname'] + '</td>';
+                            var user_detail = '<td title="' + order['user_department'] + '" style="min-width: 150px;">' + order['user_name'].substr(0,1) + '. ' + order['user_surname'] + '</td>';
+                            var chief_detail = '<td title="' + order['confirmed_at'] + '" style="min-width: 150px;">' + order['chief_name'].substr(0,1) + '. ' + order['chief_surname'] + '</td>';
                             var product = '<td title="' + order['Product'] + '" style="min-width: 150px;">' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Product'] + '">' + '</td>';
                             var translation_brand = '<td style="min-width: 150px;" title="' + order['Translation_Brand'] + '">' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Translation_Brand'] + '">' + '</td>';
                             var part = '<td title="' + order['Part'] + '" style="min-width: 100px;">' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Part'] + '">' + '</td>';
@@ -713,7 +713,7 @@
                                 if (order['SupplyID'] == null) {
                                     select_supply = '<td><span onclick="select_supply(' + id + ');" class="btn btn-success btn-xs select-supply-modal">Seç</span></td>';
                                 } else {
-                                    select_supply = '<td><span class="btn btn-warning btn-xs">' + order['supply_name'] + ' ' + order['supply_surname'] + '</span></td>';
+                                    select_supply = '<td><span class="btn btn-warning btn-xs">' + order['supply_name'].substr(0,1) + '. ' + order['supply_surname'] + '</span></td>';
                                 }
                             } else {
                                 select_supply = '<td><span disabled="true" style="background-color: red; border-color: red;" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs">Seç</span></td>';
