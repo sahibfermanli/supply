@@ -71,6 +71,11 @@
                         <ul class="nav side-menu">
                             <li><a style="color: {{$settings->message_color}};" href="/"><i class="fa fa-home"></i> Bildirişlər</a></li>
 
+                            @if(Auth::user()->delivered_person() == 1)
+                                <li><a href="/warehouseman/orders"><i class="fa fa-briefcase"></i> Anbar</a></li>
+                                <li><a href="/warehouseman/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                            @endif
+
                             @if(Auth::user()->authority() == 1)
                                 {{--admin--}}
                                 <li><a href="/settings"><i class="fa fa-cogs"></i> Ayarlar</a></li>
@@ -88,6 +93,9 @@
 
                             @elseif(Auth::user()->authority() == 3  && Auth::user()->chief() == 1)
                                 {{--Chief--}}
+                                <li><a href="/chief/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                <li><a href="/chief/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
+
                                 @php($orders_for_chief_total_count = 0)
                                 @php($li_for_orders_chief = '')
                                 @foreach($categories_for_chief as $category)
@@ -110,7 +118,10 @@
                             @elseif(Auth::user()->authority() == 3)
                                 {{--User--}}
 
-                                @if(Auth::user()->DepartmentID() == 2)
+                                <li><a href="/users/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                <li><a href="/users/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
+
+                                @if(Auth::user()->DepartmentID() == 2 && Auth::user()->delivered_person() != 1)
                                     <li><a href="/vehicles"><i class="fa fa-car"></i> Texnikalar </a></li>
                                 @endif
 
@@ -135,6 +146,8 @@
                                 {{--SupplyUser--}}
                                 <li><a href="/supply/companies"><i class="fa fa-building"></i> Şirkətlər</a></li>
                                 <li><a href="/supply/accounts"><i class="fa fa-money"></i> Hesablar</a></li>
+                                <li><a href="/supply/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                <li><a href="/supply/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
                                 <li><a href="/supply/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
 
                                 @php($alts_for_supply_total_count = 0)
@@ -192,6 +205,8 @@
                             @elseif(Auth::user()->authority() == 5)
                                 {{--Director--}}
                                 <li><a href="/director/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
+                                <li><a href="/director/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                <li><a href="/director/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
 
                                 @php($alts_for_law_total_count = 0)
                                 @php($lis = '')

@@ -72,5 +72,6 @@ class Kernel extends HttpKernel
         'DirectorLawyer' => \App\Http\Middleware\DirectorLawyer::class,
         'Finance' => \App\Http\Middleware\Finance::class,
         'FinanceChief' => \App\Http\Middleware\FinanceChief::class,
+        'WareHouseMan' => \App\Http\Middleware\WareHouseMan::class,
     ];
 }

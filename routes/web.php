@@ -25,6 +25,18 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     Route::get('/users/update', 'UserController@get_users_update');
     Route::post('/users/update', 'UserController@post_users_update');
 
+    //warehouse for supply user
+    Route::group(['prefix'=>'/users/warehouse', 'middleware'=>'User'], function () {
+        Route::get('/', 'WareHouseController@get_warehouse_for_users');
+        Route::post('/', 'WareHouseController@post_warehouse');
+    });
+
+    //delivered for supply user
+    Route::group(['prefix'=>'/users/delivered', 'middleware'=>'User'], function () {
+        Route::get('/', 'DeliveryController@get_delivered_for_users');
+        Route::post('/', 'DeliveryController@post_delivered');
+    });
+
     //orders for users
     Route::group(['prefix'=>'orders', 'middleware'=>'User'], function () {
         Route::get('/', 'OrderController@get_orders');
@@ -41,6 +53,18 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     Route::group(['prefix'=>'chief/orders'], function () {
         Route::get('/', 'OrderController@get_orders_for_chief');
         Route::post('/', 'OrderController@post_delete_order_for_chief');
+    });
+
+    //warehouse for chief
+    Route::group(['prefix'=>'/chief/warehouse', 'middleware'=>'UserChief'], function () {
+        Route::get('/', 'WareHouseController@get_warehouse_for_chief');
+        Route::post('/', 'WareHouseController@post_warehouse');
+    });
+
+    //delivered for chief
+    Route::group(['prefix'=>'/chief/delivered', 'middleware'=>'UserChief'], function () {
+        Route::get('/', 'DeliveryController@get_delivered_for_chief');
+        Route::post('/', 'DeliveryController@post_delivered');
     });
 
     //users for supply chiefs
@@ -77,6 +101,18 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/', 'PurchaseController@post_purchase_for_supply');
     });
 
+    //warehouse for supply user
+    Route::group(['prefix'=>'supply/warehouse', 'middleware'=>'Supply'], function () {
+        Route::get('/', 'WareHouseController@get_warehouse_for_supply');
+        Route::post('/', 'WareHouseController@post_warehouse');
+    });
+
+    //delivered for supply user
+    Route::group(['prefix'=>'supply/delivered', 'middleware'=>'Supply'], function () {
+        Route::get('/', 'DeliveryController@get_delivered_for_supply');
+        Route::post('/', 'DeliveryController@post_delivered');
+    });
+
     //companies for supply
     Route::group(['prefix'=>'supply/companies', 'middleware'=>'Supply'], function () {
         Route::get('/', 'CompanyController@get_companies');
@@ -101,6 +137,18 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::group(['prefix'=>'/pending/orders', 'middleware'=>'DirectorLawyer'], function () {
             Route::get('/', 'LawyerController@get_pending_orders');
             Route::post('/', 'LawyerController@post_pending_orders');
+        });
+
+        //warehouse for supply user
+        Route::group(['prefix'=>'/warehouse'], function () {
+            Route::get('/', 'WareHouseController@get_warehouse_for_director');
+            Route::post('/', 'WareHouseController@post_warehouse');
+        });
+
+        //delivered for supply user
+        Route::group(['prefix'=>'/delivered'], function () {
+            Route::get('/', 'DeliveryController@get_delivered_for_director');
+            Route::post('/', 'DeliveryController@post_delivered');
         });
 
         Route::get('/accounts/print', 'AccountController@print_orders_in_account_for_supply');
@@ -301,6 +349,20 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::group(['prefix'=>'/chief/purchases'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
             Route::post('/', 'PurchaseController@post_purchases');
+        });
+    });
+
+    //warehouseman
+    Route::group(['prefix'=>'warehouseman', 'middleware'=>'WareHouseMan'], function () {
+        //warehouse
+        Route::group(['prefix'=>'orders'], function () {
+            Route::get('/', 'WareHouseController@get_warehouse_for_warehouseman');
+            Route::post('/', 'WareHouseController@post_warehouse');
+        });
+        //delivered orders for warehouseman
+        Route::group(['prefix'=>'delivered'], function () {
+            Route::get('/', 'DeliveryController@get_delivered_for_warehouseman');
+            Route::post('/', 'DeliveryController@post_delivered');
         });
     });
 });

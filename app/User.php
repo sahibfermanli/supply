@@ -52,4 +52,8 @@ class User extends Authenticatable
     public function auditor() {
         return $this->auditor;
     }
+
+    public function delivered_person() {
+        return $this->delivered_person;
+    }
 }
