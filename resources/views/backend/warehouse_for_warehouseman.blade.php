@@ -54,7 +54,7 @@
                                             <td>
                                                 <center><span class="btn btn-primary btn-xs" onclick="delivery_order({{$purchase->order_id}});"><i class="fa fa-check"></i></span></center>
                                             </td>
-                                            <td title="{{$purchase->Department}}">{{substr($purchase->name, 0, 1)}}. {{$purchase->surname}}</td>
+                                            <td title="{{$purchase->Department}}">{{mb_substr($purchase->name, 0, 1)}}. {{$purchase->surname}}</td>
                                             <td title="{{$purchase->last_status['status_date']}}"><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->last_status['status_color']}}; border-color: {{$purchase->last_status['status_color']}};" class="btn btn-primary btn-xs">{{$purchase->last_status['status']}}</span></td>
                                             <td>{{$purchase->Product}}</td>
                                             <td>{{$purchase->Brend}}</td>
