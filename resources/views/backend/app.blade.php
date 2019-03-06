@@ -118,23 +118,25 @@
                             @elseif(Auth::user()->authority() == 3)
                                 {{--User--}}
 
-                                <li><a href="/users/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
-                                <li><a href="/users/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
+                                @if(Auth::user()->delivered_person() != 1)
+                                    <li><a href="/users/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                    <li><a href="/users/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
 
-                                @if(Auth::user()->DepartmentID() == 2 && Auth::user()->delivered_person() != 1)
-                                    <li><a href="/vehicles"><i class="fa fa-car"></i> Texnikalar </a></li>
+                                    @if(Auth::user()->DepartmentID() == 2)
+                                        <li><a href="/vehicles"><i class="fa fa-car"></i> Texnikalar </a></li>
+                                    @endif
+
+                                    <li><a href="/orders"><i class="fa fa-folder-open"></i> Sifarişlər </a></li>
+                                    <li class="active">
+                                        <ul class="nav child_menu show-categories">
+                                            @foreach($categories as $category)
+                                                <li class="cat-li"><a class="cat-select" href="#"
+                                                                      cat_id="{{$category->id}}">{{$category->process}}</a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
                                 @endif
-
-                                <li><a href="/orders"><i class="fa fa-folder-open"></i> Sifarişlər </a></li>
-                                <li class="active">
-                                    <ul class="nav child_menu show-categories">
-                                        @foreach($categories as $category)
-                                            <li class="cat-li"><a class="cat-select" href="#"
-                                                                  cat_id="{{$category->id}}">{{$category->process}}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
 
                             @elseif(Auth::user()->authority() == 4)
 
@@ -252,6 +254,8 @@
                                 @if(Auth::user()->chief() == 1)
                                     {{--Lawyer Chief--}}
                                     <li><a href="/law/users"><i class="fa fa-user"></i> İşçilər</a></li>
+                                    <li><a href="/law/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                    <li><a href="/law/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
                                     <li><a href="/law/chief/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a>
                                     </li>
 
@@ -274,6 +278,8 @@
                                         </ul>
                                     </li>
                                 @else
+                                    <li><a href="/law/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                    <li><a href="/law/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
                                     <li><a href="/law/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/law/orders/"><i class="fa fa-folder"></i> Daxili sifarişlər</a></li>
                                     <li class="active">
@@ -322,6 +328,8 @@
                                 @if(Auth::user()->chief() == 1)
                                     {{--Lawyer Chief--}}
                                     <li><a href="/finance/users"><i class="fa fa-user"></i> İşçilər</a></li>
+                                    <li><a href="/finance/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                    <li><a href="/finance/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
                                     <li><a href="/finance/chief/purchases"><i class="fa fa-shopping-bag"></i>
                                             Alımlar</a></li>
                                     @php($orders_for_chief_total_count = 0)
@@ -343,6 +351,8 @@
                                         </ul>
                                     </li>
                                 @else
+                                    <li><a href="/finance/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
+                                    <li><a href="/finance/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
                                     <li><a href="/finance/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
                                     <li><a href="/finance/orders/"><i class="fa fa-folder-open"></i> Daxili
                                             sifarişlər</a></li>

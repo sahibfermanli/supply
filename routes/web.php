@@ -139,13 +139,13 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::post('/', 'LawyerController@post_pending_orders');
         });
 
-        //warehouse for supply user
+        //warehouse
         Route::group(['prefix'=>'/warehouse'], function () {
             Route::get('/', 'WareHouseController@get_warehouse_for_director');
             Route::post('/', 'WareHouseController@post_warehouse');
         });
 
-        //delivered for supply user
+        //delivered
         Route::group(['prefix'=>'/delivered'], function () {
             Route::get('/', 'DeliveryController@get_delivered_for_director');
             Route::post('/', 'DeliveryController@post_delivered');
@@ -274,6 +274,18 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::post('/', 'PurchaseController@post_purchases');
         });
 
+        //warehouse
+        Route::group(['prefix'=>'/warehouse'], function () {
+            Route::get('/', 'WareHouseController@get_warehouse_for_director');
+            Route::post('/', 'WareHouseController@post_warehouse');
+        });
+
+        //delivered
+        Route::group(['prefix'=>'/delivered'], function () {
+            Route::get('/', 'DeliveryController@get_delivered_for_director');
+            Route::post('/', 'DeliveryController@post_delivered');
+        });
+
         Route::get('/accounts/print', 'AccountController@print_orders_in_account_for_supply');
     });
 
@@ -323,6 +335,20 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
             Route::get('/', 'PurchaseController@get_purchases');
             Route::post('/', 'PurchaseController@post_purchases');
         });
+
+        //warehouse
+        Route::group(['prefix'=>'/warehouse'], function () {
+            Route::get('/', 'WareHouseController@get_warehouse_for_director');
+            Route::post('/', 'WareHouseController@post_warehouse');
+        });
+
+        //delivered
+        Route::group(['prefix'=>'/delivered'], function () {
+            Route::get('/', 'DeliveryController@get_delivered_for_director');
+            Route::post('/', 'DeliveryController@post_delivered');
+        });
+
+        Route::get('/accounts/print', 'AccountController@print_orders_in_account_for_supply');
     });
 
     //finance chief
