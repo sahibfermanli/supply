@@ -491,6 +491,7 @@ class OrderController extends HomeController
         $validator = Validator::make($request->all(), [
             'OrderID' => 'required|integer',
             'unit_id' => 'required|integer',
+            'Product' => 'required|string|max:300',
             'Brend' => 'required|string|max:255',
             'Model' => 'required|string|max:255',
             'PartSerialNo' => 'required|string|max:255',

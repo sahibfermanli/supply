@@ -99,6 +99,13 @@
                                                                     class="fa fa-plus"></i></button>
                                                     </td>
                                                     <td id="orders-add-inputs" style="width: 150px;"><input type="text"
+                                                                                                            id="product_input"
+                                                                                                            class="form-control input-sm"
+                                                                                                            name="Product"
+                                                                                                            placeholder="Malın adı *"
+                                                                                                            required>
+                                                    </td>
+                                                    <td id="orders-add-inputs" style="width: 150px;"><input type="text"
                                                                                                             id="brend_input"
                                                                                                             class="form-control input-sm"
                                                                                                             name="Brend"
@@ -224,6 +231,7 @@
                                                     <th class="column-title">#</th>
                                                     <th class="column-title">#</th>
                                                     <th class="column-title">Sil</th>
+                                                    <th class="column-title">Malın adı</th>
                                                     <th class="column-title">Marka</th>
                                                     <th class="column-title">Model</th>
                                                     <th class="column-title">Part No</th>
@@ -978,6 +986,7 @@
 
                             // var remark = alternative['Remark'];
                             var alt_id = request['id'];
+                            var product = '<td>' + request['Product'] + '</td>';
                             var brend = '<td>' + request['Brend'] + '</td>';
                             var model = '<td>' + request['Model'] + '</td>';
                             var part = '<td>' + request['PartSerialNo'] + '</td>';
@@ -1010,7 +1019,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + alt_id + '</td><td></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark + created_date;
+                            tr = tr + '<td>' + alt_id + '</td><td></td>' + del_btn + product + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark + created_date;
                             tr = tr + '</tr>';
 
                             $('#alts_table').append(tr);
@@ -1120,6 +1129,7 @@
 
                         if (order['Product'] !== null) {
                             order_details += order['Product'] + ' , ';
+                            $('#product_input').val(order['Product']);
                         }
                         if (order['Translation_Brand'] !== null) {
                             order_details += order['Translation_Brand'] + ' , ';
@@ -1159,6 +1169,7 @@
                                     @endif
 
                             var alt_id = alternative['id'];
+                            var product = '<td>' + alternative['Product'] + '</td>';
                             var brend = '<td>' + alternative['Brend'] + '</td>';
                             var model = '<td>' + alternative['Model'] + '</td>';
                             var part = '<td>' + alternative['PartSerialNo'] + '</td>';
@@ -1190,7 +1201,7 @@
                             }
 
                             var tr = '<tr class="even pointer" id="alt_row_' + alt_id + '">';
-                            tr = tr + '<td>' + alt_id + '</td><td style="min-width: 80px;"><span id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</span><span id="suggestion_alternative_tr_' + alternative['id'] + '">' + suggestion_btn + '</span></td>' + del_btn + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark + created_date;
+                            tr = tr + '<td>' + alt_id + '</td><td style="min-width: 80px;"><span id="confirm_alternative_tr_' + alternative['id'] + '">' + confirm_btn + '</span><span id="suggestion_alternative_tr_' + alternative['id'] + '">' + suggestion_btn + '</span></td>' + del_btn + product + brend + model + part + pcs + unit + cost + currency + date + total_cost + store_type + company + country + image + remark + director_remark + created_date;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
