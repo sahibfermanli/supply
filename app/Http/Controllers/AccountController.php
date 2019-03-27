@@ -112,6 +112,52 @@ class AccountController extends HomeController
         }
     }
 
+    //telebname
+    public function print_orders_for_demand_for_supply() {
+        $account_id = Input::get('a');
+
+        if (empty($account_id)) {
+            return redirect('/');
+        }
+
+        try {
+//            if (Purchase::where(['account_id'=>$account_id, 'deleted'=>0, 'completed'=>0])->count() == 0) {
+//                Session::flash('message', 'Bu hesabda heç bir sifariş tapılmadı!');
+//                Session::flash('class', 'danger');
+//                Session::flash('display', 'block');
+//                return redirect('/');
+//            }
+
+            $account = Accounts::where(['id'=>$account_id])->select('account_no')->first();
+
+            $current_date = Carbon::now();
+            $current_date = date('d M Y', strtotime($current_date));
+
+            if (Auth::user()->chief() == 1) {
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'o.DepartmentID', '=', 'd.id')->leftJoin('users as chief', 'o.ChiefID', '=', 'chief.id')->leftJoin('lb_vehicles_list as v', 'o.vehicle_id', '=', 'v.id')->leftJoin('users as director', 'Purchases.LawyerID', '=', 'director.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id])->orderBy('Purchases.id')->select('Purchases.id as id', 'o.Product', 'o.Translation_Brand', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'cur.cur_name as currency', 'o.Remark as order_remark', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'v.Marka', 'v.QN', 'v.Tipi', 'director.name as director_name', 'director.surname as director_surname')->get();
+            }
+            else {
+                $orders = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_currencies_list as cur', 'a.currency_id', '=', 'cur.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'o.DepartmentID', '=', 'd.id')->leftJoin('users as chief', 'o.ChiefID', '=', 'chief.id')->leftJoin('users as director', 'Purchases.LawyerID', '=', 'director.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.account_id'=>$account_id, 'o.SupplyID'=>Auth::id()])->orderBy('Purchases.id')->select('Purchases.id as id', 'o.Product', 'o.Translation_Brand', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'cur.cur_name as currency', 'o.Remark as order_remark', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'director.name as director_name', 'director.surname as director_surname')->get();
+            }
+
+            $cost_arr = array();
+            foreach ($orders as $order) {
+                if (isset($cost_arr[$order->currency])) {
+                    $old_val = $cost_arr[$order->currency];
+                    $new_val = $old_val + $order->total_cost;
+                    $cost_arr[$order->currency] = $new_val;
+                } else {
+                    $new_val = $order->total_cost;
+                    $cost_arr[$order->currency] = $new_val;
+                }
+            }
+
+            return view('backend._print_demand')->with(['orders'=>$orders, 'account'=>$account, 'current_date'=>$current_date, 'cost_arr'=>$cost_arr]);
+        } catch (\Exception $e) {
+            return redirect('/');
+        }
+    }
+
     public function get_accounts_for_supply() {
         $companies = Sellers::where(['deleted'=>0])->select('id', 'seller_name')->orderBy('seller_name')->get();
         $accounts = Accounts::leftJoin('users as u', 'accounts.edited_by', '=', 'u.id')->where(['accounts.deleted'=>0])->select('accounts.*', 'u.name as edited_name', 'u.surname as edited_surname')->paginate(30);

@@ -903,8 +903,6 @@ class OrderController extends HomeController
                         array_push($to, $chief->name . ' ' . $chief->surname);
                     }
 
-//                    $email = $user['email'];
-//                    $to = $user['name'] . ' ' . $user['surname'];
                     $message = "Yeni sifariş var. </br>
                                 Sifarişi verən: ". Auth::user()->name." ".Auth::user()->surname .".</br>
                                 Sifariş: ". $product .".</br>

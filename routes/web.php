@@ -92,7 +92,7 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::get('/', 'AccountController@get_accounts_for_supply');
         Route::post('/', 'AccountController@post_accounts_for_supply');
         Route::get('/print', 'AccountController@print_orders_in_account_for_supply');
-        Route::get('/finance/print', 'AccountController@print_orders_for_finance_for_supply');
+        Route::get('/finance/print', 'AccountController@print_orders_for_demand_for_supply');
     });
 
     //purchase for supply user
