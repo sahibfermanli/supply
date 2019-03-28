@@ -16,12 +16,13 @@
             border: 1px solid #dddddd;
             text-align: left;
             padding: 8px;
+            font-size: 10px;
         }
 
         tr:nth-child(even) {
             background-color: #dddddd;
         }
-        .header-text h1 {
+        .header-text h2 {
             text-align: center;
         }
         .header-text {
@@ -59,13 +60,13 @@
 <body>
 <div class="container">
     <div class="col-md-12 forma">
-        <div class="pull-left"><h4>"Silk Way Aviaşirkəti MMC -nin "GHC" filialı <br> (idarə), müəssisə"</h4></div>
-        <div class="pull-right"><h4>M-11 N-li nümunəvi idarələrarası Forma</h4></div>
+        <div class="pull-left"><h5>"Silk Way Aviaşirkəti MMC -nin "GHC" filialı <br> (idarə), müəssisə"</h5></div>
+        <div class="pull-right"><h5>M-11 N-li nümunəvi idarələrarası Forma</h5></div>
     </div>
 </div>
 <div class="col-md-12">
     <div class="header-text">
-        <h1>TƏLƏBNAMƏ</h1>
+        <h2>TƏLƏBNAMƏ {{$account->id}}</h2>
 
     </div>
 </div>
@@ -78,7 +79,7 @@
             <div class="baslıq-telebname">
                 <ul>
                     <li><b>{{$account->account_no}}</b></li>
-                    <li>{{$current_date}}</li>
+                    <li style="font-size: 12px;">{{$current_date}}</li>
                 </ul>
             </div>
         </div>
@@ -113,7 +114,7 @@
             <th>Miqdarı</th>
             <th>Qiyməti</th>
             <th>Məbləği</th>
-            <th>Valyuta</th>
+            {{--<th>Valyuta</th>--}}
             <th>Sifarişçi</th>
             <th>Təsdiq etdi</th>
         </tr>
@@ -128,14 +129,14 @@
                 <td>{{$order->id}}</td>
                 <td>{{$order->Product}}</td>
                 <td>{{$order->Brend}}, {{$order->Model}}</td>
-                <td>{{$order->Translation_Brand}}</td>
+                <td>{{$order->Translation_Brand}}, {{$vehicle}}</td>
                 <td>{{$order->order_remark}}</td>
                 <td>{{$order->pcs}} {{$order->Unit}}</td>
                 <td>{{$order->cost}}</td>
                 <td>{{$order->total_cost}}</td>
-                <td>{{$order->currency}}</td>
-                <td>{{$order->user_name}} {{$order->user_surname}}, {{$order->department}}{{$vehicle}} ({{$order->chief_name}} {{$order->chief_surname}})</td>
-                <td>{{$order->director_name}} {{$order->director_surname}}</td>
+                {{--<td>{{$order->currency}}</td>--}}
+                <td>{{substr($order->user_name, 0, 1)}}.{{$order->user_surname}}, ({{substr($order->chief_name, 0, 1)}}.{{$order->chief_surname}})</td>
+                <td>{{substr($order->director_name, 0, 1)}}.{{$order->director_surname}}</td>
             </tr>
         @endforeach
     </table>
@@ -144,8 +145,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12 col-xs-12 izinler">
-            <div class="col-md-4 col-xs-4"><h4>Tərtib etdi</h4></div>
-            <div class="col-md-4 col-xs-5 sexs"><h4>{{Auth::user()->name}} {{Auth::user()->surname}}</h4></div>
+            <div class="col-md-4 col-xs-4"><h5>Tərtib etdi</h5></div>
+            <div class="col-md-4 col-xs-5 sexs"><h5>{{Auth::user()->name}} {{Auth::user()->surname}}</h5></div>
         </div>
     </div>
 </div>

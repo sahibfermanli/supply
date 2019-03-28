@@ -128,7 +128,7 @@ class AccountController extends HomeController
 //                return redirect('/');
 //            }
 
-            $account = Accounts::where(['id'=>$account_id])->select('account_no')->first();
+            $account = Accounts::where(['id'=>$account_id])->select('account_no', 'id')->first();
 
             $current_date = Carbon::now();
             $current_date = date('d M Y', strtotime($current_date));
