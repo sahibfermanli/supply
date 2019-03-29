@@ -56,8 +56,9 @@
                 <th class="column-title">№</th>
                 <th class="column-title">Malın adı</th>
                 <th class="column-title">Marka, model</th>
-                <th class="column-title">Say</th>
+                <th class="column-title">Əlavə məlumat</th>
                 <th class="column-title">Sifariş səbəbi</th>
+                <th class="column-title">Say</th>
                 <th class="column-title">Sifarişçi</th>
                 <th class="column-title">Təsdiq etdi</th>
                 <th class="column-title">Rəhbərlik</th>
@@ -68,7 +69,16 @@
                 @foreach($orders as $order)
                     @php($row++)
                     @if(!empty($order->Marka))
-                        @php($vehicle = ', ' . $order->Marka . ' - ' . $order->QN . ' - ' . $order->Tipi)
+                        @php($vehicle = ', ')
+                        @if(!empty($order->Marka) && $order->Marka != 'null')
+                            @php($vehicle .= $order->Marka)
+                        @endif
+                        @if(!empty($order->QN) && $order->QN != 'null')
+                            @php($vehicle .= ' - ' . $order->QN)
+                        @endif
+                        @if(!empty($order->Tipi) && $order->Tipi != 'null')
+                            @php($vehicle .= ' - ' . $order->Tipi)
+                        @endif
                     @else
                         @php($vehicle = '')
                     @endif
@@ -76,9 +86,10 @@
                         <td>{{$row}}</td>
                         <td>{{$order->Product}}</td>
                         <td>{{$order->Brend}}, {{$order->Model}}</td>
-                        <td>{{$order->pcs}} {{$order->Unit}}</td>
+                        <td>{{$order->Translation_Brand}} {{$vehicle}}</td>
                         <td>{{$order->order_remark}}</td>
-                        <td>{{$order->user_name}} {{$order->user_surname}}, {{$order->department}}{{$vehicle}}</td>
+                        <td>{{$order->pcs}} {{$order->Unit}}</td>
+                        <td>{{$order->user_name}} {{$order->user_surname}}, {{$order->department}}</td>
                         <td>{{$order->chief_name}} {{$order->chief_surname}}</td>
                         <td>Vüqar Zeynalov</td>
                     </tr>

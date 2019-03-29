@@ -86,3 +86,17 @@ input {
 select {
     min-width: 10ch !important;
 }
+
+.search-input {
+    display: inline-block;
+    max-width: 155px;
+    margin: 2px 0;
+}
+
+.search-areas {
+    display: block;
+}
+
+#search-cost-area, #search-date-area {
+    display: none;
+}

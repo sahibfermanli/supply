@@ -4,7 +4,63 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left" style="width: 100%; !important;">
-                    <h3 style="display: inline-block;"> Purchases</h3>
+                    <h3 style="display: inline-block;"> Alımlar</h3>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div id="search-inputs-area" class="search-areas">
+                                <input type="text" class="form-control search-input" id="product_search" placeholder="Malın adı" value="{{$search_arr['product']}}">
+                                <input type="text" class="form-control search-input" id="brand_search" placeholder="Marka" value="{{$search_arr['brand']}}">
+                                <input type="text" class="form-control search-input" id="model_search" placeholder="Model" value="{{$search_arr['model']}}">
+                                <select class="form-control search-input" id="department_search">
+                                    <option value="">Departament</option>
+                                    @foreach($departments as $department)
+                                        @if($department->id == $search_arr['department'])
+                                            <option selected value="{{$department->id}}">{{$department->Department}}</option>
+                                        @else
+                                            <option value="{{$department->id}}">{{$department->Department}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <select class="form-control search-input" id="status_search">
+                                    <option value="">Status</option>
+                                    @foreach($statuses as $status)
+                                        @if($status->id == $search_arr['status'])
+                                            <option selected value="{{$status->id}}">{{$status->status}}</option>
+                                        @else
+                                            <option value="{{$status->id}}">{{$status->status}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <select class="form-control search-input" id="seller_search">
+                                    <option value="">Satıcı</option>
+                                    @foreach($sellers as $seller)
+                                        @if($seller->id == $search_arr['seller'])
+                                            <option selected value="{{$seller->id}}">{{$seller->seller}}</option>
+                                        @else
+                                            <option value="{{$seller->id}}">{{$seller->seller}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="search_data();">Axtar</button>
+                            </div>
+                            <div id="search-type-area" class="search-areas">
+                                <label for="cost_search">Qiymət aralığı</label>
+                                <input type="checkbox" id="cost_search" placeholder="min" onclick="cost_area();">
+                                <label for="date_search">Tarix aralığı</label>
+                                <input type="checkbox" id="date_search" placeholder="max" onclick="date_area();">
+                            </div>
+                            <div id="search-cost-area" class="search-areas">
+                                <input type="number" class="form-control search-input" placeholder="min" id="min_cost_search" value="{{$search_arr['min_cost']}}">
+                                <input type="number" class="form-control search-input" placeholder="max" id="max_cost_search" value="{{$search_arr['max_cost']}}">
+                            </div>
+                            <div id="search-date-area" class="search-areas">
+                                <label for="start_date">Hardan</label>
+                                <input type="date" id="start_date_search" class="form-control search-input" value="{{$search_arr['start_date']}}">
+                                <label for="end_date">Hara</label>
+                                <input type="date" id="end_date_search" class="form-control search-input" value="{{$search_arr['end_date']}}">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -72,7 +128,7 @@
                                                 </select>
                                             </td>
                                             <td title="{{$purchase->Department}}">{{mb_substr($purchase->name, 0, 1)}}. {{$purchase->surname}}</td>
-                                            <td title="{{$purchase->last_status['status_date']}}"><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->last_status['status_color']}}; border-color: {{$purchase->last_status['status_color']}};" class="btn btn-primary btn-xs">{{$purchase->last_status['status']}}</span></td>
+                                            <td><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->status_color}}; border-color: {{$purchase->status_color}};" class="btn btn-primary btn-xs">{{$purchase->status}}</span></td>
                                             <td>{{$purchase->Product}}</td>
                                             <td>{{$purchase->Brend}}</td>
                                             <td>{{$purchase->Model}}</td>
@@ -208,6 +264,64 @@
     <script src="/js/sweetalert2.min.js"></script>
 
     <script type="text/javascript">
+
+        var show_cost_area = false;
+        var show_date_area = false;
+
+        $(document).ready(function(){
+            var url = window.location.href;
+            var url_arr = url.split('product');
+            var where_url = 'product' + url_arr[1];
+
+            if (url_arr.length > 1) {
+                $('.pagination').each(function(){
+                    $(this).find('a').each(function(){
+                        var current = $(this);
+                        var old_url = current.attr('href');
+                        var new_url = old_url + '&' + where_url;
+                        current.prop('href', new_url);
+                    });
+                });
+            }
+        });
+
+        function cost_area() {
+            if (show_cost_area) {
+                show_cost_area = false;
+                $('#search-cost-area').css('display', 'none');
+            } else {
+                show_cost_area = true;
+                $('#search-cost-area').css('display', 'block');
+            }
+        }
+
+        function date_area() {
+            if (show_date_area) {
+                show_date_area = false;
+                $('#search-date-area').css('display', 'none');
+            } else {
+                show_date_area = true;
+                $('#search-date-area').css('display', 'block');
+            }
+        }
+
+        function search_data() {
+            var product = $('#product_search').val();
+            var brand = $('#brand_search').val();
+            var model = $('#model_search').val();
+            var department = $('#department_search').val();
+            var status = $('#status_search').val();
+            var seller = $('#seller_search').val();
+            var min_cost = $('#min_cost_search').val();
+            var max_cost = $('#max_cost_search').val();
+            var start_date = $('#start_date_search').val();
+            var end_date = $('#end_date_search').val();
+
+            var link = '?product=' + product + '&brand=' + brand + '&model=' + model + '&department=' + department + '&status=' + status + '&seller=' + seller + '&min_cost=' + min_cost + '&max_cost=' + max_cost + '&start_date=' + start_date + '&end_date=' + end_date;
+
+            location.href = link;
+        }
+
         function select_delivered_person(elem) {
             var delivered_person_id = $(elem).val();
 

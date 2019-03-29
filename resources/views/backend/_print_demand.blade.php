@@ -110,18 +110,27 @@
             <th>Malın adı</th>
             <th>Növü, ölçüsü, markası</th>
             <th>Əlavə məlumat</th>
-            <th>Sifariş səbəbi</th>
+            {{--<th>Sifariş səbəbi</th>--}}
             <th>Miqdarı</th>
             <th>Qiyməti</th>
             <th>Məbləği</th>
             {{--<th>Valyuta</th>--}}
             <th>Sifarişçi</th>
-            <th>Təsdiq etdi</th>
+            {{--<th>Təsdiq etdi</th>--}}
         </tr>
 
         @foreach($orders as $order)
             @if(!empty($order->Marka))
-                @php($vehicle = ', ' . $order->Marka . ' - ' . $order->QN . ' - ' . $order->Tipi)
+                @php($vehicle = ', ')
+                @if(!empty($order->Marka) && $order->Marka != 'null')
+                    @php($vehicle .= $order->Marka)
+                @endif
+                @if(!empty($order->QN) && $order->QN != 'null')
+                    @php($vehicle .= ' - ' . $order->QN)
+                @endif
+                @if(!empty($order->Tipi) && $order->Tipi != 'null')
+                    @php($vehicle .= ' - ' . $order->Tipi)
+                @endif
             @else
                 @php($vehicle = '')
             @endif
@@ -129,14 +138,14 @@
                 <td>{{$order->id}}</td>
                 <td>{{$order->Product}}</td>
                 <td>{{$order->Brend}}, {{$order->Model}}</td>
-                <td>{{$order->Translation_Brand}}, {{$vehicle}}</td>
-                <td>{{$order->order_remark}}</td>
+                <td>{{$order->Translation_Brand}} {{$vehicle}}</td>
+                {{--<td>{{$order->order_remark}}</td>--}}
                 <td>{{$order->pcs}} {{$order->Unit}}</td>
                 <td>{{$order->cost}}</td>
                 <td>{{$order->total_cost}}</td>
                 {{--<td>{{$order->currency}}</td>--}}
                 <td>{{substr($order->user_name, 0, 1)}}.{{$order->user_surname}}, ({{substr($order->chief_name, 0, 1)}}.{{$order->chief_surname}})</td>
-                <td>{{substr($order->director_name, 0, 1)}}.{{$order->director_surname}}</td>
+                {{--<td>{{substr($order->director_name, 0, 1)}}.{{$order->director_surname}}</td>--}}
             </tr>
         @endforeach
     </table>

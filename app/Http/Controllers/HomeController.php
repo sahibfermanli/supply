@@ -65,6 +65,18 @@ class HomeController extends Controller
 //
 //        app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
 
+        //update last status
+//        $orders = Orders::select('id')->get();
+//        foreach ($orders as $order) {
+//            if (OrderStatus::where(['order_id'=>$order->id, 'deleted'=>0])->select('status_id')->count() > 0) {
+//                $statuses = OrderStatus::where(['order_id'=>$order->id, 'deleted'=>0])->select('status_id')->orderBy('id', 'Desc')->first();
+//                $last_status_id = $statuses->status_id;
+//                Orders::where(['id'=>$order->id])->update(['last_status_id'=>$last_status_id]);
+//            }
+//        }
+//
+//        return 'finish';
+
         return view('backend.index');
     }
 }
