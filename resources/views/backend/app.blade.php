@@ -20,7 +20,7 @@
     <!-- Custom Theme Style -->
     <link href="/backend/build/css/custom.min.css" rel="stylesheet">
 
-    <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/main.css?v=2.0" rel="stylesheet">
 
     @yield('css')
 </head>
