@@ -5,6 +5,7 @@
             <div class="page-title">
                 <div class="title_left" style="width: 100%; !important;">
                     <h3 style="display: inline-block;"> Alternativlər</h3>
+                    <span class="btn btn-success btn-mobile" style="display: none;">Kategoriyalar</span>
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div id="search-inputs-area" class="search-areas">
@@ -21,12 +22,14 @@
                                         <option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>
                                     @endforeach
                                 </select>
-                                <select class="form-control search-input" id="supply_search">
-                                    <option value="">Təchizatçı</option>
-                                    @foreach($supplies as $supply)
-                                        <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
-                                    @endforeach
-                                </select>
+                                @if(Auth::user()->chief() == 1)
+                                    <select class="form-control search-input" id="supply_search">
+                                        <option value="">Təchizatçı</option>
+                                        @foreach($supplies as $supply)
+                                            <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
                                 <select class="form-control search-input" id="status_search">
                                     <option value="">Status</option>
                                     @foreach($statuses as $status)
@@ -47,7 +50,6 @@
                             </div>
                         </div>
                     </div>
-                    <span class="btn btn-success btn-mobile" style="display: none;">Kategoriyalar</span>
                 </div>
             </div>
 
@@ -549,7 +551,7 @@
             $('.cat-li').removeClass('active');
             $(this).addClass('active');
 
-            var cat_id = $(this).attr('cat_id');
+            cat_id = $(this).attr('cat_id');
 
             product_search = '';
             department_search = '';
