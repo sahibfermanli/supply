@@ -7,11 +7,13 @@ use App\Categories;
 use App\Company;
 use App\Countries;
 use App\Currencies;
+use App\Departments;
 use App\Orders;
 use App\OrderStatus;
 use App\Positions;
 use App\Sellers;
 use App\Settings;
+use App\Situations;
 use App\Units;
 use App\User;
 use App\Vehicles;
@@ -136,7 +138,12 @@ class OrderController extends HomeController
         $companies = Sellers::where(['deleted'=>0])->select('id', 'seller_name as name')->orderBy('seller_name')->get();
         $supplies = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.deleted'=>0])->select('users.id', 'users.name', 'users.surname')->get();
 
-        return view('backend.orders_for_supply')->with(['units' => $units, 'companies'=>$companies, 'vehicles' => $vehicles, 'positions' => $positions, 'countries'=>$countries, 'currencies'=>$currencies, 'supplies'=>$supplies]);
+        //for search
+        $departments = Departments::where(['deleted'=>0])->orderBy('Department')->select('id', 'Department')->get();
+        $situations = Situations::where(['deleted'=>0])->orderBy('status')->select('id', 'status')->get();
+        //
+
+        return view('backend.orders_for_supply')->with(['units' => $units, 'companies'=>$companies, 'vehicles' => $vehicles, 'positions' => $positions, 'countries'=>$countries, 'currencies'=>$currencies, 'supplies'=>$supplies, 'departments'=>$departments, 'statuses'=>$situations]);
     }
 
     //post order for supply
@@ -462,19 +469,55 @@ class OrderController extends HomeController
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Kateqoriya tapılmadl!']);
         }
 
+        //search start
+        $where_product = '';
+        $where_supply_id = 0;
+        $where_department_id = 0;
+        $where_vehicle_id = 0;
+        $where_status_id = 0;
+        $where_start_date = '1900-01-01 00:00:00';
+        $where_end_date = Carbon::now();
+
+        $where_arr = array();
+
+        if (!empty($request->product) && $request->product != ''  && $request->product != null) {
+            $where_product = $request->product;
+        }
+
+        if (!empty($request->supply) && $request->supply != ''  && $request->supply != null) {
+            $where_supply_id = $request->supply;
+            $where_arr['Orders.SupplyID'] = $where_supply_id;
+        }
+
+        if (!empty($request->department) && $request->department != ''  && $request->department != null) {
+            $where_department_id = $request->department;
+            $where_arr['Orders.DepartmentID'] = $where_department_id;
+        }
+
+        if (!empty($request->vehicle) && $request->vehicle != ''  && $request->vehicle != null) {
+            $where_vehicle_id = $request->vehicle;
+            $where_arr['Orders.vehicle_id'] = $where_vehicle_id;
+        }
+
+        if (!empty($request->status) && $request->status != ''  && $request->status != null) {
+            $where_status_id = $request->status;
+            $where_arr['Orders.last_status_id'] = $where_status_id;
+        }
+
+        if (!empty($request->start_date) && $request->start_date != ''  && $request->start_date != null) {
+            $where_start_date = $request->start_date;
+        }
+
+        if (!empty($request->end_date) && $request->end_date != ''  && $request->end_date != null) {
+            $where_end_date = $request->end_date;
+        }
+        //search end
+
         if (Auth::user()->chief() == 1) {
-            $orders = Orders::leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->whereNull('Orders.delivered_person')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka as vehicle', 'v.QN', 'v.Tipi', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at')->get();
+            $orders = Orders::leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('users as supply', 'Orders.SupplyID', '=', 'supply.id')->leftJoin('lb_status as status', 'Orders.last_status_id', '=', 'status.id')->whereNull('Orders.delivered_person')->where('Orders.Product', 'like', '%'.$where_product.'%')->where($where_arr)->where('Orders.created_at', '>=', $where_start_date)->where('Orders.created_at', '<=', $where_end_date)->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.confirmed', '=', 1)->orWhere('Orders.DepartmentID', '=', Auth::user()->DepartmentID());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka as vehicle', 'v.QN', 'v.Tipi', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'supply.name as supply_name', 'supply.surname as supply_surname', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at', 'Orders.last_status_id as status_id', 'status.status', 'status.color as status_color')->get();
         }
         else {
-            $orders = Orders::leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->whereNull('Orders.delivered_person')->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.SupplyID', '=', Auth::id())->orWhere('Orders.MainPerson', '=', Auth::id());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at')->get();
-        }
-
-        //get last status
-        foreach ($orders as $order) {
-            $order_id = $order->id;
-
-            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
-            $order['last_status'] = $statuses;
+            $orders = Orders::leftJoin('lb_units_list as u', 'Orders.unit_id', '=', 'u.id')->leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->leftJoin('lb_vehicles_list as v', 'Orders.vehicle_id', '=', 'v.id')->leftJoin('lb_positions as p', 'Orders.position_id', '=', 'p.id')->leftJoin('users', 'Orders.MainPerson', '=', 'users.id')->leftJoin('users as chief', 'Orders.ChiefID', '=', 'chief.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('lb_status as status', 'Orders.last_status_id', '=', 'status.id')->whereNull('Orders.delivered_person')->where('Orders.Product', 'like', '%'.$where_product.'%')->where($where_arr)->where('Orders.created_at', '>=', $where_start_date)->where('Orders.created_at', '<=', $where_end_date)->where(['Orders.deleted' => 0, 'Orders.category_id' => $request->cat_id])->where(function ($query){$query->where('Orders.SupplyID', '=', Auth::id())->orWhere('Orders.MainPerson', '=', Auth::id());})->select('Orders.id', 'Orders.Product', 'Orders.Translation_Brand', 'Orders.Part', 'Orders.WEB_link', 'image', 'u.Unit', 'Orders.Pcs', 'Orders.Remark', 'c.process', 'v.Marka', 'p.position', 'Orders.category_id', 'Orders.deffect_doc', 'Orders.created_at', 'Orders.SupplyID', 'Orders.vehicle_id', 'Orders.unit_id', 'Orders.position_id', 'Orders.ReportDocument', 'Orders.confirmed', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as user_department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'Orders.confirmed_at', 'Orders.last_status_id as status_id', 'status.status', 'status.color as status_color')->get();
         }
 
         $purchases = Purchase::leftjoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->where(['Purchases.deleted'=>0])->select('a.OrderID')->get();
