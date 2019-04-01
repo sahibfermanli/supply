@@ -6,6 +6,50 @@
                 <div class="title_left" style="width: 100%; !important;">
                     <h3 style="display: inline-block;"> Sifarişlər</h3>
                     <span class="btn btn-success btn-mobile" style="display: none;">Kategoriyalar</span>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div id="search-inputs-area" class="search-areas">
+                                <input type="text" class="form-control search-input" id="product_search" placeholder="Malın adı">
+                                <select class="form-control search-input" id="department_search">
+                                    <option value="">Departament</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{$department->id}}">{{$department->Department}}</option>
+                                    @endforeach
+                                </select>
+                                <select class="form-control search-input" id="vehicle_search">
+                                    <option value="">Texnika</option>
+                                    @foreach($vehicles as $vehicle)
+                                        <option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>
+                                    @endforeach
+                                </select>
+                                @if(Auth::user()->chief() == 1)
+                                    <select class="form-control search-input" id="supply_search">
+                                        <option value="">Təchizatçı</option>
+                                        @foreach($supplies as $supply)
+                                            <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                                <select class="form-control search-input" id="status_search">
+                                    <option value="">Status</option>
+                                    @foreach($statuses as $status)
+                                        <option value="{{$status->id}}">{{$status->status}}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="search_data();">Axtar</button>
+                            </div>
+                            <div id="search-type-area" class="search-areas">
+                                <label for="date_search">Tarix aralığı</label>
+                                <input type="checkbox" id="date_search" placeholder="max" onclick="date_area();">
+                            </div>
+                            <div id="search-date-area" class="search-areas">
+                                <label for="start_date">Hardan</label>
+                                <input type="date" id="start_date_search" class="form-control search-input">
+                                <label for="end_date">Hara</label>
+                                <input type="date" id="end_date_search" class="form-control search-input">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -241,6 +285,40 @@
     {{--form submit--}}
     <script>
         var category_id = 0;
+        var cat_id = 0;
+        var product_search = '';
+        var department_search = '';
+        var vehicle_search = '';
+        var supply_search = '';
+        var status_search = '';
+        var start_date_search = '';
+        var end_date_search = '';
+
+        //search start
+        var show_date_area = false;
+
+        function date_area() {
+            if (show_date_area) {
+                show_date_area = false;
+                $('#search-date-area').css('display', 'none');
+            } else {
+                show_date_area = true;
+                $('#search-date-area').css('display', 'block');
+            }
+        }
+
+        function search_data() {
+            product_search = $('#product_search').val();
+            department_search = $('#department_search').val();
+            vehicle_search = $('#vehicle_search').val();
+            supply_search = $('#supply_search').val();
+            status_search = $('#status_search').val();
+            start_date_search = $('#start_date_search').val();
+            end_date_search = $('#end_date_search').val();
+
+            change_category(cat_id);
+        }
+        //search end
 
 
         //show status
@@ -404,18 +482,40 @@
             $('.cat-li').removeClass('active');
             $(this).addClass('active');
 
-            var cat_id = $(this).attr('cat_id');
+            cat_id = $(this).attr('cat_id');
 
             category_id = cat_id;
+
+            product_search = '';
+            department_search = '';
+            vehicle_search = '';
+            supply_search = '';
+            status_search = '';
+            start_date_search = '';
+            end_date_search = '';
+
+            $('#product_search').val('');
+            $('#department_search').val('');
+            $('#vehicle_search').val('');
+            $('#supply_search').val('');
+            $('#status_search').val('');
+            $('#start_date_search').val('');
+            $('#end_date_search').val('');
 
             change_category(cat_id);
         });
 
         //change category function
         function change_category(elem) {
-            var cat_id = elem;
+            cat_id = elem;
 
             $('#add_to_form_category_id').html('<input type="hidden" name="category_id" value="' + cat_id + '">');
+
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
+                text: 'Əməliyyat aparılır, xahiş olunur gözləyin...',
+                showConfirmButton: false
+            });
 
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
@@ -424,7 +524,15 @@
                 data: {
                     'cat_id': cat_id,
                     '_token': CSRF_TOKEN,
-                    'type': 2
+                    'type': 2,
+                    //search data
+                    'product': product_search,
+                    'department': department_search,
+                    'vehicle': vehicle_search,
+                    'supply': supply_search,
+                    'status': status_search,
+                    'start_date': start_date_search,
+                    'end_date': end_date_search
                 },
                 beforeSubmit: function () {
                     //loading
@@ -602,7 +710,7 @@
                                 var defect = '<td><center><a title="Xəta sənədini endir" href="' + order['deffect_doc'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
                             }
 
-                            var status = '<td title="' + order['last_status']['status_date'] + '"><span onclick="show_status(' + order['id'] + ')" id="status_' + id + '" class="btn btn-xs" style="color: ' + order['last_status']['status_color'] + '; border-color: ' + order['last_status']['status_color'] + ';">' + order['last_status']['status'] + '</span></td>';
+                            var status = '<td><span onclick="show_status(' + order['id'] + ')" id="status_' + id + '" class="btn btn-xs" style="color: ' + order['status_color'] + '; border-color: ' + order['status_color'] + ';">' + order['status'] + '</span></td>';
 
                             var show_alt = '<td><span onclick="get_alternatives(this, ' + order['id'] + ');" class="btn btn-success btn-xs add-modal-alternatives"><i class="fa fa-eye"></i></span></td>';
 
