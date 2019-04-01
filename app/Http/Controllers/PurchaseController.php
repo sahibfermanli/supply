@@ -12,6 +12,7 @@ use App\Sellers;
 use App\Settings;
 use App\Situations;
 use App\User;
+use App\Vehicles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,12 +28,14 @@ class PurchaseController extends HomeController
         $departments = Departments::where(['deleted'=>0])->orderBy('Department')->select('id', 'Department')->get();
         $situations = Situations::where(['deleted'=>0])->orderBy('status')->select('id', 'status')->get();
         $sellers = Sellers::where(['deleted'=>0])->orderBy('seller_name')->select('id', 'seller_name as seller')->get();
+        $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
         //
 
         $where_product = '';
         $where_brand = '';
         $where_model = '';
         $where_department_id = 0;
+        $where_vehicle_id = 0;
         $where_status_id = 0;
         $is_status_search = false;
         $where_seller_id = 0;
@@ -47,6 +50,7 @@ class PurchaseController extends HomeController
             'brand' => '',
             'model' => '',
             'department' => '',
+            'vehicle' => '',
             'status' => '',
             'seller' => '',
             'min_cost' => '',
@@ -74,6 +78,12 @@ class PurchaseController extends HomeController
             $where_department_id = Input::get('department');
             $where_arr['o.DepartmentID'] = $where_department_id;
             $search_arr['department'] = $where_department_id;
+        }
+
+        if (!empty(Input::get('vehicle')) && Input::get('vehicle') != ''  && Input::get('vehicle') != null) {
+            $where_vehicle_id = Input::get('vehicle');
+            $where_arr['o.vehicle_id'] = $where_vehicle_id;
+            $search_arr['vehicle'] = $where_vehicle_id;
         }
 
         if (!empty(Input::get('status')) && Input::get('status') != ''  && Input::get('status') != null) {
@@ -112,7 +122,7 @@ class PurchaseController extends HomeController
         $deadlines = Deadlines::where(['deleted'=>0])->select('type', 'deadline', 'color')->get();
         $current_date = Carbon::now()->format('Y-m-d');
 
-        return view('backend.purchases')->with(['purchases'=>$purchases, 'deadlines'=>$deadlines, 'current_date'=>$current_date, 'departments'=>$departments, 'statuses'=>$situations, 'sellers'=>$sellers, 'search_arr'=>$search_arr]);
+        return view('backend.purchases')->with(['purchases'=>$purchases, 'deadlines'=>$deadlines, 'current_date'=>$current_date, 'departments'=>$departments, 'statuses'=>$situations, 'sellers'=>$sellers, 'vehicles'=>$vehicles, 'search_arr'=>$search_arr]);
     }
 
     //for supply
@@ -121,12 +131,14 @@ class PurchaseController extends HomeController
         $departments = Departments::where(['deleted'=>0])->orderBy('Department')->select('id', 'Department')->get();
         $situations = Situations::where(['deleted'=>0])->orderBy('status')->select('id', 'status')->get();
         $sellers = Sellers::where(['deleted'=>0])->orderBy('seller_name')->select('id', 'seller_name as seller')->get();
+        $vehicles = Vehicles::orderBy('QN')->select(['id', 'QN', 'Marka', 'Tipi'])->get();
         //
 
         $where_product = '';
         $where_brand = '';
         $where_model = '';
         $where_department_id = 0;
+        $where_vehicle_id = 0;
         $where_status_id = 0;
         $is_status_search = false;
         $where_seller_id = 0;
@@ -141,6 +153,7 @@ class PurchaseController extends HomeController
             'brand' => '',
             'model' => '',
             'department' => '',
+            'vehicle' => '',
             'status' => '',
             'seller' => '',
             'min_cost' => '',
@@ -168,6 +181,12 @@ class PurchaseController extends HomeController
             $where_department_id = Input::get('department');
             $where_arr['o.DepartmentID'] = $where_department_id;
             $search_arr['department'] = $where_department_id;
+        }
+
+        if (!empty(Input::get('vehicle')) && Input::get('vehicle') != ''  && Input::get('vehicle') != null) {
+            $where_vehicle_id = Input::get('vehicle');
+            $where_arr['o.vehicle_id'] = $where_vehicle_id;
+            $search_arr['vehicle'] = $where_vehicle_id;
         }
 
         if (!empty(Input::get('status')) && Input::get('status') != ''  && Input::get('status') != null) {
@@ -215,15 +234,7 @@ class PurchaseController extends HomeController
             $purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('users', 'o.MainPerson', '=', 'users.id')->leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->leftJoin('users as supply', 'o.SupplyID', '=', 'supply.id')->leftJoin('users as lawyer', 'Purchases.LawyerID', '=', 'lawyer.id')->leftJoin('accounts', 'Purchases.account_id', '=', 'accounts.id')->leftJoin('lb_sellers', 'accounts.company_id', '=', 'lb_sellers.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('lb_status as status', 'o.last_status_id', '=', 'status.id')->where(['Purchases.deleted'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'o.SupplyID'=>Auth::id()])->whereNull('o.delivered_person')->where('a.Product', 'like', '%'.$where_product.'%')->where('a.Brend', 'like', '%'.$where_brand.'%')->where('a.Model', 'like', '%'.$where_model.'%')->where($where_arr)->where('a.total_cost', '>=', $where_min_cost)->where('a.total_cost', '<=', $where_max_cost)->where('o.created_at', '>=', $where_start_date)->where('o.created_at', '<=', $where_end_date)->orderBy('o.id', 'DESC ')->select('Purchases.id as id', 'a.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.account_id', 'Purchases.Remark', 'o.deadline', 'o.created_at', 'users.name', 'users.surname', 'd.Department', 'accounts.id as account_id', 'lb_sellers.seller_name', 'accounts.account_no', 'accounts.created_at as account_date', 'accounts.lawyer_doc', 'accounts.lawyer_confirm_at', 'Purchases.qaime_no', 'Purchases.qaime_doc', 'Purchases.qaime_date', 'supply.name as supply_name', 'supply.surname as supply_surname', 'a.created_at as supply_date', 'lawyer.name as lawyer_name', 'lawyer.surname as lawyer_surname', 'Purchases.created_at as lawyer_date', 'o.id as order_id', 'o.MainPerson', 'o.last_status_id as status_id', 'status.status', 'status.color as status_color')->paginate(30);
         }
 
-//        //get last status
-//        foreach ($purchases as $purchase) {
-//            $order_id = $purchase->order_id;
-//
-//            $statuses = OrderStatus::where(['order_status.order_id'=>$order_id, 'order_status.deleted'=>0])->leftJoin('lb_status as s', 'order_status.status_id', '=', 's.id')->select('s.id as status_id', 's.status', 's.color as status_color', 'order_status.created_at as status_date')->orderBy('order_status.id', 'Desc')->first();
-//            $purchase['last_status'] = $statuses;
-//        }
-
-        return view('backend.purchases_for_supply')->with(['purchases'=>$purchases, 'deadlines'=>$deadlines, 'current_date'=>$current_date, 'delivered_persons'=>$delivered_persons, 'departments'=>$departments, 'statuses'=>$situations, 'sellers'=>$sellers, 'search_arr'=>$search_arr]);
+        return view('backend.purchases_for_supply')->with(['purchases'=>$purchases, 'deadlines'=>$deadlines, 'current_date'=>$current_date, 'delivered_persons'=>$delivered_persons, 'departments'=>$departments, 'statuses'=>$situations, 'sellers'=>$sellers, 'vehicles'=>$vehicles, 'search_arr'=>$search_arr]);
     }
 
     //post

@@ -35,6 +35,18 @@
                                         @endforeach
                                     </select>
                                 @endif
+                                <select class="form-control search-input" id="vehicle_search">
+                                    <option value="">Texnika</option>
+                                    @foreach($vehicles as $vehicle)
+                                        @if($vehicle->id == $search_arr['vehicle'])
+                                            <option selected value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}}
+                                                - {{$vehicle->Tipi}}</option>
+                                        @else
+                                            <option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}}
+                                                - {{$vehicle->Tipi}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
                                 <select class="form-control search-input" id="status_search">
                                     <option value="">Status</option>
                                     @foreach($statuses as $status)
@@ -259,6 +271,7 @@
             @else
                 var warehouseman = '';
             @endif
+            var vehicle = $('#vehicle_search').val();
             var status = $('#status_search').val();
             var seller = $('#seller_search').val();
             var min_cost = $('#min_cost_search').val();
@@ -266,7 +279,7 @@
             var start_date = $('#start_date_search').val();
             var end_date = $('#end_date_search').val();
 
-            var link = '?product=' + product + '&brand=' + brand + '&model=' + model + '&status=' + status + '&seller=' + seller + '&min_cost=' + min_cost + '&max_cost=' + max_cost + '&start_date=' + start_date + '&end_date=' + end_date;
+            var link = '?product=' + product + '&brand=' + brand + '&model=' + model + '&status=' + status + '&vehicle=' + vehicle + '&seller=' + seller + '&min_cost=' + min_cost + '&max_cost=' + max_cost + '&start_date=' + start_date + '&end_date=' + end_date;
 
             @if(Auth::user()->authority() != 3)
                 link += '&department=' + department;
