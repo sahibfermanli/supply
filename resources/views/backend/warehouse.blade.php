@@ -129,7 +129,7 @@
                                         <?php
                                             $date = date('d.m.Y', strtotime($purchase->created_at));
                                         ?>
-                                        <tr class="even pointer" id="row_{{$row}}">
+                                        <tr class="even pointer rows" id="row_{{$row}}" onclick="select_row({{$row}});">
                                             <td>{{$purchase->order_id}}</td>
                                             <td title="{{$purchase->wh_name}} {{$purchase->wh_surname}}">
                                                 {{mb_substr($purchase->wh_name, 0, 1)}}. {{$purchase->wh_surname}}
@@ -218,6 +218,12 @@
     <script src="/js/sweetalert2.min.js"></script>
 
     <script type="text/javascript">
+        //select row
+        function select_row(row) {
+            $('.rows').css('background-color', 'white');
+            $('#row_'+row).css('background-color', '#acecff');
+        }
+
         //search start
         var show_cost_area = false;
         var show_date_area = false;

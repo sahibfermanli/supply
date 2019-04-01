@@ -117,7 +117,7 @@
                                         <?php
                                             $date = date('d.m.Y', strtotime($purchase->created_at));
                                         ?>
-                                        <tr class="even pointer" id="row_{{$purchase->order_id}}">
+                                        <tr class="even pointer rows" id="row_{{$purchase->order_id}}" onclick="select_row({{$purchase->order_id}})">
                                             <td>{{$purchase->order_id}}</td>
                                             <td>
                                                 <center><span class="btn btn-primary btn-xs" onclick="delivery_order({{$purchase->order_id}});"><i class="fa fa-check"></i></span></center>

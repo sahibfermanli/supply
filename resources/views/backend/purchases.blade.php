@@ -127,7 +127,7 @@
                                             }
                                         }
                                         ?>
-                                        <tr class="even pointer" id="row_{{$row}}">
+                                        <tr class="even pointer rows" id="row_{{$row}}" onclick="select_row({{$row}})">
                                             <td style="background-color: {{$color}};">{{$purchase->order_id}}</td>
                                             <td>{{$purchase->name}} {{$purchase->surname}}
                                                 , {{$purchase->Department}}</td>
@@ -244,6 +244,12 @@
     <script src="/js/sweetalert2.min.js"></script>
 
     <script>
+        //select row
+        function select_row(row) {
+            $('.rows').css('background-color', 'white');
+            $('#row_'+row).css('background-color', '#acecff');
+        }
+
         var show_cost_area = false;
         var show_date_area = false;
 

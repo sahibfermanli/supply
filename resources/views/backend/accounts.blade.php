@@ -7,6 +7,11 @@
                     <h5>Düymələrin mənaları</h5>
                     <ul>
                         <li>
+
+                            <span disabled title="Düymə deaktivdir" class="btn btn-success btn-xs"><i class="fa fa-upload"></i></span>
+                            <span>Qaimə yükləmə</span>
+                        </li>
+                        <li>
                             <span disabled="true" title="Çap et"
                                   class="btn btn-primary btn-xs"><i
                                         class="fa fa-print"></i>
@@ -114,7 +119,7 @@
                                                     $disabled = '';
                                                 }
                                             ?>
-                                            <tr class="even pointer" id="row_{{$row}}">
+                                            <tr class="even pointer rows" id="row_{{$row}}" onclick="select_row({{$row}});">
                                                 <td>{{$account->id}}</td>
                                                 <td><input style="border: none;" type="text" {{$disabled}}
                                                            class="form-control input-sm"
@@ -146,6 +151,7 @@
                                                 </td>
                                                 @if($account->send == 0)
                                                     <td id="btns_{{$account->id}}">
+                                                        <span title="Qaimə yüklə" onclick="upload_qaime({{$account->id}});" class="btn btn-success btn-xs"><i class="fa fa-upload"></i></span>
                                                         <a href="/supply/accounts/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
                                                         <a style="background-color: #99c2ff; border-color: #99c2ff;" href="/supply/accounts/finance/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-money"></i></a>
                                                         <a style="background-color: #435fff; border-color: #435fff;" href="/supply/accounts/report/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-list"></i></a>
@@ -168,6 +174,7 @@
                                                     </td>
                                                 @else
                                                     <td>
+                                                        <span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-upload"></i></span>
                                                         <a href="/supply/accounts/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
                                                         <a style="background-color: #99c2ff; border-color: #99c2ff;" href="/supply/accounts/finance/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-money"></i></a>
                                                         <a style="background-color: #435fff; border-color: #435fff;" href="/supply/accounts/report/print?a={{$account->id}}" target="_blank" class="btn btn-primary btn-xs"><i class="fa fa-list"></i></a>
@@ -264,7 +271,7 @@
                                                     <td>{{$purchase->cost}}</td>
                                                     <td>{{$purchase->total_cost}}</td>
                                                     <td>{{$purchase->company}}</td>
-                                                    <td title="{{$purchase->last_status['status_date']}}" style="color: {{$purchase->last_status['status_color']}};">{{$purchase->last_status['status']}}</td>
+                                                    <td style="color: {{$purchase->status_color}};">{{$purchase->status}}</td>
                                                     <td>{{$date}}</td>
                                                 </tr>
                                                 @php
@@ -361,6 +368,31 @@
         </div>
     </div>
     {{--show remark modal finish--}}
+
+    {{--start add qaime modal--}}
+    <div class="modal fade" id="add-qaime" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Qaiməni yüklə</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="type" value="add_qaime">
+                        <div id="account_id_div_for_qaime"></div>
+                        {{csrf_field()}}
+                        <input type="file" name="file" class="form-control" style="width: 30%; display: inline-block;" required>
+                        <input type="text" name="qaime_no" class="form-control" style="width: 30%; display: inline-block;" required placeholder="qaimənin nömrəsi">
+                        <button type="submit" class="btn btn-success" style="display: inline-block;"><i class="fa fa-save"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{--finish add qaime modal--}}
 @endsection
 
 @section('css')
@@ -373,6 +405,19 @@
     <script src="/js/sweetalert2.min.js"></script>
 
     <script>
+        //select row
+        function select_row(row) {
+            $('.rows').css('background-color', 'white');
+            $('#row_'+row).css('background-color', '#acecff');
+        }
+
+        //upload qaime
+        function upload_qaime(account_id) {
+            $('#account_id_div_for_qaime').html('<input type="hidden" name="account_id" value="' + account_id + '">');
+
+            $('#add-qaime').modal('show');
+        }
+
         function show_remark(account_id) {
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
@@ -531,7 +576,7 @@
                             var cost = '<td>' + purchase['cost'] + '</td>';
                             var total_cost = '<td>' + purchase['total_cost'] + '</td>';
                             var company = '<td>' + purchase['company'] + '</td>';
-                            var status = '<td><span title="' + purchase['last_status']['status_date'] + '" style="color: ' + purchase['last_status']['status_color'] + '">' + purchase['last_status']['status'] + '</span></td>';
+                            var status = '<td><span style="color: ' + purchase['status_color'] + '">' + purchase['status'] + '</span></td>';
                             var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                             var tr = '<tr class="even pointer" id="remove_' + purchase['id'] + '">';
@@ -741,7 +786,7 @@
                         var cost = '<td>' + purchase['cost'] + '</td>';
                         var total_cost = '<td>' + purchase['total_cost'] + '</td>';
                         var company = '<td>' + purchase['company'] + '</td>';
-                        var status = '<td><span title="' + purchase['last_status']['status_date'] + '" style="color: ' + purchase['last_status']['status_color'] + '">' + purchase['last_status']['status'] + '</span></td>';
+                        var status = '<td><span style="color: ' + purchase['status_color'] + '">' + purchase['status'] + '</span></td>';
                         var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                         var tr = '<tr class="even pointer" id="remove_' + purchase['id'] + '">';
@@ -797,7 +842,7 @@
                         var cost = '<td>' + purchase['cost'] + '</td>';
                         var total_cost = '<td>' + purchase['total_cost'] + '</td>';
                         var company = '<td>' + purchase['company'] + '</td>';
-                        var status = '<td><span title="' + purchase['last_status']['status_date'] + '" style="color: ' + purchase['last_status']['status_color'] + '">' + purchase['last_status']['status'] + '</span></td>';
+                        var status = '<td><span style="color: ' + purchase['status_color'] + '">' + purchase['status'] + '</span></td>';
                         var date = '<td>' + purchase['created_at'].substr(0, 10) + '</td>';
 
                         var tr = '<tr class="even pointer" id="move_' + purchase['id'] + '">';
@@ -830,9 +875,10 @@
                         response.case
                     );
                     if (response.case === 'success') {
-                        if (response.type === 'add_account') {
-                            location.reload();
-                        }
+                        // if (response.type === 'add_account') {
+                        //     location.reload();
+                        // }
+                        location.reload();
                     }
                 }
             });
