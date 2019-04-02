@@ -59,7 +59,11 @@
 
 @media (min-width: 768px) {
     .modal-dialog {
-        width: 800px !important;
+        width: 800px;
+    }
+
+    .account-modal-for-purchase {
+        width: 98% !important;
     }
 }
 
