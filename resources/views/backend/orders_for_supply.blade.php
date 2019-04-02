@@ -5,6 +5,7 @@
             <div class="page-title">
                 <div class="title_left" style="width: 100%; !important;">
                     <h3 style="display: inline-block;"> Alternativlər</h3>
+                    <input disabled type="button" onclick="tableToExcel('table_excel', 'purchases')" value="Export to Excel" style="float: right; display: none;" class="btn btn-success" id="export_excel_btn">
                     <span class="btn btn-success btn-mobile" style="display: none;">Kategoriyalar</span>
                     <div class="panel panel-default">
                         <div class="panel-body">
@@ -72,7 +73,7 @@
                         </div>
                         <div class="x_content" id="table_display">
                             <div class="table-responsive">
-                                <table class="table table-bordered">
+                                <table class="table table-bordered" id="table_excel">
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
@@ -82,7 +83,7 @@
                                         @else
                                             @php($product_input_length = 1)
                                         @endif
-                                        <th class="column-title">Emeliyyatlar</th>
+                                        <th class="column-title" style="max-width: 40px !important;"><center><b>+</b></center></th>
                                         <th class="column-title" id="Status_th">Status</th>
                                         <th class="column-title" id="Product_th">Malın adı</th>
                                         <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
@@ -440,6 +441,33 @@
     <script src="/js/jquery.validate.min.js"></script>
     <script src="/js/sweetalert2.min.js"></script>
 
+    <script type="text/javascript">
+        var tableToExcel = (function() {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+                , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+            return function(table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+
+    <script>
+        // tell the embed parent frame the height of the content
+        if (window.parent && window.parent.parent){
+            window.parent.parent.postMessage(["resultsFrame", {
+                height: document.body.getBoundingClientRect().height,
+                slug: "cmewv"
+            }], "*")
+        }
+
+        // always overwrite window.name, in case users try to set it manually
+        window.name = "result"
+    </script>
+
     <script>
         var cat_id = 0;
         var product_search = '';
@@ -570,6 +598,8 @@
             $('#end_date_search').val('');
 
             change_category(cat_id);
+
+            $('#export_excel_btn').css('display', 'inline-block').prop('disabled', false);
         });
     </script>
 
@@ -752,45 +782,53 @@
                             var id = order['id'];
                             var user_detail = '<td title="' + order['user_department'] + '" style="min-width: 150px;">' + order['user_name'].substr(0,1) + '. ' + order['user_surname'] + '</td>';
                             var chief_detail = '<td title="' + order['confirmed_at'] + '" style="min-width: 150px;">' + order['chief_name'].substr(0,1) + '. ' + order['chief_surname'] + '</td>';
-                            var product = '<td title="' + order['Product'] + '" style="min-width: 150px;">' + '<input id="product_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Product'] + '">' + '</td>';
-                            var translation_brand = '<td style="min-width: 150px;" title="' + order['Translation_Brand'] + '">' + '<input id="translation_brand_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Translation_Brand'] + '">' + '</td>';
-                            var part = '<td title="' + order['Part'] + '" style="min-width: 100px;">' + '<input id="part_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['Part'] + '">' + '</td>';
+                            if (order['Product'] !== null) {
+                                if (order['Product'].length > 50) {
+                                    var new_product = order['Product'].substr(0, 50) + '...';
+                                } else {
+                                    var new_product = order['Product'];
+                                }
+                            } else {
+                                var new_product = order['Product'];
+                            }
+                            var product = '<td title="' + order['Product'] + '">' + new_product + '</td>';
+                            if (order['Translation_Brand'] !== null) {
+                                if (order['Translation_Brand'].length > 50) {
+                                    var new_translation_brand = order['Translation_Brand'].substr(0, 50) + '...';
+                                } else {
+                                    var new_translation_brand = order['Translation_Brand'];
+                                }
+                            } else {
+                                var new_translation_brand = order['Translation_Brand'];
+                            }
+                            var translation_brand = '<td title="' + order['Translation_Brand'] + '">' + new_translation_brand + '</td>';
+                            if (order['Part'] !== null) {
+                                if (order['Part'].length > 50) {
+                                    var new_part = order['Part'].substr(0, 50) + '...';
+                                } else {
+                                    var new_part = order['Part'];
+                                }
+                            } else {
+                                var new_part = order['Part'];
+                            }
+                            var part = '<td title="' + order['Part'] + '" style="min-width: 100px;">' + new_part + '</td>';
                             var first_pcs = order['Pcs'];
                             if ((first_pcs - parseInt(first_pcs)) > 0) {
                                 var last_pcs = first_pcs;
                             } else {
                                 var last_pcs = parseInt(first_pcs);
                             }
-                            var pcs = '<td>' + '<input id="pcs_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + last_pcs + '">' + '</td>';
+                            var pcs = '<td>' + last_pcs + '</td>';
 
                             var unit_id = order['unit_id'];
                             var units = response.units;
                             var unit = '';
                             var j = 0;
-                            unit = unit + '<td title="' + order['Unit'] + '" style="min-width: 110px;"><select id="unit_id_edit_' + id + '" class="form-control input-sm">';
-                            for (j = 0; j < units.length; j++) {
-                                if (units[j]['id'] == unit_id) {
-                                    unit = unit + '<option selected value="' + units[j]['id'] + '">' + units[j]['Unit'] + '</option>';
-                                } else {
-                                    unit = unit + '<option value="' + units[j]['id'] + '">' + units[j]['Unit'] + '</option>';
-                                }
-                            }
-                            unit = unit + '</select></td>';
+                            unit = unit + '<td>' + order['Unit'] + '</td>';
 
                             var vehicle_id = order['vehicle_id'];
                             var vehicles = response.vehicles;
-                            var vehicle = '';
-                            var j = 0;
-                            vehicle = vehicle + '<td title="' + order['vehicle'] + ' , ' + order['QN'] + ' , ' + order['Tipi'] + '" style="min-width: 170px;"><select id="vehicle_id_edit_' + id + '" class="form-control input-sm">';
-                            for (j = 0; j < vehicles.length; j++) {
-                                if (vehicles[j]['id'] == vehicle_id) {
-                                    vehicle = vehicle + '<option selected value="' + vehicles[j]['id'] + '">' + vehicles[j]['QN'] + ' - ' +  vehicles[j]['Marka'] + ' - ' + vehicles[j]['Tipi'] + '</option>';
-                                } else {
-                                    vehicle = vehicle + '<option value="' + vehicles[j]['id'] + '">' + vehicles[j]['Marka'] + '</option>';
-                                }
-                            }
-                            vehicle = vehicle + '</select></td>';
-                            var marka = vehicle;
+                            var marka = '<td>' + order['QN'] + ' - ' + order['vehicle'] + ' - ' + order['Tipi'] + '</td>';
 
                             if (order['WEB_link'] == null) {
                                 // var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 100px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
@@ -838,21 +876,21 @@
                             }
 
 
-                            if (order['status_id'] == 9 || order['confirmed'] == 1) {
-                                edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                                cancel = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                                check = '<i style="color: red;" class="fa fa-check"></i>';
-                            } else {
-                                edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
-                                cancel = '<span id="cancel_btn_' + id + '" onclick="del(this, ' + id + ');" title="Geri çevir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span>';
-                                check = '<span id="check_' + id + '" class="btn btn-success btn-xs" onclick="confirm_order(' + id + ');"><i class="fa fa-check"></i></span>';
-                            }
+                            // if (order['status_id'] == 9 || order['confirmed'] == 1) {
+                            //     // edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
+                            //     // cancel = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
+                            //     check = '<i style="color: red;" class="fa fa-check"></i>';
+                            // } else {
+                            //     // edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
+                            //     // cancel = '<span id="cancel_btn_' + id + '" onclick="del(this, ' + id + ');" title="Geri çevir" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span>';
+                            //     // check = '<span id="check_' + id + '" class="btn btn-success btn-xs" onclick="confirm_order(' + id + ');"><i class="fa fa-check"></i></span>';
+                            // }
                             @else
-                            if (order['status_id'] == 9 || order['confirmed'] == 1) {
-                                edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
-                            } else {
-                                edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
-                            }
+                            // if (order['status_id'] == 9 || order['confirmed'] == 1) {
+                            //     edit = '<span disabled title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-exclamation-circle"></i></span>';
+                            // } else {
+                            //     edit = '<span onclick="update_order(' + id + ');" title="Düzəliş et" class="btn btn-warning btn-xs"><i class="fa fa-pencil"></i></span>';
+                            // }
                             @endif
 
                                 switch (category_id) {
@@ -932,7 +970,7 @@
                             var date = '<td>' + order['created_at'].substr(0, 10) + '</td>';
 
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + id + '</td>' + select_supply + '<td style="min-width: 130px;">' + send_director + check + '<span id="actions_' + id + '">' + edit + cancel + '</span>' + '</td>' + status + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + date + remark + picture + defect;
+                            tr = tr + '<td>' + id + '</td>' + select_supply + '<td style="max-width: 40px !important;">' + send_director + '<span id="actions_' + id + '">' + '</span>' + '</td>' + status + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + date + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }

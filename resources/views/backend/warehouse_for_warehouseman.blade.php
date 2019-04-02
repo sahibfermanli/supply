@@ -5,6 +5,7 @@
             <div class="page-title">
                 <div class="title_left" style="width: 100%; !important;">
                     <h3 style="display: inline-block;"> Anbardakı sifarişlər</h3>
+                    <input type="button" onclick="tableToExcel('table_excel', 'purchases')" value="Export to Excel" style="float: right;" class="btn btn-success">
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div id="search-inputs-area" class="search-areas">
@@ -86,7 +87,7 @@
                                 <div>
                                     {!! $purchases->links(); !!}
                                 </div>
-                                <table class="table table-bordered">
+                                <table class="table table-bordered" id="table_excel">
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
@@ -204,6 +205,33 @@
     <script src="/js/jquery.form.min.js"></script>
     <script src="/js/jquery.validate.min.js"></script>
     <script src="/js/sweetalert2.min.js"></script>
+
+    <script type="text/javascript">
+        var tableToExcel = (function() {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+                , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+            return function(table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+
+    <script>
+        // tell the embed parent frame the height of the content
+        if (window.parent && window.parent.parent){
+            window.parent.parent.postMessage(["resultsFrame", {
+                height: document.body.getBoundingClientRect().height,
+                slug: "cmewv"
+            }], "*")
+        }
+
+        // always overwrite window.name, in case users try to set it manually
+        window.name = "result"
+    </script>
 
     <script type="text/javascript">
         //search start
