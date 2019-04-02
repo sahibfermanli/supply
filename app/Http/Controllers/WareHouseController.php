@@ -32,6 +32,7 @@ class WareHouseController extends HomeController
         $where_product = '';
         $where_brand = '';
         $where_model = '';
+        $where_category_id = 0;
         $where_warehouseman_id = 0;
         $where_department_id = 0;
         $where_vehicle_id = 0;
@@ -48,6 +49,7 @@ class WareHouseController extends HomeController
             'product' => '',
             'brand' => '',
             'model' => '',
+            'category' => '',
             'warehouseman' => '',
             'department' => '',
             'vehicle' => '',
@@ -72,6 +74,12 @@ class WareHouseController extends HomeController
         if (!empty(Input::get('model')) && Input::get('model') != ''  && Input::get('model') != null) {
             $where_model = Input::get('model');
             $search_arr['model'] = $where_model;
+        }
+
+        if (!empty(Input::get('category')) && Input::get('category') != ''  && Input::get('category') != null) {
+            $where_category_id = Input::get('category');
+            $where_arr['o.category_id'] = $where_category_id;
+            $search_arr['category'] = $where_category_id;
         }
 
         if (!empty(Input::get('warehouseman')) && Input::get('warehouseman') != ''  && Input::get('warehouseman') != null) {
@@ -149,6 +157,7 @@ class WareHouseController extends HomeController
         $where_product = '';
         $where_brand = '';
         $where_model = '';
+        $where_category_id = 0;
         $where_warehouseman_id = 0;
         $where_department_id = 0;
         $where_vehicle_id = 0;
@@ -165,6 +174,7 @@ class WareHouseController extends HomeController
             'product' => '',
             'brand' => '',
             'model' => '',
+            'category' => '',
             'warehouseman' => '',
             'department' => '',
             'vehicle' => '',
@@ -189,6 +199,12 @@ class WareHouseController extends HomeController
         if (!empty(Input::get('model')) && Input::get('model') != ''  && Input::get('model') != null) {
             $where_model = Input::get('model');
             $search_arr['model'] = $where_model;
+        }
+
+        if (!empty(Input::get('category')) && Input::get('category') != ''  && Input::get('category') != null) {
+            $where_category_id = Input::get('category');
+            $where_arr['o.category_id'] = $where_category_id;
+            $search_arr['category'] = $where_category_id;
         }
 
         if (!empty(Input::get('warehouseman')) && Input::get('warehouseman') != ''  && Input::get('warehouseman') != null) {
@@ -258,6 +274,7 @@ class WareHouseController extends HomeController
         $where_product = '';
         $where_brand = '';
         $where_model = '';
+        $where_category_id = 0;
         $where_warehouseman_id = 0;
         $where_vehicle_id = 0;
         $where_status_id = 0;
@@ -273,6 +290,7 @@ class WareHouseController extends HomeController
             'product' => '',
             'brand' => '',
             'model' => '',
+            'category' => '',
             'warehouseman' => '',
             'vehicle' => '',
             'status' => '',
@@ -296,6 +314,12 @@ class WareHouseController extends HomeController
         if (!empty(Input::get('model')) && Input::get('model') != ''  && Input::get('model') != null) {
             $where_model = Input::get('model');
             $search_arr['model'] = $where_model;
+        }
+
+        if (!empty(Input::get('category')) && Input::get('category') != ''  && Input::get('category') != null) {
+            $where_category_id = Input::get('category');
+            $where_arr['o.category_id'] = $where_category_id;
+            $search_arr['category'] = $where_category_id;
         }
 
         if (!empty(Input::get('warehouseman')) && Input::get('warehouseman') != ''  && Input::get('warehouseman') != null) {
@@ -360,6 +384,7 @@ class WareHouseController extends HomeController
         $where_product = '';
         $where_brand = '';
         $where_model = '';
+        $where_category_id = 0;
         $where_warehouseman_id = 0;
         $where_vehicle_id = 0;
         $where_status_id = 0;
@@ -375,6 +400,7 @@ class WareHouseController extends HomeController
             'product' => '',
             'brand' => '',
             'model' => '',
+            'category' => '',
             'warehouseman' => '',
             'vehicle' => '',
             'status' => '',
@@ -398,6 +424,12 @@ class WareHouseController extends HomeController
         if (!empty(Input::get('model')) && Input::get('model') != ''  && Input::get('model') != null) {
             $where_model = Input::get('model');
             $search_arr['model'] = $where_model;
+        }
+
+        if (!empty(Input::get('category')) && Input::get('category') != ''  && Input::get('category') != null) {
+            $where_category_id = Input::get('category');
+            $where_arr['o.category_id'] = $where_category_id;
+            $search_arr['category'] = $where_category_id;
         }
 
         if (!empty(Input::get('warehouseman')) && Input::get('warehouseman') != ''  && Input::get('warehouseman') != null) {
@@ -461,6 +493,7 @@ class WareHouseController extends HomeController
         $where_product = '';
         $where_brand = '';
         $where_model = '';
+        $where_category_id = 0;
         $where_department_id = 0;
         $where_vehicle_id = 0;
         $where_status_id = 0;
@@ -476,6 +509,7 @@ class WareHouseController extends HomeController
             'product' => '',
             'brand' => '',
             'model' => '',
+            'category' => '',
             'department' => '',
             'vehicle' => '',
             'status' => '',
@@ -499,6 +533,12 @@ class WareHouseController extends HomeController
         if (!empty(Input::get('model')) && Input::get('model') != ''  && Input::get('model') != null) {
             $where_model = Input::get('model');
             $search_arr['model'] = $where_model;
+        }
+
+        if (!empty(Input::get('category')) && Input::get('category') != ''  && Input::get('category') != null) {
+            $where_category_id = Input::get('category');
+            $where_arr['o.category_id'] = $where_category_id;
+            $search_arr['category'] = $where_category_id;
         }
 
         if (!empty(Input::get('department')) && Input::get('department') != ''  && Input::get('department') != null) {

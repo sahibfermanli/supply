@@ -12,6 +12,16 @@
                                 <input type="text" class="form-control search-input" id="product_search" placeholder="Malın adı" value="{{$search_arr['product']}}">
                                 <input type="text" class="form-control search-input" id="brand_search" placeholder="Marka" value="{{$search_arr['brand']}}">
                                 <input type="text" class="form-control search-input" id="model_search" placeholder="Model" value="{{$search_arr['model']}}">
+                                <select class="form-control search-input" id="category_search">
+                                    <option value="">Kateqoriya</option>
+                                    @foreach($categories as $category)
+                                        @if($category->id == $search_arr['category'])
+                                            <option selected value="{{$category->id}}">{{$category->process}}</option>
+                                        @else
+                                            <option value="{{$category->id}}">{{$category->process}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
                                 <select class="form-control search-input" id="department_search">
                                     <option value="">Departament</option>
                                     @foreach($departments as $department)
@@ -279,6 +289,7 @@
             var product = $('#product_search').val();
             var brand = $('#brand_search').val();
             var model = $('#model_search').val();
+            var category = $('#category_search').val();
             var department = $('#department_search').val();
             var vehicle = $('#vehicle_search').val();
             var warehouseman = $('#warehouseman_search').val();
@@ -289,7 +300,7 @@
             var start_date = $('#start_date_search').val();
             var end_date = $('#end_date_search').val();
 
-            var link = '?product=' + product + '&brand=' + brand + '&model=' + model + '&warehouseman=' + warehouseman + '&vehicle=' + vehicle + '&status=' + status + '&seller=' + seller + '&min_cost=' + min_cost + '&max_cost=' + max_cost + '&start_date=' + start_date + '&end_date=' + end_date + '&department=' + department;
+            var link = '?product=' + product + '&brand=' + brand + '&model=' + model + '&category=' + category + '&warehouseman=' + warehouseman + '&vehicle=' + vehicle + '&status=' + status + '&seller=' + seller + '&min_cost=' + min_cost + '&max_cost=' + max_cost + '&start_date=' + start_date + '&end_date=' + end_date + '&department=' + department;
 
             location.href = link;
         }
