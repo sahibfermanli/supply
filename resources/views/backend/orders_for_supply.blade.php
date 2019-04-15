@@ -138,7 +138,7 @@
                                             <input type="hidden" name="type" value="5">
                                             <table class="table table-bordered">
                                                 <thead>
-                                                <tr class="jsgrid-filter-row">
+                                                <tr class="jsgrid-filter-row" id="add-new-alternative-row">
                                                     <td id="add-btn-td" colspan="3">
                                                         <button type="submit" id="add-btn"
                                                                 class="btn btn-success btn-xs"><i
@@ -860,9 +860,9 @@
                             var status = '<td><span onclick="show_status(' + order['id'] + ')" id="status_' + id + '" class="btn btn-xs" style="color: ' + order['status_color'] + '; border-color: ' + order['status_color'] + ';">' + order['status'] + '</span></td>';
 
                             if (order['confirmed'] === 1 && order['SupplyID'] !== null) {
-                                var send_director = '<span onclick="show_alternative(' + id + ',' + last_pcs + ',' + unit_id + ');" class="btn btn-success btn-xs show-alternative-modal"><i class="fa fa-eye"></i></span>';
+                                var send_director = '<span onclick="show_alternative(' + id + ',' + last_pcs + ',' + unit_id + ',' + 1 + ');" class="btn btn-success btn-xs show-alternative-modal"><i class="fa fa-eye"></i></span>';
                             } else {
-                                var send_director = '<span style="background-color: red; border-color: red;" disabled="true" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span>';
+                                var send_director = '<span style="background-color: red; border-color: red;" disabled="true" title="Təchizatçı seçilməyib" class="btn btn-success btn-xs"><i class="fa fa-eye"></i></span>';
                             }
 
                             @if(Auth::user()->chief() == 1)
@@ -956,10 +956,10 @@
                             }
 
                             var color_style = 'style="background-color: #ECFBFB;"';
-                            for (var k = 0; k < purchases.length; k++) {
-                                if (id == purchases[k]['OrderID']) {
+                            for (var l = 0; l < purchases.length; l++) {
+                                if (id == purchases[l]['OrderID']) {
                                     color_style = '';
-                                    send_director = '<span title="Düymə deaktivdir" class="btn btn-success btn-xs" style="background-color: red; border-color: red;"><i class="fa fa-eye"></i></span>';
+                                    send_director = '<span title="Alternativ əlavə edilə bilməz" onclick="show_alternative(' + id + ',' + last_pcs + ',' + unit_id + ',' + 0 + ');"  class="btn btn-warning btn-xs show=alternative-modal"><i class="fa fa-eye"></i></span>';
                                     break;
                                 }
                             }
@@ -1218,7 +1218,19 @@
 
     {{--show alternative--}}
     <script>
-        function show_alternative(order_id, pcs, unit) {
+        function show_alternative(order_id, pcs, unit, add_new) {
+            if (add_new === 1) {
+                $("#add-new-alternative-row").css('display', 'table-row');
+            } else {
+                $("#add-new-alternative-row").css('display', 'none');
+            }
+
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                text: 'Əməliyyat aparılır..',
+                showConfirmButton: false
+            });
+
             //update inputs value
             var now = new Date();
             var day = ("0" + now.getDate()).slice(-2);
@@ -1265,11 +1277,7 @@
                     'type': 8
                 },
                 success: function (response) {
-                    swal(
-                        response.title,
-                        response.content,
-                        response.case
-                    );
+                    swal.close();
                     if (response.case === 'success') {
                         swal.close();
 
@@ -1304,18 +1312,23 @@
 
                             // var remark = alternative['Remark'];
                             @if(Auth::user()->chief() == 1)
-                            if (alternative['confirm_chief'] == 0) {
-                                confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
-                            } else {
-                                confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
-                            }
+                                if (add_new === 1) {
+                                    if (alternative['confirm_chief'] == 0) {
+                                        confirm_btn = '<span onclick="confirm_alternative(' + alternative['id'] + ');" title="Təsdiqlə" class="btn btn-success btn-xs"><i class="fa fa-check"></i></span>';
+                                    } else {
+                                        confirm_btn = '<i title"Təsdiq edilib" style="color: green;" class="fa fa-check"></i>';
+                                    }
 
-                            if (alternative['suggestion'] == 1) {
-                                suggestion_btn = '<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>';
-                            } else {
-                                suggestion_btn = '<span onclick="suggestion_alternative(' + alternative['id'] + ');" title="Tövsiyyə et" class="btn btn-primary btn-xs"><i class="fa fa-check-circle"></i></span>';
-                            }
-                                    @endif
+                                    if (alternative['suggestion'] == 1) {
+                                        suggestion_btn = '<span disabled="true" title="Tövsiyyə olunub" class="btn btn-success btn-xs"><i class="fa fa-check-circle"></i></span>';
+                                    } else {
+                                        suggestion_btn = '<span onclick="suggestion_alternative(' + alternative['id'] + ');" title="Tövsiyyə et" class="btn btn-primary btn-xs"><i class="fa fa-check-circle"></i></span>';
+                                    }
+                                } else {
+                                    confirm_btn = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-check"></i></span>';
+                                    suggestion_btn = '<span disabled title="Düymə deaktivdir" class="btn btn-danger btn-xs"><i class="fa fa-check-circle"></i></span>';
+                                }
+                            @endif
 
                             var alt_id = alternative['id'];
                             var product = '<td>' + alternative['Product'] + '</td>';
@@ -1343,7 +1356,7 @@
                             }
 
                             var del_btn = '';
-                            if (alternative['confirm_chief'] === 0) {
+                            if (alternative['confirm_chief'] === 0 && add_new === 1) {
                                 del_btn = '<td id="del_alt_btn_' + alt_id + '"><span onclick="del_alt(' + alt_id + ');" title="Sil" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></span></td>';
                             } else {
                                 del_btn = '<td><span disabled="true" title="Düymə deaktivdir" class="btn btn-warning btn-xs"><i class="fa fa-trash"></i></span></td>';
@@ -1358,6 +1371,12 @@
                         $('#alts_table').html(table);
 
                         $('#show-alternative-modal').modal('show');
+                    } else {
+                        swal(
+                            response.title,
+                            response.content,
+                            response.case
+                        );
                     }
                 }
             });
