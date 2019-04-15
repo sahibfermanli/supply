@@ -542,7 +542,11 @@ class OrderController extends HomeController
 
         if (!empty($request->supply) && $request->supply != ''  && $request->supply != null) {
             $where_supply_id = $request->supply;
-            $where_arr['Orders.SupplyID'] = $where_supply_id;
+            if ($where_supply_id == 'null') {
+                $where_arr['Orders.SupplyID'] = null;
+            } else {
+                $where_arr['Orders.SupplyID'] = $where_supply_id;
+            }
         }
 
         if (!empty($request->department) && $request->department != ''  && $request->department != null) {

@@ -26,6 +26,7 @@
                                 @if(Auth::user()->chief() == 1)
                                     <select class="form-control search-input" id="supply_search">
                                         <option value="">Təchizatçı</option>
+                                        <option value="null">Seçilməyənlər</option>
                                         @foreach($supplies as $supply)
                                             <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
                                         @endforeach
