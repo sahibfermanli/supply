@@ -869,7 +869,7 @@
                                 if (order['SupplyID'] == null) {
                                     select_supply = '<td><span onclick="select_supply(' + id + ');" class="btn btn-success btn-xs select-supply-modal">Seç</span></td>';
                                 } else {
-                                    select_supply = '<td><span class="btn btn-warning btn-xs">' + order['supply_name'].substr(0,1) + '. ' + order['supply_surname'] + '</span></td>';
+                                    select_supply = '<td><span onclick="select_supply(' + id + ');" class="btn btn-warning btn-xs select-supply-modal">' + order['supply_name'].substr(0,1) + '. ' + order['supply_surname'] + '</span></td>';
                                 }
                             } else {
                                 select_supply = '<td><span disabled="true" style="background-color: red; border-color: red;" title="Sifariş təsdiqlənməyib" class="btn btn-success btn-xs">Seç</span></td>';
