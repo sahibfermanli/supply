@@ -101,15 +101,17 @@
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
-                                        <th class="column-title" style="min-width: 200px;">Sifarişçi</th>
+                                        <th class="column-title">Sifarişçi</th>
                                         <th class="column-title">Status</th>
-                                        <th class="column-title" style="min-width: 100px;">Malın adı</th>
-                                        <th class="column-title" style="min-width: 150px;">Marka</th>
-                                        <th class="column-title" style="min-width: 100px;">Model</th>
+                                        <th class="column-title">Malın adı</th>
+                                        <th class="column-title">Marka</th>
+                                        <th class="column-title">Model</th>
+                                        <th class="column-title">Part No</th>
                                         <th class="column-title">Miqdar</th>
                                         <th class="column-title">Ölçü vahidi</th>
                                         <th class="column-title">Qiymət</th>
                                         <th class="column-title">Ümumi qiymət</th>
+                                        <th class="column-title">##</th>
                                         <th class="column-title">Yaradılma tarixi</th>
                                         <th class="column-title">Satıcı</th>
                                         <th class="column-title">Hesab</th>
@@ -146,10 +148,24 @@
                                             <td>{{$purchase->Product}}</td>
                                             <td>{{$purchase->Brend}}</td>
                                             <td>{{$purchase->Model}}</td>
+                                            <td>{{$purchase->PartSerialNo}}</td>
                                             <td>{{$purchase->pcs}}</td>
                                             <td>{{$purchase->Unit}}</td>
                                             <td>{{$purchase->cost}}</td>
                                             <td>{{$purchase->total_cost}}</td>
+                                            <td>
+                                                @if(!empty($purchase->image))
+                                                    <span title="Şəkli göstər" class="btn btn-success btn-xs" onclick="show_image('{{$purchase->image}}');"><i class="fa fa-image"></i></span>
+                                                @else
+                                                    <span title="Şəkil yoxdur" disabled class="btn btn-danger btn-xs"><i class="fa fa-image"></i></span>
+                                                @endif
+
+                                                @if(!empty($purchase->a_Remark))
+                                                    <span title="Qeydi göstər" class="btn btn-warning btn-xs" onclick="show_remark('{{$purchase->a_Remark}}');"><i class="fa fa-eye"></i></span>
+                                                @else
+                                                    <span title="Qeyd yoxdur" disabled class="btn btn-danger btn-xs"><i class="fa fa-eye"></i></span>
+                                                @endif
+                                            </td>
                                             <td>{{$date}}</td>
                                             <td>{{$purchase->seller_name}}</td>
                                             <td>
@@ -183,7 +199,7 @@
                                                                 class="fa fa-file-pdf-o"></i></span>
                                                 @endif
                                             </td>
-                                            <td style="min-width: 150px;">
+                                            <td>
                                                 @if(isset($purchase->qaime_doc))
                                                     <a href="{{$purchase->qaime_doc}}" title="{{$purchase->qaime_date}}"
                                                        class="btn btn-success btn-xs"
@@ -239,6 +255,25 @@
 
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{--show data (image or remark)--}}
+    <div class="modal fade" id="data-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="show-data">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -400,6 +435,16 @@
                     }
                 }
             });
+        }
+
+        function  show_image(image) {
+            $(".show-data").html('<img src="' + image + '" width="200" height="200"><br><br><a href="' + image + '" target="_blank" class="btn btn-primary">Şəkilə tam ölçüdə baxmaq<a/>');
+            $("#data-modal").modal('show');
+        }
+
+        function  show_remark(remark) {
+            $(".show-data").html(remark);
+            $("#data-modal").modal('show');
         }
     </script>
 @endsection

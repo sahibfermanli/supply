@@ -223,6 +223,9 @@ class OrderController extends HomeController
         else if ($request->type == 'show_status') {
             return $this->show_status($request);
         }
+        else if ($request->type == 'back_order') {
+            return $this->back_order($request);
+        }
         else {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Error!']);
         }
@@ -230,6 +233,41 @@ class OrderController extends HomeController
 
 
     //private functions
+
+    //back_order
+    private function back_order(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Id tapılmadl!']);
+        }
+        try {
+            $id = $request->id;
+            $status_arr['order_id'] = $id;
+            $status_arr['status_id'] = 23; //sifarisciye geri gonderildi
+            $back_order = Orders::where(['id'=>$id])->update(['confirmed'=>0, 'ChiefID'=>null, 'SupplyID'=>null]);
+
+            if ($back_order) {
+                OrderStatus::create($status_arr);
+                if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                    $user = Orders::leftJoin('users as u', 'Orders.MainPerson', '=', 'u.id')->where(['Orders.id'=>$id])->select('u.name', 'u.surname', 'u.email', 'Orders.Product')->first();
+
+                    $email = $user['email'];
+                    $to = $user['name'] . ' ' . $user['surname'];
+                    $message = $user['name'] . " " . $user['surname'] . ",
+                            sizin <b>" . $user['Product'] . "</b> adlı sifarişiniz təchizatçı (" . Auth::user()->name . " " . Auth::user()->surname . ") tərəfindən sizə geri göndərildi. Siz sifarişi silə və ya düzəliş edib yenidən göndərə bilərsiniz. Yenidən göndərsəniz departament rəhbəriniz sifarişi bir daha təsdiq etməlidir.";
+                    $title = 'Sifarişin geri göndərilməsi';
+
+                    app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+                }
+            }
+
+            return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Sifariş geri göndərildi!', 'id' => $id]);
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Səhv!', 'content' => 'Xəta baş verdi!']);
+        }
+    }
 
     //show status (send order_id)
     private function show_status(Request $request) {

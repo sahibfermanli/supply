@@ -955,9 +955,13 @@
                                     break;
                             }
 
+                            var back_order = '';
+                            back_order = '<span onclick="back_order(' + id +');" class="btn btn-danger btn-xs" title="Sifarişçiyə geri göndər"><i class="fa fa-undo"></i></span>';
+
                             var color_style = 'style="background-color: #ECFBFB;"';
                             for (var l = 0; l < purchases.length; l++) {
                                 if (id == purchases[l]['OrderID']) {
+                                    back_order = '';
                                     color_style = '';
                                     send_director = '<span title="Alternativ əlavə edilə bilməz" onclick="show_alternative(' + id + ',' + last_pcs + ',' + unit_id + ',' + 0 + ');"  class="btn btn-warning btn-xs show=alternative-modal"><i class="fa fa-eye"></i></span>';
                                     break;
@@ -971,7 +975,7 @@
                             var date = '<td>' + order['created_at'].substr(0, 10) + '</td>';
 
                             var tr = '<tr ' + color_style + ' class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + id + '</td>' + select_supply + '<td style="max-width: 40px !important;">' + send_director + '<span id="actions_' + id + '">' + '</span>' + '</td>' + status + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + date + remark + picture + defect;
+                            tr = tr + '<td>' + id + '</td>' + select_supply + '<td style="max-width: 80px !important;">' + send_director + back_order + '</td>' + status + product + translation_brand + part + web_link + pcs + unit + marka + position + user_detail + chief_detail + date + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
@@ -1079,6 +1083,61 @@
                             if (response.case === 'success') {
                                 var elem = document.getElementById('alt_row_' + response.id);
                                 elem.parentNode.removeChild(elem);
+                            }
+                        }
+                    });
+                } else {
+                    return false;
+                }
+            });
+        }
+
+        //back order
+        function back_order(id) {
+            swal({
+                title: 'Sifarişi geri göndərmək istədiyinizdən əminsiniz?',
+                text: 'Bu zaman sifarişçiyə email ilə bildiriş göndəriləcəkdir...',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Geri',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Təsdiqlə!'
+            }).then(function (result) {
+                if (result.value) {
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                        text: 'Gözləyin, əməliyyat aparılır..',
+                        showConfirmButton: false
+                    });
+                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                    $.ajax({
+                        type: "Post",
+                        url: '',
+                        data: {
+                            'id': id,
+                            '_token': CSRF_TOKEN,
+                            'type': 'back_order'
+                        },
+                        beforeSubmit: function () {
+                            //loading
+                            swal({
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                text: 'Gözləyin, əməliyyat aparılır..',
+                                showConfirmButton: false
+                            });
+                        },
+                        success: function (response) {
+                            swal.close();
+                            if (response.case === 'success') {
+                                var elem = document.getElementById('row_' + response.id);
+                                elem.parentNode.removeChild(elem);
+                            } else {
+                                swal(
+                                    response.title,
+                                    response.content,
+                                    response.case
+                                );
                             }
                         }
                     });
