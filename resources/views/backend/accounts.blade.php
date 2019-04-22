@@ -53,6 +53,34 @@
                         </li>
                     </ul>
                     <h3 style="display: inline-block;"> Hesablar</h3>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div id="search-inputs-area" class="search-areas">
+                                <input type="text" class="form-control search-input" id="account_search" placeholder="Hesab №" value="{{$search_arr['account']}}">
+                                <select class="form-control search-input" id="seller_search">
+                                    <option value="">Satıcı</option>
+                                    @foreach($companies as $company)
+                                        @if($company->id == $search_arr['seller'])
+                                            <option selected value="{{$company->id}}">{{$company->seller_name}}</option>
+                                        @else
+                                            <option value="{{$company->id}}">{{$company->seller_name}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <select class="form-control search-input" id="edited_search">
+                                    <option value="">Hesabı yaradan</option>
+                                    @foreach($supplies as $supply)
+                                        @if($supply->id == $search_arr['edited'])
+                                            <option selected value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
+                                        @else
+                                            <option value="{{$supply->id}}">{{$supply->name}} {{$supply->surname}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="search_data();">Axtar</button>
+                            </div>
+                        </div>
+                    </div>
                     <span style="float: right;" class="btn btn-success btn-add-new-account"
                           onclick="show_account_add_form();"><i class="fa fa-plus"></i></span>
                     <span type="button" onclick="remove_account_add_form();"
@@ -85,7 +113,7 @@
                                             </td>
                                             <td id="orders-add-inputs"><input type="text" class="form-control input-sm"
                                                                               name="account_no"
-                                                                              placeholder="Hesab No *"></td>
+                                                                              placeholder="Hesab № *"></td>
                                             <td id="orders-add-inputs" colspan="2">
                                                 <select class="form-control input-sm" name="company_id">
                                                     @foreach($companies as $company)
@@ -96,7 +124,7 @@
                                         </tr>
                                         <tr class="headings">
                                             <th class="column-title">#</th>
-                                            <th class="column-title">Hesab No</th>
+                                            <th class="column-title">Hesab №</th>
                                             <th class="column-title">Satıcı</th>
                                             <th class="column-title">Yaradan istifadəçi</th>
                                             <th class="column-title">Yaradılma tarixi</th>
@@ -416,6 +444,33 @@
             $('#account_id_div_for_qaime').html('<input type="hidden" name="account_id" value="' + account_id + '">');
 
             $('#add-qaime').modal('show');
+        }
+
+        $(document).ready(function(){
+            var url = window.location.href;
+            var url_arr = url.split('account');
+            var where_url = 'account' + url_arr[1];
+
+            if (url_arr.length > 1) {
+                $('.pagination').each(function(){
+                    $(this).find('a').each(function(){
+                        var current = $(this);
+                        var old_url = current.attr('href');
+                        var new_url = old_url + '&' + where_url;
+                        current.prop('href', new_url);
+                    });
+                });
+            }
+        });
+
+        function search_data() {
+            var account = $('#account_search').val();
+            var seller = $('#seller_search').val();
+            var edited = $('#edited_search').val();
+
+            var link = '?account=' + account + '&seller=' + seller + '&edited=' + edited;
+
+            location.href = link;
         }
 
         function show_remark(account_id) {

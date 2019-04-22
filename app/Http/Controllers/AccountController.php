@@ -8,6 +8,7 @@ use App\Orders;
 use App\OrderStatus;
 use App\Purchase;
 use App\Sellers;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -153,8 +154,38 @@ class AccountController extends HomeController
     }
 
     public function get_accounts_for_supply() {
+        //for search
+        $where_account = '';
+        $where_seller_id = 0;
+        $where_edited_id = 0;
+
+        $where_arr = array();
+        $search_arr = array(
+            'account' => '',
+            'seller' => '',
+            'edited' => '',
+        );
+
+        if (!empty(Input::get('account')) && Input::get('account') != ''  && Input::get('account') != null) {
+            $where_account = Input::get('account');
+            $search_arr['account'] = $where_account;
+        }
+
+        if (!empty(Input::get('seller')) && Input::get('seller') != ''  && Input::get('seller') != null) {
+            $where_seller_id = Input::get('seller');
+            $where_arr['accounts.company_id'] = $where_seller_id;
+            $search_arr['seller'] = $where_seller_id;
+        }
+
+        if (!empty(Input::get('edited')) && Input::get('edited') != ''  && Input::get('edited') != null) {
+            $where_edited_id = Input::get('edited');
+            $where_arr['accounts.edited_by'] = $where_edited_id;
+            $search_arr['edited'] = $where_edited_id;
+        }
+
+        $supplies = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.deleted'=>0])->select('users.id', 'users.name', 'users.surname')->get();
         $companies = Sellers::where(['deleted'=>0])->select('id', 'seller_name')->orderBy('seller_name')->get();
-        $accounts = Accounts::leftJoin('users as u', 'accounts.edited_by', '=', 'u.id')->where(['accounts.deleted'=>0])->orderBy('id', 'DESC')->select('accounts.*', 'u.name as edited_name', 'u.surname as edited_surname')->paginate(30);
+        $accounts = Accounts::leftJoin('users as u', 'accounts.edited_by', '=', 'u.id')->where(['accounts.deleted'=>0])->where('accounts.account_no', 'like', '%'.$where_account.'%')->where($where_arr)->orderBy('accounts.id', 'DESC')->select('accounts.*', 'u.name as edited_name', 'u.surname as edited_surname')->paginate(30);
         if (Auth::user()->chief() == 1) {
             $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('lb_status as status', 'o.last_status_id', '=', 'status.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0])->whereNull('account_id')->orderBy('o.id', 'ASC')->select('Purchases.id as id', 'a.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID', 'o.id as order_id', 'o.last_status_id as status_id', 'status.status', 'status.color as status_color')->get();
         }
@@ -162,7 +193,7 @@ class AccountController extends HomeController
             $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')->leftJoin('lb_units_list as u', 'a.unit_id', '=', 'u.id')->leftJoin('lb_status as status', 'o.last_status_id', '=', 'status.id')->where(['Purchases.deleted'=>0, 'Purchases.completed'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'o.SupplyID'=>Auth::id()])->whereNull('account_id')->orderBy('o.id', 'ASC')->select('Purchases.id as id', 'a.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'a.company_id', 'lb_sellers.seller_name as company', 'o.id as OrderID', 'o.id as order_id', 'o.last_status_id as status_id', 'status.status', 'status.color as status_color')->get();
         }
 
-        return view('backend.accounts')->with(['accounts'=>$accounts, 'free_purchases'=>$free_purchases, 'companies'=>$companies]);
+        return view('backend.accounts')->with(['accounts'=>$accounts, 'free_purchases'=>$free_purchases, 'companies'=>$companies, 'supplies'=>$supplies, 'search_arr'=>$search_arr]);
     }
 
     public function post_accounts_for_supply(Request $request) {
