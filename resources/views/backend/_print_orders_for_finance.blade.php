@@ -54,6 +54,7 @@
             <thead>
             <tr>
                 <th class="column-title">№</th>
+                <th class="column-title">ID</th>
                 <th class="column-title">Malın adı</th>
                 <th class="column-title">Marka, model</th>
                 <th class="column-title">Əlavə məlumat</th>
@@ -84,6 +85,7 @@
                     @endif
                     <tr>
                         <td>{{$row}}</td>
+                        <td>{{$order->id}}</td>
                         <td>{{$order->Product}}</td>
                         <td>{{$order->Brend}}, {{$order->Model}}</td>
                         <td>{{$order->Translation_Brand}} {{$vehicle}}</td>
