@@ -87,6 +87,12 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/orders', 'OrderController@post_delete_order_for_chief');
     });
 
+    //alternatives list for supply chief
+    Route::group(['prefix'=>'supply', 'middleware'=>'SupplyChief'], function () {
+        Route::get('/alternatives-list', 'AlternativesController@get_alternatives');
+        Route::post('/alternatives-list', 'AlternativesController@post_alternatives');
+    });
+
     //accounts for supply
     Route::group(['prefix'=>'supply/accounts', 'middleware'=>'Supply'], function () {
         Route::get('/', 'AccountController@get_accounts_for_supply');

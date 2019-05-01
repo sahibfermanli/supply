@@ -190,6 +190,10 @@
                                             {!! $li_supply_chief !!}
                                         </ul>
                                     </li>
+                                    @if(Auth::user()->chief() == 1)
+                                        {{--Supply Chief--}}
+                                        <li><a href="/supply/alternatives-list"><i class="fa fa-list-ul"></i> Alternativ siyahısı</a></li>
+                                    @endif
                                 @else
                                     <li><a href="/supply/orders/"><i class="fa fa-folder-open"></i> Daxili
                                             sifarişlər</a></li>

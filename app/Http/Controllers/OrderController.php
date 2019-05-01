@@ -641,7 +641,7 @@ class OrderController extends HomeController
             'country_id' => 'required|integer',
             'currency_id' => 'required|integer',
             'company_id' => 'required|integer',
-            'pcs' => 'required|integer',
+            'pcs' => 'required',
             'store_type' => 'required|string|max:50',
         ]);
         if ($validator->fails()) {
