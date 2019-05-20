@@ -56,7 +56,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div id="search-inputs-area" class="search-areas">
-                                <input type="text" class="form-control search-input" id="account_search" placeholder="Hesab №" value="{{$search_arr['account']}}">
+                                <input type="text" class="form-control search-input" id="account_search" placeholder="Hesab №" value="{{$search_arr['accountno']}}">
                                 <select class="form-control search-input" id="seller_search">
                                     <option value="">Satıcı</option>
                                     @foreach($companies as $company)
@@ -448,8 +448,8 @@
 
         $(document).ready(function(){
             var url = window.location.href;
-            var url_arr = url.split('account');
-            var where_url = 'account' + url_arr[1];
+            var url_arr = url.split('accountno');
+            var where_url = 'accountno' + url_arr[1];
 
             if (url_arr.length > 1) {
                 $('.pagination').each(function(){
@@ -468,7 +468,7 @@
             var seller = $('#seller_search').val();
             var edited = $('#edited_search').val();
 
-            var link = '?account=' + account + '&seller=' + seller + '&edited=' + edited;
+            var link = '?accountno=' + account + '&seller=' + seller + '&edited=' + edited;
 
             location.href = link;
         }

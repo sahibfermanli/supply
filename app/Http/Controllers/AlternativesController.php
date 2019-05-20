@@ -11,6 +11,7 @@ use App\Units;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 
 class AlternativesController extends HomeController
@@ -86,7 +87,9 @@ class AlternativesController extends HomeController
             $id = $request->id;
             unset($request['id']);
 
-            $update = Alternatives::where('id', $id)->update($request->all());
+            $request = Input::except('page');
+
+            $update = Alternatives::where('id', $id)->update($request);
             if ($update) {
                 AlternativeLogs::create(['user_id'=>Auth::id(), 'alt_id'=>$id, 'type'=>'update']);
             }

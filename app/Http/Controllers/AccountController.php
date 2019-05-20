@@ -161,14 +161,14 @@ class AccountController extends HomeController
 
         $where_arr = array();
         $search_arr = array(
-            'account' => '',
+            'accountno' => '',
             'seller' => '',
             'edited' => '',
         );
 
-        if (!empty(Input::get('account')) && Input::get('account') != ''  && Input::get('account') != null) {
-            $where_account = Input::get('account');
-            $search_arr['account'] = $where_account;
+        if (!empty(Input::get('accountno')) && Input::get('accountno') != ''  && Input::get('accountno') != null) {
+            $where_account = Input::get('accountno');
+            $search_arr['accountno'] = $where_account;
         }
 
         if (!empty(Input::get('seller')) && Input::get('seller') != ''  && Input::get('seller') != null) {
@@ -346,16 +346,21 @@ class AccountController extends HomeController
         if ($validator->fails()) {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Bütün xanaları doldurun!']);
         }
-        try {
+//        try {
             $id = $request->id;
             unset($request['id'], $request['_token'], $request['type']);
 
-            Accounts::where(['id'=>$id])->update($request->all());
+            $request = Input::except('page', 'accountno', 'seller', 'edited');
+//            $request = Input::except('accountno');
+//            $request = Input::except();
+//            $request = Input::except();
+
+            Accounts::where(['id'=>$id])->update($request);
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Hesab məlumatları dəyişdirildi!']);
-        } catch (\Exception $e) {
-            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
-        }
+//        } catch (\Exception $e) {
+//            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+//        }
     }
 
     //update document
