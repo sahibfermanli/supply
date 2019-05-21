@@ -544,6 +544,15 @@
                             }
                                 break;
 
+                            case '11': {
+                                //zemanetler
+                                $('#Product_th').html('Adı');
+                                $('#Translation_Brand_th').html('Əlavə məlumat');
+                                $('#Part_th').html('Markası');
+                                $('#vehicle_th').css('display', 'none');
+                            }
+                                break;
+
                             ////////////////////////////////
                             default: {
                                 alert('Kateqoriya tapılmadı!');
@@ -670,6 +679,13 @@
                                 case '9': {
                                     //blank
                                     translation_brand = '';
+                                    marka = '';
+                                    defect = '';
+                                }
+                                    break;
+
+                                case '11': {
+                                    //zemanet
                                     marka = '';
                                     defect = '';
                                 }
@@ -1026,6 +1042,32 @@
                     Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
                     image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
                     deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
+
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
+                }
+                    break;
+
+                case '11': {
+                    //zemanet
+                    Product = '<td colspan="{{$product_colspan}}" id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Adı"></td>';
+                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Əlavə məlumat"></td>';
+                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Markası"></td>';
+                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
+                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
+
+                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
+                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
+                    @foreach($units as $unit)
+                            @if($unit->id == 10)
+                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
+                    @else
+                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
+                    @endif
+                            @endforeach
+                        unit_id = unit_id + '</select></td>';
+
+                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Qeyd"></td>';
+                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
 
                     inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }

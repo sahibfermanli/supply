@@ -420,6 +420,15 @@
                             }
                                 break;
 
+                            case '11': {
+                                //zemanet
+                                $('#Product_th').html('Adı');
+                                $('#Translation_Brand_th').html('Əlavə məlumat');
+                                $('#Part_th').html('Markası');
+                                $('#vehicle_th').css('display', 'none');
+                            }
+                                break;
+
                             ////////////////////////////////
                             default: {
                                 alert('Kateqoriya tapılmadı!');
@@ -520,6 +529,13 @@
                                 case '9': {
                                     //blank
                                     translation_brand = '';
+                                    marka = '';
+                                    defect = '';
+                                }
+                                    break;
+
+                                case '11': {
+                                    //zemanet
                                     marka = '';
                                     defect = '';
                                 }
