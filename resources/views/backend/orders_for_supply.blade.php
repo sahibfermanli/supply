@@ -434,6 +434,13 @@
         #table_display {
             display: none;
         }
+
+        body.nav-md.modal-open {
+            padding-right: 0!important;
+        }
+        body.nav-md{
+            padding-right: 0!important;
+        }
     </style>
 @endsection
 

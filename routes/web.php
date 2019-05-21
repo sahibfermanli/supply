@@ -93,6 +93,13 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
         Route::post('/alternatives-list', 'AlternativesController@post_alternatives');
     });
 
+    //demand for supply
+    Route::group(['prefix'=>'supply', 'middleware'=>'Supply'], function () {
+        Route::get('/demand', 'DemandController@get_demand');
+        Route::post('/demand', 'DemandController@post_demand');
+        Route::get('/demand/print', 'DemandController@print_orders_for_demand_for_supply');
+    });
+
     //accounts for supply
     Route::group(['prefix'=>'supply/accounts', 'middleware'=>'Supply'], function () {
         Route::get('/', 'AccountController@get_accounts_for_supply');

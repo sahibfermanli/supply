@@ -25,7 +25,7 @@
     @yield('css')
 </head>
 
-<body class="nav-md">
+<body class="nav-md" >
 <div class="container body">
     <div class="main_container">
         <div class="col-md-3 left_col">
@@ -148,6 +148,7 @@
                                 {{--SupplyUser--}}
                                 <li><a href="/supply/companies"><i class="fa fa-building"></i> Şirkətlər</a></li>
                                 <li><a href="/supply/accounts"><i class="fa fa-money"></i> Hesablar</a></li>
+                                <li><a href="/supply/demand"><i class="fa fa-file"></i> Tələbnamələr</a></li>
                                 <li><a href="/supply/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
                                 <li><a href="/supply/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
                                 <li><a href="/supply/purchases"><i class="fa fa-shopping-bag"></i> Alımlar</a></li>
