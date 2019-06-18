@@ -22,6 +22,8 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     Route::get('/index', 'HomeController@get_index');
     Route::get('/home', 'HomeController@get_index');
 
+    Route::get('/chat', 'ChatController@get_chat');
+
     Route::get('/users/update', 'UserController@get_users_update');
     Route::post('/users/update', 'UserController@post_users_update');
 

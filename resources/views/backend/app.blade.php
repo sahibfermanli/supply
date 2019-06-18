@@ -70,6 +70,7 @@
                     <div class="menu_section">
                         <ul class="nav side-menu">
                             <li><a style="color: {{$settings->message_color}};" href="/"><i class="fa fa-home"></i> Bildirişlər</a></li>
+                            <li><a href="/chat"><i class="fa fa-mail-reply"></i> Chat</a></li>
 
                             @if(Auth::user()->delivered_person() == 1)
                                 <li><a href="/warehouseman/orders"><i class="fa fa-briefcase"></i> Anbar</a></li>
@@ -78,6 +79,7 @@
 
                             @if(Auth::user()->authority() == 1)
                                 {{--admin--}}
+                                <li><a href="/settings"><i class="fa fa-cogs"></i> Ayarlar</a></li>
                                 <li><a href="/settings"><i class="fa fa-cogs"></i> Ayarlar</a></li>
                                 <li><a href="/admins"><i class="fa fa-user-secret"></i> Adminlər</a></li>
                                 <li><a href="/chiefs"><i class="fa fa-user"></i> Rəhbərlər</a></li>
