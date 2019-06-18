@@ -22,6 +22,7 @@
 
     <link href="/css/main.css?v=3.0" rel="stylesheet">
 
+
     @yield('css')
 </head>
 
