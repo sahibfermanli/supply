@@ -271,9 +271,9 @@ class PurchaseController extends HomeController
         else if ($request->type == 'show_status') {
             return $this->show_status($request);
         }
-        else if ($request->type == 'get_order_for_delivery') {
-            return $this->get_order_for_delivery($request);
-        }
+//        else if ($request->type == 'get_order_for_delivery') {
+//            return $this->get_order_for_delivery($request);
+//        }
         else if ($request->type == 'order_delivered') {
             return $this->order_delivered($request);
         }
@@ -311,7 +311,7 @@ class PurchaseController extends HomeController
         if ($validator->fails()) {
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Sifariş tapılmadı!']);
         }
-//        try {
+        try {
             $order_id = $request->order_id;
             $user_id = $request->user_id;
             $count = $request->count;
@@ -400,9 +400,9 @@ class PurchaseController extends HomeController
             }
 
             return response(['case' => 'success', 'title'=>'Uğurlu!', 'content'=>'Uğurlu!', 'type'=>'delivered_person']);
-//        } catch (\Exception $e) {
-//            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
-//        }
+        } catch (\Exception $e) {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
     }
 
     //show status (send order_id)

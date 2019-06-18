@@ -144,7 +144,7 @@
                                         <tr class="even pointer rows" id="row_{{$row}}" onclick="select_row({{$row}});">
                                             <td style="background-color: {{$color}}; color: black;">{{$purchase->order_id}}</td>
                                             <td>
-                                                <select class="form-control input-sm" onchange="select_delivered_person(this);" order_id="{{$purchase->order_id}}">
+                                                <select class="form-control input-sm" onchange="select_delivered_person(this);" order_id="{{$purchase->order_id}}" pcs="{{$purchase->pcs}}">
                                                     <option value="">Boş</option>
                                                     @foreach($delivered_persons as $delivered_person)
                                                         <option value="{{$delivered_person->id}}">{{$delivered_person->name}} {{$delivered_person->surname}}</option>
@@ -426,45 +426,56 @@
             }
             else {
                 var order_id = $(elem).attr('order_id');
+                var pcs = $(elem).attr('pcs');
 
-                swal ({
-                    title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
-                    text: 'Əməliyyat aparılır, xaiş olunur gözləyin...',
-                    showConfirmButton: false
-                });
-                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                $.ajax({
-                    type: "Post",
-                    url: '',
-                    data: {
-                        'order_id': order_id,
-                        '_token': CSRF_TOKEN,
-                        'type': 'get_order_for_delivery'
-                    },
-                    success: function (response) {
-                        if (response.case === 'success') {
-                            swal.close();
+                var count_input = '<input style="max-width: 50%;" name="count" class="form-control" type="number" value="' + pcs + '">';
+                var order_id_input = '<input type="hidden" name="order_id" value="' + order_id + '">';
+                var user_id = '<input type="hidden" name="user_id" value="' + delivered_person_id +'">';
 
-                            var order_count = response.order['count'];
-                            var count_input = '<input style="max-width: 50%;" name="count" class="form-control" type="number" value="' + order_count + '">';
-                            var order_id = '<input type="hidden" name="order_id" value="' + response.order['id'] + '">';
-                            var user_id = '<input type="hidden" name="user_id" value="' + delivered_person_id +'">';
+                $('#delivered_count').html(count_input);
+                $('#delivered_order_id').html(order_id_input);
+                $('#delivered_user_id').html(user_id);
 
-                            $('#delivered_count').html(count_input);
-                            $('#delivered_order_id').html(order_id);
-                            $('#delivered_user_id').html(user_id);
+                $("#delivered-modal").modal('show');
 
-                            $("#delivered-modal").modal('show');
-                        }
-                        else {
-                            swal(
-                                response.title,
-                                response.content,
-                                response.case
-                            );
-                        }
-                    }
-                });
+                // swal ({
+                //     title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
+                //     text: 'Əməliyyat aparılır, xaiş olunur gözləyin...',
+                //     showConfirmButton: false
+                // });
+                // var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                // $.ajax({
+                //     type: "Post",
+                //     url: '',
+                //     data: {
+                //         'order_id': order_id,
+                //         '_token': CSRF_TOKEN,
+                //         'type': 'get_order_for_delivery'
+                //     },
+                //     success: function (response) {
+                //         if (response.case === 'success') {
+                //             swal.close();
+                //
+                //             var order_count = response.order['count'];
+                //             var count_input = '<input style="max-width: 50%;" name="count" class="form-control" type="number" value="' + order_count + '">';
+                //             var order_id = '<input type="hidden" name="order_id" value="' + response.order['id'] + '">';
+                //             var user_id = '<input type="hidden" name="user_id" value="' + delivered_person_id +'">';
+                //
+                //             $('#delivered_count').html(count_input);
+                //             $('#delivered_order_id').html(order_id);
+                //             $('#delivered_user_id').html(user_id);
+                //
+                //             $("#delivered-modal").modal('show');
+                //         }
+                //         else {
+                //             swal(
+                //                 response.title,
+                //                 response.content,
+                //                 response.case
+                //             );
+                //         }
+                //     }
+                // });
             }
         }
 
