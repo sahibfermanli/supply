@@ -81,7 +81,6 @@
                             @if(Auth::user()->authority() == 1)
                                 {{--admin--}}
                                 <li><a href="/settings"><i class="fa fa-cogs"></i> Ayarlar</a></li>
-                                <li><a href="/settings"><i class="fa fa-cogs"></i> Ayarlar</a></li>
                                 <li><a href="/admins"><i class="fa fa-user-secret"></i> Adminlər</a></li>
                                 <li><a href="/chiefs"><i class="fa fa-user"></i> Rəhbərlər</a></li>
                                 <li><a href="/directors"><i class="fa fa-user-plus"></i> Direktorlar</a></li>
