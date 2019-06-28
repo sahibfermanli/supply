@@ -133,7 +133,10 @@
                                         <tr class="even pointer rows" id="row_{{$purchase->order_id}}" onclick="select_row({{$purchase->order_id}})">
                                             <td>{{$purchase->order_id}}</td>
                                             <td>
-                                                <center><span class="btn btn-primary btn-xs" onclick="delivery_order({{$purchase->order_id}});"><i class="fa fa-check"></i></span></center>
+                                                <center>
+                                                    <span class="btn btn-primary btn-xs" onclick="delivery_order({{$purchase->order_id}});"><i class="fa fa-check"></i></span>
+                                                    <span onclick="undelivered_order({{$purchase->order_id}});" class="btn btn-danger btn-xs"><i class="fa fa-times"></i></span>
+                                                </center>
                                             </td>
                                             <td title="{{$purchase->Department}}">{{mb_substr($purchase->name, 0, 1)}}. {{$purchase->surname}}</td>
                                             <td><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->status_color}}; border-color: {{$purchase->status_color}};" class="btn btn-primary btn-xs">{{$purchase->status}}</span></td>
@@ -364,6 +367,64 @@
                 }
             });
         });
+
+        function undelivered_order(id) {
+            swal({
+                title: 'Sifariş sizə çatdırılmayıb?',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Geri',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Bəli!'
+            }).then(function (result) {
+                if (result.value) {
+                    swal({
+                        title: 'Qeyd',
+                        input: 'text',
+                        inputAttributes: {
+                            autocapitalize: 'off'
+                        },
+                        showCancelButton: true,
+                        cancelButtonText: 'Geri',
+                        confirmButtonText: 'Təsdiq et',
+                        showLoaderOnConfirm: true,
+                        preConfirm: (remark) => {
+                            swal({
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                text: 'Yüklənir, lütfən gözləyin..',
+                                showConfirmButton: false
+                            });
+                            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                            $.ajax({
+                                type: "Post",
+                                url: '',
+                                data: {
+                                    'id': id,
+                                    '_token': CSRF_TOKEN,
+                                    'type': 'undelivered_order',
+                                    'remark': remark
+                                },
+                                success: function (response) {
+                                    swal.close();
+                                    if (response.case === 'success') {
+                                        location.reload();
+                                    } else {
+                                        swal(
+                                            response.title,
+                                            response.content,
+                                            response.case
+                                        );
+                                    }
+                                }
+                            });
+                        },
+                    });
+                } else {
+                    return false;
+                }
+            });
+        }
 
         //delivery order
         function delivery_order(id) {

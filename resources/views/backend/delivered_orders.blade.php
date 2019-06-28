@@ -115,6 +115,9 @@
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
+                                        @if(Auth::user()->delivered_person() == 0)
+                                            <th class="column-title">#</th>
+                                        @endif
                                         <th class="column-title" style="min-width: 100px;">Sifarişçi </th>
                                         <th class="column-title">Status </th>
                                         <th class="column-title">Malın adı </th>
@@ -145,6 +148,9 @@
                                         ?>
                                         <tr class="even pointer rows" id="row_{{$row}}" onclick="select_row({{$row}})">
                                             <td>{{$purchase->order_id}}</td>
+                                            @if(Auth::user()->delivered_person() == 0)
+                                                <td><span onclick="undelivered_order({{$purchase->order_id}});" class="btn btn-danger btn-xs"><i class="fa fa-times"></i></span></td>
+                                            @endif
                                             <td title="{{$purchase->Department}}">{{mb_substr($purchase->name, 0, 1)}}. {{$purchase->surname}}</td>
                                             <td><span onclick="show_status({{$purchase->order_id}}, '{{$purchase->Product}}');" style="background-color: {{$purchase->status_color}}; border-color: {{$purchase->status_color}};" class="btn btn-primary btn-xs">{{$purchase->status}}</span></td>
                                             <td>{{$purchase->Product}}</td>
@@ -395,6 +401,67 @@
                 }
             });
         });
+
+        @if(Auth::user()->delivered_person() == 0)
+        //undelivered order
+        function undelivered_order(id) {
+            swal({
+                title: 'Sifariş sizə çatdırılmayıb?',
+                type: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Geri',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Bəli!'
+            }).then(function (result) {
+                if (result.value) {
+                    swal({
+                        title: 'Qeyd',
+                        input: 'text',
+                        inputAttributes: {
+                            autocapitalize: 'off'
+                        },
+                        showCancelButton: true,
+                        cancelButtonText: 'Geri',
+                        confirmButtonText: 'Təsdiq et',
+                        showLoaderOnConfirm: true,
+                        preConfirm: (remark) => {
+                            swal({
+                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                                text: 'Yüklənir, lütfən gözləyin..',
+                                showConfirmButton: false
+                            });
+                            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                            $.ajax({
+                                type: "Post",
+                                url: '',
+                                data: {
+                                    'id': id,
+                                    '_token': CSRF_TOKEN,
+                                    'type': 'undelivered_order',
+                                    'remark': remark
+                                },
+                                success: function (response) {
+                                    swal.close();
+                                    if (response.case === 'success') {
+                                        location.reload();
+                                    } else {
+                                        swal(
+                                            response.title,
+                                            response.content,
+                                            response.case
+                                        );
+                                    }
+                                }
+                            });
+                        },
+                    });
+                } else {
+                    return false;
+                }
+            });
+        }
+        @endif
 
         //show status
         function show_status(order_id, order) {

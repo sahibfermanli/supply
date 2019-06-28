@@ -593,7 +593,64 @@ class DeliveryController extends HomeController
         if ($request->type == 'show_status') {
             return $this->show_status($request);
         }
+        else if ($request->type == 'undelivered_order' && Auth::user()->delivered_person() == 0) {
+            return $this->undelivered_order($request);
+        }
         else {
+            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
+        }
+    }
+
+    //undelivered order
+    private function undelivered_order(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'remark' => 'required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Məlumatlar tam deyil (Qeyd max 255 simvol ola bilər)!']);
+        }
+        try {
+            $status_id = 26; //Sifariş çatdırılmayıb
+            $status_arr = array();
+            $order_id = $request->id;
+            $remark = $request->remark;
+            $status_arr['order_id'] = $order_id;
+            $status_arr['status_id'] = $status_id;
+
+            Orders::where(['id'=>$order_id])->update(['delivered_person'=>null, 'undelivered_remark'=>$remark, 'delivered'=>0]);
+            OrderStatus::create($status_arr);
+
+            //send email
+            if (Settings::where(['id'=>1, 'send_email'=>1])->count() > 0) {
+                $email = array();
+                $to = array();
+
+                $order = Orders::leftJoin('lb_categories as c', 'Orders.category_id', '=', 'c.id')->where(['Orders.id'=>$order_id])->select('Orders.Product', 'c.process', 'Orders.SupplyID')->first();
+                $supply_id = $order->supply_id;
+
+                //supply chief
+                $supply_chief = User::leftJoin('Departments as d', 'users.DepartmentID', '=', 'd.id')->where(['d.authority_id'=>4, 'users.chief'=>1, 'users.deleted'=>0])->select('users.name', 'users.surname', 'users.email')->first();
+                array_push($email, $supply_chief->email);
+                array_push($to, $supply_chief->name . ' ' . $supply_chief->surname);
+
+                //supply
+                $supply = User::where(['id'=>$supply_id])->select('name', 'surname', 'email')->first();
+                array_push($email, $supply->email);
+                array_push($to, $supply->name . ' ' . $supply->surname);
+
+                $message = "Sifarişçi sifarişin ona (tam) çatdırılmadığını bildirir </br>
+                    Sifariş No: ". $order_id .".</br>
+                    Sifarişin adı: ". $order->Product .".</br>
+                    Sifarişin kateqoriyası: ". $order->process .".
+                ";
+                $title = 'Sifariş çatdırılmayıb';
+
+                app('App\Http\Controllers\MailController')->get_send($email, $to, $title, $message);
+            }
+
+            return response(['case' => 'success']);
+        } catch (\Exception $e) {
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Səhv baş verdi!']);
         }
     }

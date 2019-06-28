@@ -113,6 +113,9 @@
                                     <thead>
                                     <tr class="headings">
                                         <th class="column-title">#</th>
+{{--                                        @if(Auth::user()->delivered_person() == 1)--}}
+{{--                                            <th class="column-title">#</th>--}}
+{{--                                        @endif--}}
                                         <th class="column-title">Anbardar</th>
                                         <th class="column-title" style="min-width: 100px;">Sifarişçi </th>
                                         <th class="column-title">Status </th>
@@ -144,6 +147,9 @@
                                         ?>
                                         <tr class="even pointer rows" id="row_{{$row}}" onclick="select_row({{$row}});">
                                             <td>{{$purchase->order_id}}</td>
+{{--                                            @if(Auth::user()->delivered_person() == 1)--}}
+{{--                                                <td><span onclick="undelivered_order({{$purchase->order_id}});" class="btn btn-danger btn-xs"><i class="fa fa-times"></i></span></td>--}}
+{{--                                            @endif--}}
                                             <td title="{{$purchase->wh_name}} {{$purchase->wh_surname}}">
                                                 {{mb_substr($purchase->wh_name, 0, 1)}}. {{$purchase->wh_surname}}
                                             </td>
