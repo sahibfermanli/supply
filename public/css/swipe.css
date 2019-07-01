@@ -1844,7 +1844,9 @@ a.dropdown-item {
         max-width: calc(100vw - 300px);
         padding:28px;
         height: 133vh;
-        overflow: hidden
+        overflow: hidden;
+        width: 79%;
+
     }
 
     .chat .item .top ul > li:nth-child(5) {

@@ -52,7 +52,7 @@
 }
 
 @media screen and (max-width: 700px){
-   .popup{
+    .popup{
         width: 95% !important;
     }
 }
@@ -109,3 +109,145 @@ select {
     display: none;
 }
 
+@media (min-width: 992px){
+    .sidebar {
+        width: 336px;
+        height: 100vh;
+    }
+}
+.sidebar {
+    background: #fdfdfd;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    overflow-x: hidden;
+}
+.sidebar .top {
+    margin-bottom: 30px;
+}
+.sidebar .top .nav {
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    padding: 6px;
+    width: 100%;
+    background: #f5f5f5;
+    border-radius: 6px;
+    margin-top: 15px;
+}
+.sidebar .top form {
+    position: relative;
+}
+.sidebar .top .form-control {
+    padding: 0 10px 0 50px;
+    height: 55px;
+}
+.form-control {
+    background: #f5f5f5;
+    color: #bdbac2;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+.sidebar .top form .eva {
+    fill: #bdbac2;
+}
+.sidebar .middle {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.sidebar .middle h4 {
+    font-weight: 600;
+    margin-bottom: 0;
+}
+.sidebar .middle h4 + .btn {
+    margin-left: 15px;
+}
+.round .eva {
+    width: 20px;
+    height: 20px;
+    fill: #bdbac2;
+}
+.discussions {
+    -ms-flex-preferred-size: 100%;
+    flex-basis: 100%;
+    padding-left: 0;
+    list-style: none;
+    margin-bottom: 0;
+}
+.discussions>li {
+    -ms-flex-preferred-size: 100%;
+    flex-basis: 100%;
+}
+.discussions>li .direct {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+.discussions>li>a {
+    display: block;
+    padding: 25px 0;
+    border-bottom: 2px solid #fbfbfb;
+}
+.status.online {
+    fill: #43b581;
+    stroke: #43b581;
+}
+.status {
+    position: relative;
+    margin-right: 15px;
+}
+.discussions>li>a img {
+    width: 42px;
+    height: 42px;
+    border-radius: 100%;
+}
+.status .eva-radio-button-on {
+    position: absolute;
+    bottom: 0;
+    margin-left: -11px;
+    width: 11px;
+    height: 11px;
+    stroke-width: 4;
+}
+.discussions>li>a .content {
+    -ms-flex-preferred-size: 100%;
+    flex-basis: 100%;
+}
+.discussions>li>a .headline {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+.discussions>li>a h5 {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.7;
+    color: #212529;
+    margin-right: auto;
+    margin-bottom: 0;
+}
+.discussions>li>a span {
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    color: #bdbac2;
+    margin-left: 30px;
+}
+.layaut {
+    display: -webkit-inline-box;
+}
+.sidebar .container {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.layaut .sidebar {
+    width: 33%;
+    height: 100vh;
+}
