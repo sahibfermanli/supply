@@ -71,7 +71,7 @@
                     <div class="menu_section">
                         <ul class="nav side-menu">
                             <li><a style="color: {{$settings->message_color}};" href="/"><i class="fa fa-home"></i> Bildirişlər</a></li>
-                            <li><a href="/chat"><i class="fa fa-mail-reply"></i> Chat</a></li>
+                            <li><a href="/chat"><i class="fa fa-inbox"></i> Mesajlar</a></li>
 
                             @if(Auth::user()->delivered_person() == 1)
                                 <li><a href="/warehouseman/orders"><i class="fa fa-briefcase"></i> Anbar</a></li>

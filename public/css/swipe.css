@@ -503,7 +503,8 @@ a.dropdown-item {
     background: #fdfdfd;
     overflow-y: auto;
     -ms-overflow-style: none;
-    overflow-x: hidden
+    overflow-x: hidden;
+    box-shadow: 0px -1px 1px 3px #ededed;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -1050,7 +1051,8 @@ a.dropdown-item {
 }
 
 .chat {
-    background: #fbfbfb
+    background: #fbfbfb;
+    box-shadow: 0px -1px 1px 3px #ededed;
 }
 
 .chat .item {
@@ -1150,7 +1152,7 @@ a.dropdown-item {
 .chat .item .middle {
     display: -ms-flexbox;
     display: flex;
-    height: calc(100vh - 221px);
+    height: 60vh;
     overflow-y: auto;
     -ms-overflow-style: none;
     overflow-x: hidden
@@ -1279,52 +1281,52 @@ a.dropdown-item {
     margin-top: 0
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) {
+.chat .item .middle ul > .author {
     -ms-flex-pack: justify;
     justify-content: flex-start;
     text-align: left
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) img {
+.chat .item .middle ul > .author img {
     margin-right: 15px;
     margin-left: 0;
     -ms-flex-order: 1;
     order: 1
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) .content {
+.chat .item .middle ul > .author .content {
     -ms-flex-order: 2;
     order: 2
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) .bubble {
+.chat .item .middle ul > .author .bubble {
     background: #2a3f54;
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) p {
+.chat .item .middle ul > .author p {
     color: #bdbac2
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) .attachment .round {
+.chat .item .middle ul > .author .attachment .round {
     background: #007bff
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) .attachment .round .eva {
+.chat .item .middle ul > .author .attachment .round .eva {
     fill: #fff
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) .attachment h5 {
+.chat .item .middle ul > .author .attachment h5 {
     color: #007bff
 }
 
-.chat .item .middle ul > li:nth-of-type(odd) .attachment span {
+.chat .item .middle ul > .author .attachment span {
     color: #bdbac2
 }
 
 .chat .item .bottom {
     padding: 30px 0;
     position: relative;
-    top: 118px;
+    top: 22px;
     border-top: 2px solid #f9f9f9;
 }
 
@@ -1843,9 +1845,9 @@ a.dropdown-item {
         flex: 1;
         max-width: calc(100vw - 300px);
         padding:28px;
-        height: 133vh;
+        height: 86vh;
         overflow: hidden;
-        width: 79%;
+        width: 103%;
 
     }
 
@@ -2000,4 +2002,30 @@ a.dropdown-item {
         height: 15px;
         overflow: hidden
     }
+}
+
+@media(min-width: 1690px){
+    .chat {
+        width: 188%;
+    }
+    .chat .item .middle {
+        height: 56vh;
+    }
+}
+
+@media(min-width: 1110px){
+    .chat .item .middle {
+
+        height: 46vh;
+
+    }
+}
+@media(min-width: 1690px){
+
+    .chat .item .middle {
+        height: 56vh;
+    }
+    .chat {
+
+        height: 90vh;}
 }
