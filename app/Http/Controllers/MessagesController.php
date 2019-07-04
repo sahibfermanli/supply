@@ -71,8 +71,26 @@ class MessagesController extends HomeController
         try {
             $order_id = $request->order_id;
 
-            if (Auth::user()->authority() == 3) {
-                //User
+            if (Auth::user()->authority() == 4 && Auth::user()->chief() == 1) {
+                //SupplyChief
+                if (Orders::where(['id'=>$order_id, 'deleted'=>0])->count() == 0) {
+                    return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sifariş yoxdur!']);
+                }
+            }
+            else if (Auth::user()->authority() == 5 || Auth::user()->authority() == 8) {
+                //Director
+                if (Orders::where(['id'=>$order_id, 'deleted'=>0])->count() == 0) {
+                    return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sifariş yoxdur!']);
+                }
+            }
+            else if (Auth::user()->authority() == 4 && Auth::user()->chief() != 1) {
+                //SupplyUser
+                if (Orders::where(['id'=>$order_id, 'SupplyID'=>Auth::id(), 'deleted'=>0])->count() == 0) {
+                    return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sizin bu əməliyyat üçün icazəniz yoxdur!']);
+                }
+            }
+            else {
+                //User or UserChief
                 if (Orders::where(['id'=>$order_id, 'DepartmentID'=>Auth::user()->DepartmentID(), 'deleted'=>0])->count() == 0) {
                     return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sizin bu əməliyyat üçün icazəniz yoxdur!']);
                 }
@@ -100,8 +118,26 @@ class MessagesController extends HomeController
         try {
             $order_id = $request->order_id;
 
-            if (Auth::user()->authority() == 3) {
-                //User
+            if (Auth::user()->authority() == 4 && Auth::user()->chief() == 1) {
+                //SupplyChief
+                if (Orders::where(['id'=>$order_id, 'deleted'=>0])->count() == 0) {
+                    return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sifariş yoxdur!']);
+                }
+            }
+            else if (Auth::user()->authority() == 5 || Auth::user()->authority() == 8) {
+                //Director
+                if (Orders::where(['id'=>$order_id, 'deleted'=>0])->count() == 0) {
+                    return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sifariş yoxdur!']);
+                }
+            }
+            else if (Auth::user()->authority() == 4 && Auth::user()->chief() != 1) {
+                //SupplyUser
+                if (Orders::where(['id'=>$order_id, 'SupplyID'=>Auth::id(), 'deleted'=>0])->count() == 0) {
+                    return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sizin bu mesajları görmək üçün icazəniz yoxdur!']);
+                }
+            }
+            else {
+                //User or UserChief
                 if (Orders::where(['id'=>$order_id, 'DepartmentID'=>Auth::user()->DepartmentID(), 'deleted'=>0])->count() == 0) {
                     return response(['case' => 'error', 'title' => 'Oops!', 'content' => 'Sizin bu mesajları görmək üçün icazəniz yoxdur!']);
                 }
@@ -110,7 +146,7 @@ class MessagesController extends HomeController
             if ($request->message_id != null && MessageUser::where(['user_id'=>Auth::id(), 'message_id'=>$request->message_id, 'deleted'=>0])->count() == 0) {
                 MessageUser::create(['user_id'=>Auth::id(), 'message_id'=>$request->message_id, 'viewed'=>1]);
             }
-//            Messages::where(['order_id'=>$order_id, 'deleted'=>0, 'viewed'=>0])->update(['viewed'=>1, 'viewed_at'=>Carbon::now()]);
+
             $messages = Messages::leftJoin('users as u', 'messages.author', '=', 'u.id')->where(['messages.order_id'=>$order_id, 'messages.deleted'=>0])->select('messages.id', 'messages.message', 'messages.author', 'messages.created_at', 'u.name', 'u.surname')->get();
 
             return response(['case' => 'success', 'messages'=>$messages]);
