@@ -1843,7 +1843,7 @@ a.dropdown-item {
 
     .chat {
         flex: 1;
-        max-width: calc(100vw - 300px);
+        max-width: 109vh;
         padding:28px;
         height: 86vh;
         overflow: hidden;
@@ -2007,6 +2007,8 @@ a.dropdown-item {
 @media(min-width: 1690px){
     .chat {
         width: 188%;
+
+        max-width: 133vh;
     }
     .chat .item .middle {
         height: 56vh;
