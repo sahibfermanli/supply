@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('/404', 'Api\MissingController@not_found');
+Route::get('/message', 'Api\MessageController@message');
+
+Route::post('/orders', 'Api\OrdersController@get_orders')->middleware('ApiLogin');

@@ -73,5 +73,6 @@ class Kernel extends HttpKernel
         'Finance' => \App\Http\Middleware\Finance::class,
         'FinanceChief' => \App\Http\Middleware\FinanceChief::class,
         'WareHouseMan' => \App\Http\Middleware\WareHouseMan::class,
+        'ApiLogin' => \App\Http\Middleware\Api\Login::class,
     ];
 }
