@@ -79,6 +79,7 @@
             <div class="baslıq-telebname">
                 <ul>
                     <li style="font-size: 12px;">{{$current_date}}</li>
+                    <li style="font-size: 12px;">{{$orders[0]->company}}</li>
                 </ul>
             </div>
         </div>
@@ -107,12 +108,12 @@
         <tr>
             <th>№</th>
             <th>Malın adı</th>
-            <th>Növü, ölçüsü, markası</th>
-            <th>Əlavə məlumat</th>
+            <th>Növü, markası, part №</th>
             <th>Miqdarı</th>
             <th>Qiyməti</th>
             <th>Məbləği</th>
-            <th>Sifarişçi</th>
+            <th>Əlavə məlumat</th>
+{{--            <th>Sifarişçi</th>--}}
         </tr>
 
         @foreach($orders as $order)
@@ -133,12 +134,12 @@
             <tr>
                 <td>{{$order->id}}</td>
                 <td>{{$order->Product}}</td>
-                <td>{{$order->Brend}}, {{$order->Model}}</td>
-                <td>{{$order->Translation_Brand}} {{$vehicle}}</td>
+                <td>{{$order->Brend}}, {{$order->Model}}, {{$order->PartSerialNo}}</td>
                 <td>{{$order->pcs}} {{$order->Unit}}</td>
                 <td>{{$order->cost}}</td>
-                <td>{{$order->total_cost}}</td>
-                <td>{{substr($order->user_name, 0, 1)}}.{{$order->user_surname}}, ({{substr($order->chief_name, 0, 1)}}.{{$order->chief_surname}})</td>
+                <td>{{$order->total_cost}}{{$order->currency}}</td>
+                <td>{{$order->Translation_Brand}} {{$vehicle}}</td>
+{{--                <td>{{substr($order->user_name, 0, 1)}}.{{$order->user_surname}}, ({{substr($order->chief_name, 0, 1)}}.{{$order->chief_surname}})</td>--}}
             </tr>
         @endforeach
     </table>
@@ -147,12 +148,24 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-xs-6 izinler">
-            <div class="col-md-4 col-xs-4"><h5>Tərtib etdi</h5></div>
-            <div class="col-md-4 col-xs-5 sexs"><h5>{{Auth::user()->name}} {{Auth::user()->surname}}</h5></div>
+            <div class="row">
+                <div class="col-md-4 col-xs-4"><h5>Tərtib etdi</h5></div>
+                <div class="col-md-4 col-xs-5 sexs"><h5>{{Auth::user()->name}} {{Auth::user()->surname}}</h5></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-xs-4"><h5>Təslim alan</h5></div>
+                <div class="col-md-4 col-xs-5 sexs"><h5>{{$orders[0]->delivered_name}} {{$orders[0]->delivered_surname}}</h5></div>
+            </div>
         </div>
         <div class="col-md-6 col-xs-6 izinler">
-            <div class="col-md-4 col-xs-4"><h5>Təslim alan</h5></div>
-            <div class="col-md-4 col-xs-5 sexs"><h5>{{$orders[0]->delivered_name}} {{$orders[0]->delivered_surname}}</h5></div>
+            <div class="row">
+                <div class="col-md-4 col-xs-4"><h5>Tələb etdi</h5></div>
+                <div class="col-md-4 col-xs-5 sexs"><h5>{{$orders[0]->user_name}} {{$orders[0]->user_surname}}</h5></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-xs-4"><h5>Təsdiq etdi</h5></div>
+                <div class="col-md-4 col-xs-5 sexs"><h5>{{$orders[0]->chief_name}} {{$orders[0]->chief_surname}}</h5></div>
+            </div>
         </div>
     </div>
 </div>

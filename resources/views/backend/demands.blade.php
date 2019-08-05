@@ -119,7 +119,7 @@
                                                 <tr class="even pointer" id="move_{{$purchase->id}}">
                                                     <td>{{$purchase->order_id}}</td>
                                                     <td>
-                                                        <span id="add_purchase_to_demand_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_demand('{{$purchase->id}}', '{{$purchase->OrderID}}', '{{$purchase->delivered_person}}');"
+                                                        <span id="add_purchase_to_demand_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_demand({{$purchase->id}}, {{$purchase->OrderID}}, {{$purchase->delivered_person}}, {{$purchase->company_id}}, {{$purchase->MainPerson}});"
                                                               class="add_purchase_to_demand_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span>
                                                     </td>
                                                     <td>{{substr($purchase->delivered_name, 0, 1)}}. {{$purchase->delivered_surname}}</td>
@@ -146,7 +146,7 @@
                         </div>
 
                         <div class="col-md-6 col-sm-6 col-xs-6" id="selected_purchases_table_div">
-                            <h5>Cari hesaba aid sifarişlər <span id="print-page-link"></span></h5>
+                            <h5>Cari tələbnaməyə aid sifarişlər <span id="print-page-link"></span></h5>
                             <div class="x_panel">
                                 <div class="x_content">
                                     <div class="table-responsive" style="max-height: 300px !important;">
@@ -401,7 +401,7 @@
             }
         @endif
 
-        function add_purchase_to_selected_demand(purchase_id, order_id, person) {
+        function add_purchase_to_selected_demand(purchase_id, order_id, person, company_id, MainPerson) {
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "Post",
@@ -411,6 +411,8 @@
                     'purchase_id': purchase_id,
                     'order_id': order_id,
                     'delivered_person': person,
+                    'MainPerson': MainPerson,
+                    'company_id': company_id,
                     '_token': CSRF_TOKEN,
                     'type': 'add_purchase_to_selected_demand'
                 },
@@ -474,7 +476,7 @@
                         var table = '';
                         var purchase = response.purchase;
 
-                        var move_btn = '<td><span id="add_purchase_to_demand_span_' + purchase['company_id'] + '" onclick="add_purchase_to_selected_demand(' + purchase['id'] + ',' + purchase['OrderID'] + ',' + purchase['delivered_person'] + ');" class="add_purchase_to_demand_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span></td>';
+                        var move_btn = '<td><span id="add_purchase_to_demand_span_' + purchase['company_id'] + '" onclick="add_purchase_to_selected_demand(' + purchase['id'] + ',' + purchase['OrderID'] + ',' + purchase['delivered_person'] + ',' + purchase['company_id'] + ',' + purchase['MainPerson'] + ');" class="add_purchase_to_demand_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span></td>';
                         var person = '<td>' + purchase['delivered_name'].substr(0,1) + '. ' + purchase['delivered_surname'] + '</td>';
                         var product = '<td>' + purchase['Product'] + '</td>';
                         var brend = '<td>' + purchase['Brend'] + '</td>';
