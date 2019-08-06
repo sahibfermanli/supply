@@ -111,6 +111,7 @@
                                         <th class="column-title">Miqdar </th>
                                         <th class="column-title">Ölçü vahidi </th>
                                         <th class="column-title">## </th>
+                                        <th class="column-title">Səbəb </th>
                                         <th class="column-title">Yaradılma tarixi </th>
                                         <th class="column-title">Qiymətləndirən </th>
                                         <th class="column-title">Qiyməti təsdiq edən </th>
@@ -149,6 +150,13 @@
                                                     <span title="Qeydi göstər" class="btn btn-warning btn-xs" onclick="show_remark('{{$purchase->a_Remark}}');"><i class="fa fa-eye"></i></span>
                                                 @else
                                                     <span title="Qeyd yoxdur" disabled class="btn btn-danger btn-xs"><i class="fa fa-eye"></i></span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if(!empty($purchase->order_remark))
+                                                    <span title="Göstər" class="btn btn-success btn-xs" onclick="show_order_remark('{{$purchase->order_remark}}');"><i class="fa fa-eye"></i></span>
+                                                @else
+                                                    <span title="Yoxdur" disabled class="btn btn-danger btn-xs"><i class="fa fa-eye"></i></span>
                                                 @endif
                                             </td>
                                             <td>{{$date}}</td>
@@ -473,6 +481,11 @@
         }
 
         function  show_remark(remark) {
+            $(".show-data").html(remark);
+            $("#data-modal").modal('show');
+        }
+
+        function  show_order_remark(remark) {
             $(".show-data").html(remark);
             $("#data-modal").modal('show');
         }
