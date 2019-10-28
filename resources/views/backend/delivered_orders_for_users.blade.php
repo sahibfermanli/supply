@@ -384,7 +384,7 @@
                         preConfirm: (remark) => {
                             swal({
                                 title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                                text: 'Yüklənir, lütfən gözləyin..',
+                                text: 'Gözləyin, əməliyyat aparılır...',
                                 showConfirmButton: false
                             });
                             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');

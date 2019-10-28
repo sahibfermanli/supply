@@ -139,6 +139,11 @@
                 confirmButtonText: 'Sil!'
             }).then(function (result) {
                 if (result.value) {
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                        text: 'Gözləyin, əməliyyat aparılır...',
+                        showConfirmButton: false
+                    });
                     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     $.ajax({
                         type: "Post",
@@ -149,15 +154,8 @@
                             'row_id': row_id,
                             'type': 'delete'
                         },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Zəhmət olmasa gözləyin...</span>',
-                                text: 'Loading, please wait..',
-                                showConfirmButton: false
-                            });
-                        },
                         success: function (response) {
+                            swal.close();
                             swal(
                                 response.title,
                                 response.content,

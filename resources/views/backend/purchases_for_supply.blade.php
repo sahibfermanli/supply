@@ -445,45 +445,6 @@
                 $('#delivered_user_id').html(user_id);
 
                 $("#delivered-modal").modal('show');
-
-                // swal ({
-                //     title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Əməliyyat aparılır...</span>',
-                //     text: 'Əməliyyat aparılır, xaiş olunur gözləyin...',
-                //     showConfirmButton: false
-                // });
-                // var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                // $.ajax({
-                //     type: "Post",
-                //     url: '',
-                //     data: {
-                //         'order_id': order_id,
-                //         '_token': CSRF_TOKEN,
-                //         'type': 'get_order_for_delivery'
-                //     },
-                //     success: function (response) {
-                //         if (response.case === 'success') {
-                //             swal.close();
-                //
-                //             var order_count = response.order['count'];
-                //             var count_input = '<input style="max-width: 50%;" name="count" class="form-control" type="number" value="' + order_count + '">';
-                //             var order_id = '<input type="hidden" name="order_id" value="' + response.order['id'] + '">';
-                //             var user_id = '<input type="hidden" name="user_id" value="' + delivered_person_id +'">';
-                //
-                //             $('#delivered_count').html(count_input);
-                //             $('#delivered_order_id').html(order_id);
-                //             $('#delivered_user_id').html(user_id);
-                //
-                //             $("#delivered-modal").modal('show');
-                //         }
-                //         else {
-                //             swal(
-                //                 response.title,
-                //                 response.content,
-                //                 response.case
-                //             );
-                //         }
-                //     }
-                // });
             }
         }
 

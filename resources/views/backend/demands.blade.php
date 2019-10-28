@@ -326,17 +326,6 @@
                             table = table + tr;
                         }
 
-                        // if (disabled === 1) {
-                        //     $('#free_purchases_table_div').css('display', 'none');
-                        //     $('#selected_purchases_table_div').removeClass('col-md-6 col-sm-6 col-xs-6');
-                        //     $('#selected_purchases_table_div').addClass('col-md-12 col-sm-12 col-xs-12');
-                        // }
-                        // else {
-                        //     $('#free_purchases_table_div').css('display', 'block');
-                        //     $('#selected_purchases_table_div').addClass('col-md-6 col-sm-6 col-xs-6');
-                        //     $('#selected_purchases_table_div').removeClass('col-md-12 col-sm-12 col-xs-12');
-                        // }
-
                         $('#selected_purchases_table').html(table);
 
                         $('#show-purchases-modal').modal('show');
@@ -364,6 +353,11 @@
                     confirmButtonText: 'Sil!'
                 }).then(function (result) {
                     if (result.value) {
+                        swal({
+                            title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                            text: 'Gözləyin, əməliyyat aparılır...',
+                            showConfirmButton: false
+                        });
                         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                         $.ajax({
                             type: "Post",
@@ -374,15 +368,8 @@
                                 'row_id': row_id,
                                 'type': 'delete'
                             },
-                            beforeSubmit: function () {
-                                //loading
-                                swal({
-                                    title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                                    text: 'Gözləyin, əməliyyat aparılır..',
-                                    showConfirmButton: false
-                                });
-                            },
                             success: function (response) {
+                                swal.close();
                                 swal(
                                     response.title,
                                     response.content,
@@ -402,6 +389,11 @@
         @endif
 
         function add_purchase_to_selected_demand(purchase_id, order_id, person, company_id, MainPerson) {
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                text: 'Gözləyin, əməliyyat aparılır...',
+                showConfirmButton: false
+            });
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "Post",
@@ -417,6 +409,7 @@
                     'type': 'add_purchase_to_selected_demand'
                 },
                 success: function (response) {
+                    swal.close();
                     if (response.case === 'success') {
                         swal.close();
                         var table = '';
@@ -455,6 +448,11 @@
         }
 
         function remove_purchase_from_selected_demand(purchase_id, order_id) {
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                text: 'Gözləyin, əməliyyat aparılır...',
+                showConfirmButton: false
+            });
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "Post",
@@ -466,6 +464,7 @@
                     'type': 'remove_purchase_from_selected_demand'
                 },
                 success: function (response) {
+                    swal.close();
                     swal(
                         response.title,
                         response.content,

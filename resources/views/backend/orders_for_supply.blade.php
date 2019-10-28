@@ -1023,6 +1023,11 @@
 
     <script>
         function get_data(id, type) {
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                text: 'Gözləyin, əməliyyat aparılır...',
+                showConfirmButton: false
+            });
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "Post",
@@ -1031,14 +1036,6 @@
                     'id': id,
                     '_token': CSRF_TOKEN,
                     'type': type
-                },
-                beforeSubmit: function () {
-                    //loading
-                    swal({
-                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
-                        text: 'Loading, please wait..',
-                        showConfirmButton: false
-                    });
                 },
                 success: function (response) {
                     swal.close();
@@ -1080,6 +1077,11 @@
                 confirmButtonText: 'Sil!'
             }).then(function (result) {
                 if (result.value) {
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                        text: 'Gözləyin, əməliyyat aparılır...',
+                        showConfirmButton: false
+                    });
                     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     $.ajax({
                         type: "Post",
@@ -1089,15 +1091,8 @@
                             '_token': CSRF_TOKEN,
                             'type': 15
                         },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                                text: 'Gözləyin, əməliyyat aparılır..',
-                                showConfirmButton: false
-                            });
-                        },
                         success: function (response) {
+                            swal.close();
                             swal(
                                 response.title,
                                 response.content,
@@ -1141,14 +1136,6 @@
                             'id': id,
                             '_token': CSRF_TOKEN,
                             'type': 'back_order'
-                        },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                                text: 'Gözləyin, əməliyyat aparılır..',
-                                showConfirmButton: false
-                            });
                         },
                         success: function (response) {
                             swal.close();
@@ -1465,6 +1452,11 @@
         }
 
         function get_alt_image(id) {
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                text: 'Gözləyin, əməliyyat aparılır...',
+                showConfirmButton: false
+            });
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "Post",
@@ -1473,14 +1465,6 @@
                     'id': id,
                     '_token': CSRF_TOKEN,
                     'type': 14
-                },
-                beforeSubmit: function () {
-                    //loading
-                    swal({
-                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
-                        text: 'Loading, please wait..',
-                        showConfirmButton: false
-                    });
                 },
                 success: function (response) {
                     swal.close();
@@ -1491,16 +1475,17 @@
                 }
             });
         }
-
-        // $(document).on('click', '.alt-image-modal', function() {
-        //     $('#alt-image').modal('show');
-        // });
     </script>
 
     @if(Auth::user()->chief() == 1)
         <script>
             //confirm alternative
             function confirm_alternative(alt_id) {
+                swal({
+                    title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                    text: 'Gözləyin, əməliyyat aparılır...',
+                    showConfirmButton: false
+                });
                 var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 $.ajax({
                     type: "Post",
@@ -1509,14 +1494,6 @@
                         'id': alt_id,
                         '_token': CSRF_TOKEN,
                         'type': 10
-                    },
-                    beforeSubmit: function () {
-                        //loading
-                        swal({
-                            title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                            text: 'Gözləyin, əməliyyat aparılır..',
-                            showConfirmButton: false
-                        });
                     },
                     success: function (response) {
                         swal.close();
@@ -1545,10 +1522,14 @@
         <script>
             //confirm order for chief
             function confirm_order(order_id) {
-                console.log('func');
                 var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 var cat_id = $('#cat_id_for_select_suplly').val();
 
+                swal({
+                    title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                    text: 'Gözləyin, əməliyyat aparılır...',
+                    showConfirmButton: false
+                });
                 $.ajax({
                     type: "Post",
                     url: '',
@@ -1558,15 +1539,8 @@
                         'type': 11,
                         'cat_id': cat_id
                     },
-                    beforeSubmit: function () {
-                        //loading
-                        swal({
-                            title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                            text: 'Xahiş olunur gözləyin..',
-                            showConfirmButton: false
-                        });
-                    },
                     success: function (response) {
+                        swal.close();
                         swal(
                             response.title,
                             response.content,
@@ -1604,6 +1578,11 @@
                     var Remark = $('#Remark_edit_' + id).val();
                     // var picture = $('#picture_edit_'+id).val();
 
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                        text: 'Gözləyin, əməliyyat aparılır...',
+                        showConfirmButton: false
+                    });
                     $.ajax({
                         type: "Post",
                         url: '',
@@ -1620,15 +1599,8 @@
                             'Remark': Remark,
                             // 'picture': picture
                         },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Please wait...</span>',
-                                text: 'Xahiş olunur gözləyin..',
-                                showConfirmButton: false
-                            });
-                        },
                         success: function (response) {
+                            swal.close();
                             swal(
                                 response.title,
                                 response.content,
@@ -1648,6 +1620,11 @@
 
     <script>
         function suggestion_alternative(id) {
+            swal({
+                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                text: 'Gözləyin, əməliyyat aparılır...',
+                showConfirmButton: false
+            });
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $.ajax({
                 type: "Post",
@@ -1657,15 +1634,8 @@
                     '_token': CSRF_TOKEN,
                     'type': 16
                 },
-                beforeSubmit: function () {
-                    //loading
-                    swal({
-                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                        text: 'Yüklənir, lütfən gözləyin..',
-                        showConfirmButton: false
-                    });
-                },
                 success: function (response) {
+                    swal.close();
                     swal(
                         response.title,
                         response.content,
@@ -1692,6 +1662,11 @@
                 confirmButtonText: 'Təsdiqlə!'
             }).then(function (result) {
                 if (result.value) {
+                    swal({
+                        title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
+                        text: 'Gözləyin, əməliyyat aparılır...',
+                        showConfirmButton: false
+                    });
                     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     $.ajax({
                         type: "Post",
@@ -1701,15 +1676,8 @@
                             '_token': CSRF_TOKEN,
                             'type': 1
                         },
-                        beforeSubmit: function () {
-                            //loading
-                            swal({
-                                title: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span class="sr-only">Gözləyin...</span>',
-                                text: 'Yüklənir, lütfən gözləyin..',
-                                showConfirmButton: false
-                            });
-                        },
                         success: function (response) {
+                            swal.close();
                             swal(
                                 response.title,
                                 response.content,
