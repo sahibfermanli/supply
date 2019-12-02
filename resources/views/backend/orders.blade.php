@@ -79,6 +79,7 @@
                                         <tr class="headings">
                                             <th class="column-title">#</th>
                                             <th class="column-title" style="min-width: 80px;">Düzəliş</th>
+                                            <th class="column-title">Sifarişçi</th>
                                             <th class="column-title">Tarix</th>
                                             <th class="column-title" id="Product_th">Malın adı</th>
                                             <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
@@ -626,6 +627,7 @@
                                 var defect = '<td><center><a title="Xəta sənədini endir" href="' + order['deffect_doc'] + '" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-download"></i></a></center></td>';
                             }
 
+                            var user = '<td>' + order['user_name'] + ' ' + order['user_surname'] + '</td>';
                             var status = '<td><span onclick="show_status(' + order['id'] + ')" id="status_' + id + '" class="btn btn-xs" style="color: ' + order['status_color'] + '; border-color: ' + order['status_color'] + ';">' + order['status'] + '</span></td>';
 
                             switch (category_id) {
@@ -700,7 +702,7 @@
                             var date = '<td>' + order['created_at'].substr(0, 10) + '</td>';
 
                             var tr = '<tr class="even pointer" id="row_' + order['id'] + '">';
-                            tr = tr + '<td>' + id + '</td>' + '<td><center>' + edit + cancel + '</center></td>' + date + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
+                            tr = tr + '<td>' + id + '</td>' + '<td><center>' + edit + cancel + '</center></td>' + user + date + product + translation_brand + part + web_link + pcs + unit + marka + position + status + remark + picture + defect;
                             tr = tr + '</tr>';
                             table = table + tr;
                         }
