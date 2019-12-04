@@ -95,6 +95,7 @@
 
                             @elseif(Auth::user()->authority() == 3  && Auth::user()->chief() == 1)
                                 {{--Chief--}}
+                                <li><a href="/chief/users"><i class="fa fa-align-justify"></i> İşçilər</a></li>
                                 <li><a href="/chief/delivered"><i class="fa fa-align-justify"></i> Təslim edilənlər</a></li>
                                 <li><a href="/chief/warehouse"><i class="fa fa-briefcase"></i> Anbar</a></li>
 

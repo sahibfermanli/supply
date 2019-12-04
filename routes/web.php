@@ -263,7 +263,7 @@ Route::group(['prefix'=>'/', 'middleware'=>'Login'], function () {
     });
 
     //users for chiefs
-    Route::group(['prefix'=>'users', 'middleware'=>'UserChief'], function () {
+    Route::group(['prefix'=>'/chief/users', 'middleware'=>'UserChief'], function () {
         Route::get('/', 'UserController@get_users');
         Route::post('/', 'UserController@post_delete_or_approve_user');
     });
