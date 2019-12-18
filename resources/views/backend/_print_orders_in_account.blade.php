@@ -40,8 +40,8 @@
                     <h4><strong>Hesab faktura № {{$account->account_no}}</strong></h4>
                     <h5 class="details"><strong>Tarix:</strong> {{$current_date}}</h5>
                     <br>
-                    <span class="details"><strong>Alıcı:</strong> SW_GHC</span>
-                    <span class="details"><strong>Mal qəbul edən:</strong> SW_GHC</span>
+                    <span class="details"><strong>Alıcı:</strong> Silk Way Business Aviation (GHC)</span>
+                    <span class="details"><strong>Mal qəbul edən:</strong>Silk Way Business Aviation (GHC)</span>
                     <span class="details"><strong>Ödəniş və ödəmə sənədi №:</strong> </span>
                     <span class="details"><strong>Ünvan:</strong> </span>
                     <span class="details"><strong>VÖEN:</strong> 9900067141</span>

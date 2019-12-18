@@ -40,7 +40,7 @@
             </div>
             <div class="col-sm">
                 <center>
-                    <strong>"Silk Way Aviaşirkəti" MMC-nin</strong><br>
+                    <strong>"Silk Way Business Aviation" MMC-nin</strong><br>
                     <strong>"GHC" filialının İcraçı Direktoru</strong><br>
                     <strong>cənab Fəxri Əhmədova</strong>
                 </center>
