@@ -246,12 +246,20 @@ class DemandController extends HomeController
             return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Sifariş tapılmadı!']);
         }
         try {
+            $demand = Demands::where('id', $request->demand_id)->select('company_id')->first();
+
+            if ($demand->company_id != $request->company_id) {
+                return response(['case' => 'warning', 'title' => 'Warning!', 'content' => 'Tələbnamədəki şirkətlə sifarişlərdəki şirkətlər eyni olmalıdır!']);
+            }
+
             if (Purchase::where(['deleted'=>0, 'demand_id'=>$request->demand_id])->count() > 0) {
                 $delivered_purchase = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')
                     ->leftJoin('Orders as o', 'a.OrderID', '=', 'o.id')
-                    ->leftJoin('accounts as acc', 'Purchases.account_id', '=', 'acc.id')
+//                    ->leftJoin('accounts as acc', 'Purchases.account_id', '=', 'acc.id')
                     ->where(['Purchases.deleted'=>0, 'a.deleted'=>0 ,'o.deleted'=>0, 'Purchases.demand_id'=>$request->demand_id])
-                    ->select('o.delivered_person', 'acc.company_id', 'o.MainPerson')
+                    ->select('o.delivered_person',
+//                        'acc.company_id',
+                        'o.MainPerson')
                     ->first();
                 $delivered_person = $delivered_purchase->delivered_person;
                 $company_id = $delivered_purchase->company_id;
@@ -261,9 +269,9 @@ class DemandController extends HomeController
                     return response(['case' => 'warning', 'title' => 'Warning!', 'content' => 'Bir tələbnamədəki bütün təhvil alan şəxslər eyni olmalıdır!']);
                 }
 
-                if ($request->company_id != $company_id) {
-                    return response(['case' => 'warning', 'title' => 'Warning!', 'content' => 'Bir tələbnamədəki bütün şirkətlər eyni olmalıdır!']);
-                }
+//                if ($request->company_id != $company_id) {
+//                    return response(['case' => 'warning', 'title' => 'Warning!', 'content' => 'Bir tələbnamədəki bütün şirkətlər eyni olmalıdır!']);
+//                }
 
                 if ($request->MainPerson != $main_person) {
                     return response(['case' => 'warning', 'title' => 'Warning!', 'content' => 'Bir tələbnamədəki bütün sifarişçilər eyni olmalıdır!']);
