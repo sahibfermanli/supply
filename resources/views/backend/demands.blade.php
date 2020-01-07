@@ -13,6 +13,23 @@
                             <option value="{{$company->id}}">{{$company->name}}</option>
                         @endforeach
                     </select>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div id="search-inputs-area" class="search-areas">
+                                <select class="form-control search-input" id="company_search">
+                                    <option value="">Şirkət</option>
+                                    @foreach($companies as $company)
+                                        @if($company->id == $search_arr['company'])
+                                            <option selected value="{{$company->id}}">{{$company->name}}</option>
+                                        @else
+                                            <option value="{{$company->id}}">{{$company->name}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-primary" onclick="search_data();">Axtar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -214,8 +231,8 @@
 
         $(document).ready(function(){
             var url = window.location.href;
-            var url_arr = url.split('demandno');
-            var where_url = 'demandno' + url_arr[1];
+            var url_arr = url.split('company');
+            var where_url = 'company' + url_arr[1];
 
             if (url_arr.length > 1) {
                 $('.pagination').each(function(){
@@ -230,10 +247,9 @@
         });
 
         function search_data() {
-            var demand = $('#demand_search').val();
-            var edited = $('#edited_search').val();
+            var company = $('#company_search').val();
 
-            var link = '?demandno=' + demand + '&edited=' + edited;
+            var link = '?company=' + company;
 
             location.href = link;
         }
@@ -405,6 +421,14 @@
                         return false;
                     }
                 });
+            }
+        @else
+            function del(e, id, row_id) {
+                swal(
+                    'Stop!',
+                    'Sizin buna icazəniz yoxdur!',
+                    'warning'
+                );
             }
         @endif
 

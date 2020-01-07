@@ -86,11 +86,22 @@ class DemandController extends HomeController
                 $purchase_chief['o.SupplyID'] = Auth::id();
             }
 
-            $demands = Demands::leftJoin('users as u', 'demands.created_by', '=', 'u.id')
+            $query = Demands::leftJoin('users as u', 'demands.created_by', '=', 'u.id')
                 ->leftJoin('lb_sellers as com', 'demands.company_id', '=', 'com.id')
                 ->where(['demands.deleted'=>0])
-                ->where($demand_chief)
-                ->orderBy('demands.id', 'desc')
+                ->where($demand_chief);
+
+            $search_arr = array(
+                'company' => ''
+            );
+
+            if (!empty(Input::get('company')) && Input::get('company') != ''  && Input::get('company') != null) {
+                $where_company = Input::get('company');
+                $query->where('demands.company_id', $where_company);
+                $search_arr['company'] = $where_company;
+            }
+
+            $demands = $query->orderBy('demands.id', 'desc')
                 ->select('demands.id', 'u.name', 'u.surname', 'demands.created_at', 'com.seller_name as company')
                 ->paginate(50);
 
@@ -112,7 +123,7 @@ class DemandController extends HomeController
 
             $companies = Sellers::where('deleted', 0)->orderBy('seller_name')->select('id', 'seller_name as name')->get();
 
-            return view("backend.demands")->with(['demands'=>$demands, 'free_purchases'=>$free_purchases, 'companies'=>$companies]);
+            return view("backend.demands")->with(['demands'=>$demands, 'free_purchases'=>$free_purchases, 'companies'=>$companies, 'search_arr'=>$search_arr]);
         } catch (\Exception $exception) {
             return redirect('/');
         }
