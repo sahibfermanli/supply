@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Demands;
 use App\OrderStatus;
 use App\Purchase;
+use App\Sellers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,6 +53,10 @@ class DemandController extends HomeController
                 ->select('o.id as id', 'a.Product', 'a.PartSerialNo', 'o.Translation_Brand', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'cur.cur_name as currency', 'o.Remark as order_remark', 'users.name as user_name', 'users.surname as user_surname', 'd.Department as department', 'chief.name as chief_name', 'chief.surname as chief_surname', 'v.Marka', 'v.QN', 'v.Tipi', 'director.name as director_name', 'director.surname as director_surname', 'delivered.name as delivered_name', 'delivered.surname as delivered_surname', 'com.seller_name as company')
                 ->get();
 
+            if (count($orders) == 0) {
+                return redirect('/');
+            }
+
             $cost_arr = array();
             foreach ($orders as $order) {
                 if (isset($cost_arr[$order->currency])) {
@@ -82,10 +87,12 @@ class DemandController extends HomeController
             }
 
             $demands = Demands::leftJoin('users as u', 'demands.created_by', '=', 'u.id')
+                ->leftJoin('lb_sellers as com', 'demands.company_id', '=', 'com.id')
                 ->where(['demands.deleted'=>0])
                 ->where($demand_chief)
-                ->select('demands.id', 'u.name', 'u.surname', 'demands.created_at')
-                ->paginate(30);
+                ->orderBy('demands.id', 'desc')
+                ->select('demands.id', 'u.name', 'u.surname', 'demands.created_at', 'com.seller_name as company')
+                ->paginate(50);
 
             $free_purchases = Purchase::leftJoin('lb_Alternatives as a', 'Purchases.AlternativeID', '=', 'a.id')
 //            ->leftJoin('lb_sellers', 'a.company_id', '=', 'lb_sellers.id')
@@ -103,7 +110,9 @@ class DemandController extends HomeController
                 ->select('Purchases.id as id', 'a.Product', 'a.Brend', 'a.Model', 'a.cost', 'a.total_cost', 'a.pcs', 'u.Unit', 'Purchases.created_at', 'acc.company_id', 'com.seller_name as company', 'o.id as OrderID',  'o.MainPerson', 'o.id as order_id', 'o.last_status_id as status_id', 'status.status', 'status.color as status_color', 'o.delivered_person', 'users.name as delivered_name', 'users.surname as delivered_surname')
                 ->get();
 
-            return view("backend.demands")->with(['demands'=>$demands, 'free_purchases'=>$free_purchases]);
+            $companies = Sellers::where('deleted', 0)->orderBy('seller_name')->select('id', 'seller_name as name')->get();
+
+            return view("backend.demands")->with(['demands'=>$demands, 'free_purchases'=>$free_purchases, 'companies'=>$companies]);
         } catch (\Exception $exception) {
             return redirect('/');
         }
@@ -116,7 +125,7 @@ class DemandController extends HomeController
         }
         else if ($request->type == 'add') {
             //add
-            return $this->add_demand();
+            return $this->add_demand($request);
         }
         else if ($request->type == 'show_purchases') {
             //show selected purchases
@@ -160,9 +169,15 @@ class DemandController extends HomeController
     }
 
     //add demand
-    private function add_demand() {
+    private function add_demand(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'company_id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response(['case' => 'error', 'title' => 'Error!', 'content' => 'Şirkət tapılmadı!']);
+        }
         try {
-            Demands::create(['created_by'=>Auth::id()]);
+            Demands::create(['created_by'=>Auth::id(), 'company_id'=>$request->company_id]);
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Tələbnamə əlavə edildi!', 'type' => 'add_demand']);
         } catch (\Exception $e) {

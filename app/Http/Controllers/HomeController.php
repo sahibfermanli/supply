@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Accounts;
 use App\Categories;
-use App\Orders;
-use App\OrderStatus;
 use App\Settings;
 use Illuminate\Support\Facades\View;
 

@@ -7,6 +7,12 @@
                     <h3 style="display: inline-block;"> Tələbnamələr</h3>
                     <span style="float: right;" class="btn btn-success btn-add-new-demand"
                           onclick="add_demand();"><i class="fa fa-plus"></i></span>
+                    <select id="company_id" class="form-control search-input" style="float: right; margin-right: 5px;">
+                        <option value="">Şirkət seçin</option>
+                        @foreach($companies as $company)
+                            <option value="{{$company->id}}">{{$company->name}}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
@@ -24,6 +30,7 @@
                                     <tr class="headings">
                                         <th class="column-title">#</th>
                                         <th class="column-title">Təlabnamə №</th>
+                                        <th class="column-title">Şirkət</th>
                                         <th class="column-title">Yaradan istifadəçi</th>
                                         <th class="column-title">Yaradılma tarixi</th>
                                         <th class="column-title">#Əməliyyatlar</th>
@@ -40,6 +47,7 @@
                                         <tr class="even pointer rows" id="row_{{$demand->id}}" onclick="select_row({{$demand->id}});">
                                             <td>{{$row}}</td>
                                             <td>{{$demand->id}}</td>
+                                            <td>{{$demand->company}}</td>
                                             <td>{{$demand->name}} {{$demand->surname}}</td>
                                             <td>{{$demand_date}}</td>
                                             <td>
@@ -231,6 +239,17 @@
         }
 
         function add_demand() {
+            let company_id = $("#company_id").val();
+
+            if (company_id === 0 ||company_id === '' || company_id === null) {
+                swal(
+                    'Stop!',
+                    'Əvvəlcə şikət seçin',
+                    'warning'
+                );
+                return false;
+            }
+
             swal({
                 title: 'Yeni tələbnamə yaratmaq istədiyinizdən əminsiniz?',
                 type: 'warning',
@@ -253,7 +272,8 @@
                         url: '',
                         data: {
                             '_token': CSRF_TOKEN,
-                            'type': 'add'
+                            'type': 'add',
+                            'company_id': company_id
                         },
                         success: function (response) {
                             swal.close();
