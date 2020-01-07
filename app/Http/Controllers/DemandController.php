@@ -262,7 +262,7 @@ class DemandController extends HomeController
                         'o.MainPerson')
                     ->first();
                 $delivered_person = $delivered_purchase->delivered_person;
-                $company_id = $delivered_purchase->company_id;
+//                $company_id = $delivered_purchase->company_id;
                 $main_person = $delivered_purchase->MainPerson;
 
                 if ($request->delivered_person != $delivered_person) {
