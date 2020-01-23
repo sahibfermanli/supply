@@ -670,7 +670,7 @@ class OrderController extends HomeController
             $image_name = 'order_' . str_random(4) . '_' . microtime() . '.' . $image_ext;
             Storage::disk('uploads')->makeDirectory('files/alternatives/images');
             Image::make($image->getRealPath())->save('uploads/files/alternatives/images/' . $image_name);
-            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
+//            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
             $image_address = '/uploads/files/alternatives/images/' . $image_name;
 
             $request['image'] = $image_address;
@@ -975,7 +975,7 @@ class OrderController extends HomeController
             $image_name = 'order_' . str_random(4) . '_' . microtime() . '.' . $image_ext;
             Storage::disk('uploads')->makeDirectory('files/orders/images');
             Image::make($image->getRealPath())->save('uploads/files/orders/images/' . $image_name);
-            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
+//            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
             $image_address = '/uploads/files/orders/images/' . $image_name;
 
             $request['image'] = $image_address;
@@ -1108,7 +1108,7 @@ class OrderController extends HomeController
             $image_name = 'order_' . str_random(4) . '_' . microtime() . '.' . $image_ext;
             Storage::disk('uploads')->makeDirectory('files/orders/images');
             Image::make($image->getRealPath())->save('uploads/files/orders/images/' . $image_name);
-            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
+//            Image::make($image->getRealPath())->resize(480, 480)->save('uploads/images/' . $image_name);
             $image_address = '/uploads/files/orders/images/' . $image_name;
 
             $id = $request->id;
