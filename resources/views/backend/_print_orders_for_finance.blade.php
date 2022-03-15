@@ -62,7 +62,6 @@
                 <th class="column-title">Say</th>
                 <th class="column-title">Sifarişçi</th>
                 <th class="column-title">Təsdiq etdi</th>
-                <th class="column-title">Rəhbərlik</th>
             </tr>
             </thead>
             <tbody>
@@ -93,7 +92,6 @@
                         <td>{{$order->pcs}} {{$order->Unit}}</td>
                         <td>{{$order->user_name}} {{$order->user_surname}}, {{$order->department}}</td>
                         <td>{{$order->chief_name}} {{$order->chief_surname}}</td>
-                        <td>Vüqar Zeynalov</td>
                     </tr>
                 @endforeach
             </tbody>
