@@ -81,7 +81,7 @@
                                         <th class="column-title" id="Product_th">Malın adı</th>
                                         <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
                                         <th class="column-title" id="Part_th">Part No</th>
-                                        <th class="column-title" id="WEB_link_th">WEB link</th>
+                                        <th class="column-title" id="WEB_link_th">WEBURL link</th>
                                         <th class="column-title" id="Pcs_th">Miqdar</th>
                                         <th class="column-title" id="unit_th">Ölçü vahidi</th>
                                         <th class="column-title" id="vehicle_th">Qaraj No</th>

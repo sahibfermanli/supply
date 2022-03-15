@@ -87,7 +87,7 @@
                                         <th class="column-title" style="max-width: 40px !important;"><center><b>+</b></center></th>
                                         <th class="column-title" id="Status_th">Status</th>
                                         <th class="column-title" id="Product_th">Malın adı</th>
-                                        <th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
+										<th class="column-title" id="Translation_Brand_th">Tərcümə/Təyinat</th>
                                         <th class="column-title" id="Part_th">Part No</th>
                                         <th class="column-title" id="WEB_link_th">WEB link</th>
                                         <th class="column-title" id="Pcs_th">Miqdar</th>
@@ -797,11 +797,11 @@
                             count++;
                             var order = orders[i];
                             var id = order['id'];
-                            var user_detail = '<td title="' + order['user_department'] + '" style="min-width: 150px;">' + order['user_name'].substr(0,1) + '. ' + order['user_surname'] + '</td>';
-                            var chief_detail = '<td title="' + order['confirmed_at'] + '" style="min-width: 150px;">' + order['chief_name'].substr(0,1) + '. ' + order['chief_surname'] + '</td>';
+                            var user_detail = '<td title="' + order['user_department'] + '" style="min-width: 100px;">' + order['user_name'].substr(0,1) + '. ' + order['user_surname'] + '</td>';
+                            var chief_detail = '<td title="' + order['confirmed_at'] + '" style="min-width: 100px;">' + order['chief_name'].substr(0,1) + '. ' + order['chief_surname'] + '</td>';
                             if (order['Product'] !== null) {
-                                if (order['Product'].length > 50) {
-                                    var new_product = order['Product'].substr(0, 50) + '...';
+                                if (order['Product'].length > 40) {
+                                    var new_product = order['Product'].substr(0, 40) + '...';
                                 } else {
                                     var new_product = order['Product'];
                                 }
@@ -810,8 +810,8 @@
                             }
                             var product = '<td title="' + order['Product'] + '">' + new_product + '</td>';
                             if (order['Translation_Brand'] !== null) {
-                                if (order['Translation_Brand'].length > 50) {
-                                    var new_translation_brand = order['Translation_Brand'].substr(0, 50) + '...';
+                                if (order['Translation_Brand'].length > 70) {
+                                    var new_translation_brand = order['Translation_Brand'].substr(0, 70) + '...';
                                 } else {
                                     var new_translation_brand = order['Translation_Brand'];
                                 }
@@ -820,15 +820,15 @@
                             }
                             var translation_brand = '<td title="' + order['Translation_Brand'] + '">' + new_translation_brand + '</td>';
                             if (order['Part'] !== null) {
-                                if (order['Part'].length > 50) {
-                                    var new_part = order['Part'].substr(0, 50) + '...';
+                                if (order['Part'].length > 40) {
+                                    var new_part = order['Part'].substr(0, 40) + '...';
                                 } else {
                                     var new_part = order['Part'];
                                 }
                             } else {
                                 var new_part = order['Part'];
                             }
-                            var part = '<td title="' + order['Part'] + '" style="min-width: 100px;">' + new_part + '</td>';
+                            var part = '<td title="' + order['Part'] + '" style="min-width: 10px;">' + new_part + '</td>';
                             var first_pcs = order['Pcs'];
                             if ((first_pcs - parseInt(first_pcs)) > 0) {
                                 var last_pcs = first_pcs;
@@ -848,10 +848,10 @@
                             var marka = '<td>' + order['QN'] + ' - ' + order['vehicle'] + ' - ' + order['Tipi'] + '</td>';
 
                             if (order['WEB_link'] == null) {
-                                // var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 100px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
+                                // var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 20px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
                                 var web_link = '<td title="Link yoxdur"><span disabled="true"><i class="fa fa-link"></i></span></td>';
                             } else {
-                                // var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 100px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
+                                // var web_link = '<td title="' + order['WEB_link'] + '" style="min-width: 20px;">' + '<input id="WEB_link_edit_' + id + '" style="border: none;" type="text" class="form-control input-sm" value="' + order['WEB_link'] + '">' + '</td>';
                                 var web_link = '<td title="' + order['WEB_Link'] + '"><a target="_blank" href="' + order['WEB_link'] + '"><i class="fa fa-link"></i></a></td>';
                             }
 

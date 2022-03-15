@@ -541,10 +541,20 @@
                                 $('#vehicle_th').css('display', 'none');
                             }
                                 break;
+							
+							case '12': {
+                                //Xüsusi texnika arxivi
+                                $('#Product_th').html('Malın adı');
+                                $('#Translation_Brand_th').html('Tərcümə/Təyinat');
+                                $('#Part_th').html('Part No');
+                                $('#Defect_th').css('display', 'table-cell');
+                            }
+                                break;
+                           
 
                             ////////////////////////////////
                             default: {
-                                alert('Kateqoriya tapılmadı!');
+                                alert('Kateqoriya tapılmadı!'+category_id);
                             }
                         }
 
@@ -1079,10 +1089,45 @@
                     inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
                 }
                     break;
+					
+					case '12': {
+                    //xususi texnika arxiv
+                    Product = '<td colspan="{{$product_colspan}}"  id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Product" placeholder="Malın adı"></td>';
+                    Translation_Brand = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Translation_Brand" placeholder="Tərcümə/Təyinat"></td>';
+                    Part = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="Part" placeholder="Part No"></td>';
+                    WEB_link = '<td id="orders-add-inputs" style="width: 150px;"><input type="text" class="form-control input-sm" name="WEB_link" placeholder="WEB link"></td>';
+                    Pcs = '<td id="orders-add-inputs" style="width: 150px;"><input type="number" class="form-control input-sm" name="Pcs" placeholder="Miqdarı"></td>';
 
+                    unit_id = '<td id="orders-add-inputs" style="width: 150px;">';
+                    unit_id = unit_id + '<select class="form-control input-sm" name="unit_id">';
+                    @foreach($units as $unit)
+                            @if($unit->id == 10)
+                        unit_id = unit_id + '<option selected value="{{$unit->id}}">{{$unit->Unit}}</option>';
+                    @else
+                        unit_id = unit_id + '<option value="{{$unit->id}}">{{$unit->Unit}}</option>';
+                    @endif
+                            @endforeach
+                        unit_id = unit_id + '</select></td>';
+
+                    vehicle_id = '<td id="orders-add-inputs" style="width: 150px;">';
+                    vehicle_id = vehicle_id + '<select class="form-control input-sm" name="vehicle_id">';
+                    @foreach($vehicles as $vehicle)
+                        vehicle_id = vehicle_id + '<option value="{{$vehicle->id}}">{{$vehicle->QN}} - {{$vehicle->Marka}} - {{$vehicle->Tipi}}</option>';
+                    @endforeach
+                        vehicle_id = vehicle_id + '</select></td>';
+
+                    Remark = '<td id="orders-add-inputs" colspan="2" style="width: 150px;"><input type="text" class="form-control input-sm" name="Remark" placeholder="Sifariş səbəbi"></td>';
+                    image = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="picture" placeholder="Image"></td>';
+                    deffect_doc = '<td id="orders-add-inputs" style="width: 300px;"><input type="file" class="form-control input-sm" name="defect" placeholder="Doc"></td>';
+
+                    inputs = inputs + Product + Translation_Brand + Part + WEB_link + Pcs + unit_id + vehicle_id + Remark + image + deffect_doc;
+                }
+                    break;
+
+                
                 ////////////////////////////////
                 default: {
-                    alert('Kateqoriya tapılmadı!');
+                    alert('Kateqoriya tapılmadı!'+category_id);
                 }
             }
 

@@ -60,7 +60,7 @@
 <body>
 <div class="container">
     <div class="col-md-12 forma">
-        <div class="pull-left"><h5>"Silk Way Business Aviation MMC -nin "GHC" filialı <br> (idarə), müəssisə"</h5></div>
+        <div class="pull-left"><h5>"ASG Business Aviation MMC -nin "GHC" filialı <br> (idarə), müəssisə"</h5></div>
         <div class="pull-right"><h5>M-11 N-li nümunəvi idarələrarası Forma</h5></div>
     </div>
 </div>

@@ -14,7 +14,7 @@ class MailController extends Controller
         ];
         Mail::send('emails.mail',['data'=>$data],function ($message) use ($subject, $to, $email) {
             $message->to($email, $to)->subject($subject);
-            $message->from('supply.swgh@gmail.com', "Info supply");
+            $message->from('supply@asg-groundhandling.az', "Info Supply");
         });
     }
 }

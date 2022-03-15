@@ -15,8 +15,8 @@
             <br>
             <br>
             <h2><strong>Əlaqə vasitələri:</strong></h2>
-            <p><strong>E-mail: </strong>sfermanli@swgh.az</p>
-            <p><strong>Tel: </strong>4407</p>
+            <p><strong>E-mail: </strong>support@asg.az</p>
+            <p><strong>Tel: </strong>4717</p>
         </div>
         @if(session('display') == 'block')
             <div class="alert alert-{{session('class')}}" role="alert">
