@@ -482,7 +482,7 @@ class LawyerController extends HomeController
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Alternativ tapılmadı!']);
         }
 
-        try {
+//        try {
             $order_id = $request->OrderID;
 
             unset($request['OrderID']);
@@ -536,9 +536,9 @@ class LawyerController extends HomeController
             }
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ seçildi!', 'type'=>'create_purchase']);
-        } catch (\Exception $e) {
-            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Alternativ seçilərkən səhv baş verdi!']);
-        }
+//        } catch (\Exception $e) {
+//            return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Alternativ seçilərkən səhv baş verdi!']);
+//        }
     }
 
     //cancel alternatives

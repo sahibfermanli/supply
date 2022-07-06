@@ -1242,7 +1242,7 @@
 
                             $('#alts_table').append(tr);
 
-                            $('#status_' + response.order_id).html('Alternativ yaradılıb').css('color', 'green');
+                            $('#status_' + response.order_id).html('Alımlara əlavə olundu').css('color', '#D931A7');
                         }
 
                         //add order

@@ -655,7 +655,13 @@ class OrderController extends HomeController
             return response(['case' => 'error', 'title' => 'Xəta!', 'content' => 'Sifariş tapılmadı!']);
         }
 
-        $request->merge(['deleted' => 0, 'confirm_chief'=>0]);
+        $alternative_control = Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->select('id')->first();
+
+        if ($alternative_control) {
+            return response(['case' => 'error', 'title' => 'Stop!', 'content' => 'Alternativ mövcuddur! Yalnız bir alternativ daxil edə bilərsiniz.']);
+        }
+
+        $request->merge(['deleted' => 0, 'confirm_chief'=>1]);
 
         if (isset($request->picture)) {
             $validator_file = Validator::make($request->all(), [
@@ -680,19 +686,34 @@ class OrderController extends HomeController
             unset($request['picture']);
 //                $request = Input::except('picture');
 
-            if (Auth::user()->chief() == 1) {
-                $request->merge(['confirm_chief'=>1]);
-            }
+//            if (Auth::user()->chief() == 1) {
+//                $request->merge(['confirm_chief'=>1]);
+//            }
 
             $create_alternative = Alternatives::create($request->all());
-            Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
-            $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'lb_sellers.seller_name as company')->first();
-
-//            Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
 
             $status_arr['order_id'] = $order_id;
             $status_arr['status_id'] = 8; //Alternativ yaradilib
             OrderStatus::create($status_arr);
+
+            Purchase::create([
+                'AlternativeID' => $create_alternative->id,
+                'OrderID' => $order_id,
+                'deleted'=>0,
+                'LawyerID'=>Auth::id()
+            ]);
+
+            $deadline = Carbon::now();
+
+            Orders::where(['id'=>$order_id])->update(['deadline'=>$deadline]);
+            $status_arr['order_id'] = $order_id;
+            $status_arr['status_id'] = 5; //Alımlara əlavə olundu
+            OrderStatus::create($status_arr);
+
+            //Alternatives::where(['OrderID'=>$order_id, 'deleted'=>0])->update(['DirectorRemark'=>null]);
+            $alts = Alternatives::leftJoin('lb_countries as c', 'lb_Alternatives.country_id', '=', 'c.id')->leftJoin('lb_sellers', 'lb_Alternatives.company_id', '=', 'lb_sellers.id')->leftJoin('lb_currencies_list as cur', 'lb_Alternatives.currency_id', '=', 'cur.id')->leftJoin('lb_units_list as u', 'lb_Alternatives.unit_id', '=', 'u.id')->where(['lb_Alternatives.OrderID'=>$request->OrderID, 'lb_Alternatives.deleted'=>0])->orderBy('lb_Alternatives.id', 'DESC')->select('lb_Alternatives.*', 'u.Unit', 'c.country_name as country', 'cur.cur_name as currency', 'lb_sellers.seller_name as company')->first();
+
+//            Orders::where(['id'=>$order_id])->update(['situation_id'=>8]); //Alternativ yaradilib
 
             return response(['case' => 'success', 'title' => 'Uğurlu!', 'content' => 'Alternativ əlavə edildi!', 'order_id' => $order_id, 'type' => 'add_alternative', 'alts'=>$alts]);
         } catch (\Exception $e) {
