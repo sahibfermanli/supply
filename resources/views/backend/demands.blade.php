@@ -344,7 +344,7 @@
 
                             remove = '<td><span onclick="remove_purchase_from_selected_demand(' + purchase['id'] + ',' + purchase['OrderID'] + ');" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
 
-                            var person = '<td>' + purchase['delivered_name'].substr(0, 1) + '. ' + purchase['delivered_surname'] + '</td>';
+                            var person = '<td>' + purchase['delivered_name']?.substring(0, 1) ?? '' + '. ' + purchase['delivered_surname'] ?? '' + '</td>';
                             var product = '<td>' + purchase['Product'] + '</td>';
                             var brend = '<td>' + purchase['Brend'] + '</td>';
                             var model = '<td>' + purchase['Model'] + '</td>';
