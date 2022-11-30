@@ -147,7 +147,7 @@
                                                         <span id="add_purchase_to_demand_span_{{$purchase->company_id}}" onclick="add_purchase_to_selected_demand({{$purchase->id}}, {{$purchase->OrderID}}, {{$purchase->delivered_person}}, {{$purchase->company_id}}, {{$purchase->MainPerson}});"
                                                               class="add_purchase_to_demand_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span>
                                                     </td>
-                                                    <td>{{substr($purchase->delivered_name, 0, 1)}}. {{$purchase->delivered_surname}}</td>
+                                                    <td>{{substr($purchase->delivered_name ?? '--', 0, 1)}}. {{$purchase->delivered_surname}}</td>
                                                     <td>{{$purchase->Product}}</td>
                                                     <td>{{$purchase->Brend}}</td>
                                                     <td>{{$purchase->Model}}</td>
@@ -344,7 +344,7 @@
 
                             remove = '<td><span onclick="remove_purchase_from_selected_demand(' + purchase['id'] + ',' + purchase['OrderID'] + ');" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
 
-                            var person = '<td>' + purchase['delivered_name']?.substring(0, 1) ?? '' + '. ' + purchase['delivered_surname'] ?? '' + '</td>';
+                            var person = '<td>' + purchase['delivered_name']?.substring(0, 1) + '. ' + purchase['delivered_surname'] + '</td>';
                             var product = '<td>' + purchase['Product'] + '</td>';
                             var brend = '<td>' + purchase['Brend'] + '</td>';
                             var model = '<td>' + purchase['Model'] + '</td>';
@@ -460,7 +460,7 @@
                         var purchase = response.purchase;
 
                         var remove = '<td><span onclick="remove_purchase_from_selected_demand(' + purchase['id'] + ',' + purchase['OrderID'] + ');" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></span></td>';
-                        var person = '<td>' + purchase['delivered_name'].substr(0,1) + ', ' + purchase['delivered_surname'] + '</td>';
+                        var person = '<td>' + purchase['delivered_name']?.substring(0,1) + ', ' + purchase['delivered_surname'] + '</td>';
                         var product = '<td>' + purchase['Product'] + '</td>';
                         var brend = '<td>' + purchase['Brend'] + '</td>';
                         var model = '<td>' + purchase['Model'] + '</td>';
@@ -520,7 +520,7 @@
                         var purchase = response.purchase;
 
                         var move_btn = '<td><span id="add_purchase_to_demand_span_' + purchase['company_id'] + '" onclick="add_purchase_to_selected_demand(' + purchase['id'] + ',' + purchase['OrderID'] + ',' + purchase['delivered_person'] + ',' + purchase['company_id'] + ',' + purchase['MainPerson'] + ');" class="add_purchase_to_demand_span btn btn-success btn-xs"><i class="fa fa-plus"></i></span></td>';
-                        var person = '<td>' + purchase['delivered_name'].substr(0,1) + '. ' + purchase['delivered_surname'] + '</td>';
+                        var person = '<td>' + purchase['delivered_name']?.substring(0,1) + '. ' + purchase['delivered_surname'] + '</td>';
                         var product = '<td>' + purchase['Product'] + '</td>';
                         var brend = '<td>' + purchase['Brend'] + '</td>';
                         var model = '<td>' + purchase['Model'] + '</td>';
